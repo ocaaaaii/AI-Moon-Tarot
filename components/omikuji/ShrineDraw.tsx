@@ -172,9 +172,13 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
           const payload = line.slice(6).trim();
           if (payload === "[DONE]") break;
           try {
-            const p = JSON.parse(payload) as { chunk?: string };
+            const p = JSON.parse(payload) as { chunk?: string; error?: string };
             if (p.chunk) {
               setInterpretation((t) => t + p.chunk);
+            } else if (p.error) {
+              // Route returns HTTP 200 even when the Anthropic call itself
+              // fails mid-stream — surface it instead of staying silent.
+              setInterpretation((t) => t + `（連線時發生錯誤：${p.error}）`);
             }
           } catch {
             /* skip */

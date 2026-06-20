@@ -148,10 +148,18 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           const payload = line.slice(6).trim();
           if (payload === "[DONE]") { break; }
           try {
-            const p = JSON.parse(payload) as { chunk?: string };
+            const p = JSON.parse(payload) as { chunk?: string; error?: string };
             if (p.chunk) {
               accumulated += p.chunk;
               setReadingText((t) => t + p.chunk);
+            } else if (p.error) {
+              // The route returns HTTP 200 even when the Anthropic call
+              // itself fails (the stream had already started) — without
+              // this branch, an upstream error (bad API key, rate limit,
+              // etc.) was silently swallowed and the persona just never
+              // spoke, with no clue why.
+              accumulated += `（連線時發生錯誤：${p.error}）`;
+              setReadingText((t) => t + `（連線時發生錯誤：${p.error}）`);
             }
           } catch { /* skip */ }
         }
@@ -215,10 +223,13 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           const payload = line.slice(6).trim();
           if (payload === "[DONE]") { break; }
           try {
-            const p = JSON.parse(payload) as { chunk?: string };
+            const p = JSON.parse(payload) as { chunk?: string; error?: string };
             if (p.chunk) {
               accumulated += p.chunk;
               setFollowUpText((t) => t + p.chunk);
+            } else if (p.error) {
+              accumulated += `（連線時發生錯誤：${p.error}）`;
+              setFollowUpText((t) => t + `（連線時發生錯誤：${p.error}）`);
             }
           } catch { /* skip */ }
         }
