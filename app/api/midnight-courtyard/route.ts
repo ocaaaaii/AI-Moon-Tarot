@@ -18,6 +18,9 @@ import Anthropic from "@anthropic-ai/sdk";
 import { MIDNIGHT_COURTYARD_SYSTEM_PROMPT } from "@/lib/omikuji/midnightCourtyardPrompt";
 import type { ApiError } from "@/lib/omikuji/types";
 
+// See app/api/reading/route.ts for why this is needed on Vercel.
+export const maxDuration = 60;
+
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 150;
 const TEMPERATURE = 0.95;

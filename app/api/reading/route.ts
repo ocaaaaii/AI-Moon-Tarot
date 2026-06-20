@@ -20,6 +20,11 @@ import { getTarotAvatar } from "@/lib/tarot/avatars";
 import { loadCards } from "@/lib/tarot/wikiLoader";
 import type { ReadingRequest, ApiError, HistoryMessage } from "@/lib/tarot/types";
 
+// Vercel Hobby plan defaults serverless functions to a 5–10s timeout —
+// far too short for a streamed Claude reading. Raise it to the Hobby
+// plan's max (60s) so the function isn't killed mid-stream.
+export const maxDuration = 60;
+
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 3000;
 const TEMPERATURE = 0.85;

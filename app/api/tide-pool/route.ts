@@ -15,6 +15,9 @@ import Anthropic from "@anthropic-ai/sdk";
 import { TIDE_POOL_SYSTEM_PROMPT } from "@/lib/omikuji/tidePoolPrompt";
 import type { ApiError } from "@/lib/omikuji/types";
 
+// See app/api/reading/route.ts for why this is needed on Vercel.
+export const maxDuration = 60;
+
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 200;
 const TEMPERATURE = 0.9;

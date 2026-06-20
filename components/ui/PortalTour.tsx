@@ -105,11 +105,14 @@ export default function PortalTour({ onClose }: PortalTourProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
     >
       {/* solid backdrop so the portal page never peeks through during the
           mid-crossfade moment where the outgoing slide has faded to 0
-          opacity and the incoming one hasn't faded in yet */}
+          opacity and the incoming one hasn't faded in yet. Outer wrapper's
+          own fade is now quick (0.2s) — it used to fade in parallel with
+          the first slide's own 0.7s fade, and since opacity multiplies,
+          that doubled up into a noticeably slow reveal on open. */}
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
@@ -117,7 +120,7 @@ export default function PortalTour({ onClose }: PortalTourProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         >
           <Image
             src={slide.image}

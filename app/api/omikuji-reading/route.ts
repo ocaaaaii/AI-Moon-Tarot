@@ -25,6 +25,9 @@ import { getOmikujiAvatar } from "@/lib/omikuji/avatars";
 import { loadOmikujiById } from "@/lib/omikuji/wikiLoader";
 import type { ApiError, HistoryMessage, OmikujiReadingRequest } from "@/lib/omikuji/types";
 
+// See app/api/reading/route.ts for why this is needed on Vercel.
+export const maxDuration = 60;
+
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 2000;
 const TEMPERATURE = 0.85;
