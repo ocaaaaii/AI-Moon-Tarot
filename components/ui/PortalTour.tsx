@@ -101,11 +101,15 @@ export default function PortalTour({ onClose }: PortalTourProps) {
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: "#08060e" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
+      {/* solid backdrop so the portal page never peeks through during the
+          mid-crossfade moment where the outgoing slide has faded to 0
+          opacity and the incoming one hasn't faded in yet */}
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
