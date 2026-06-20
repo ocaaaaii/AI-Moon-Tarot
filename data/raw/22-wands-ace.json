@@ -1,0 +1,37 @@
+{
+  "id": 22,
+  "slug": "wands-ace",
+  "name_en": "Ace of Wands",
+  "name_zh": "權杖王牌",
+  "arcana": "minor",
+  "suit": "wands",
+  "number": 1,
+  "keywords": [
+    "機會",
+    "行動",
+    "挑戰"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "有哪些新機會正在蘊釀中呢？",
+    "機會來臨的時候，你會勇敢抓住，好好把握嗎？",
+    "你手上有哪些東西能帶領你以行動得到成功？"
+  ],
+  "upright_meanings": [
+    "心動不如馬上行動",
+    "正面樂觀的機會",
+    "要把握住機會行動"
+  ],
+  "reversed_meanings": [
+    "一廂情願的狂熱",
+    "熱情用錯地方",
+    "容易缺乏幹勁"
+  ],
+  "love_reading": "以熱情作為基底的感覺、活力展現的感覺、會產生性慾的感覺",
+  "career_reading": "有好的機會轉換到新的工作當中 或、已經拿到轉換新工作的機會",
+  "image_url": "/wp-content/uploads/tarot/wands-ace.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-wands-ace/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}

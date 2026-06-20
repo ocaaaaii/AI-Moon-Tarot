@@ -1,0 +1,36 @@
+{
+  "id": 30,
+  "slug": "wands-nine",
+  "name_en": "Nine of Wands",
+  "name_zh": "權杖九",
+  "arcana": "minor",
+  "suit": "wands",
+  "number": 9,
+  "keywords": [
+    "重新評估",
+    "審慎",
+    "決定"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "你是個懂著在努力過後給自己喘息空間的人嗎？",
+    "你會做什麼樣的事情讓自己暫緩休息一下？",
+    "從以前所學的，現在足夠應付當下的挑戰嗎？"
+  ],
+  "upright_meanings": [
+    "堅持紀律所發展出來的力量與智慧",
+    "能保護好自己的利益或計畫",
+    "能隨時做好心理準備"
+  ],
+  "reversed_meanings": [
+    "戒心有時太強",
+    "容易忽略身體的警訊"
+  ],
+  "love_reading": "非常疲累的感覺",
+  "career_reading": "目前不太適合轉換工作、求職時，多一點警戒心、招聘時，注意過去發生的事",
+  "image_url": "/wp-content/uploads/tarot/wands-nine.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-wands-nine/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}

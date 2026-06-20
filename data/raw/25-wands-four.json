@@ -1,0 +1,37 @@
+{
+  "id": 25,
+  "slug": "wands-four",
+  "name_en": "Four of Wands",
+  "name_zh": "權杖四",
+  "arcana": "minor",
+  "suit": "wands",
+  "number": 4,
+  "keywords": [
+    "階段的收穫",
+    "家",
+    "安穩"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "你是會為了家園或者團體而努力的人嗎？為什麼？",
+    "「家」對於您來說是什麼？",
+    "在生活中你正在準備迎接什麼呢？"
+  ],
+  "upright_meanings": [
+    "穩定的",
+    "安全的",
+    "有夥伴支援的"
+  ],
+  "reversed_meanings": [
+    "有些保守",
+    "被限制的",
+    "只有階段性的突破"
+  ],
+  "love_reading": "溫馨的感覺、像親情的感覺、衝線的感覺",
+  "career_reading": "選擇你熟悉的領域、選擇團隊氣氛和樂的環境、需要「跑數目」的工作，例如營銷、業務、婚禮或典禮相關的工作",
+  "image_url": "/wp-content/uploads/tarot/wands-four.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-wands-four/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}

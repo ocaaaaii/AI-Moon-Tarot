@@ -1,0 +1,37 @@
+{
+  "id": 24,
+  "slug": "wands-three",
+  "name_en": "Three of Wands",
+  "name_zh": "權杖三",
+  "arcana": "minor",
+  "suit": "wands",
+  "number": 3,
+  "keywords": [
+    "探索",
+    "開創",
+    "成長"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "對你而言，成功的定義是什麼？",
+    "你能夠從自已的現在的基礎上開拓出新旅途嗎？",
+    "你有耐性讓足夠的動力促成改變和成長嗎？"
+  ],
+  "upright_meanings": [
+    "自信",
+    "有遠見",
+    "大膽地擁抱未知的海洋"
+  ],
+  "reversed_meanings": [
+    "急於求成",
+    "操之過急",
+    "野心大過於行動"
+  ],
+  "love_reading": "自信滿滿的感覺、有主導性的感覺",
+  "career_reading": "要高瞻遠矚與較長遠的目標、選擇有開創性、前瞻性，並趨向未來的工作、商務、船務、進出口公司",
+  "image_url": "/wp-content/uploads/tarot/wands-three.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-wands-three/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}

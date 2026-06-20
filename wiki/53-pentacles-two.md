@@ -1,0 +1,54 @@
+---
+id: 53
+name: Two of Pentacles
+name_zh: 錢幣二
+arcana: minor
+suit: pentacles
+number: 2
+keywords:
+- 能量的流動
+- 平衡感
+- 生命的浪潮
+upright_meanings:
+- 會努力，讓別人看來一點也不吃力
+- 有輕鬆掌握某些事的本事
+reversed_meanings:
+- 會沉迷於手上來來回回的事，包括成為工作狂
+- 不太願意展露真正的感受
+- 情緒高低起伏較大
+local_image: '/assets/cards/53-pentacles-two.webp'
+image_url: /wp-content/uploads/tarot/pentacles-two.jpeg
+source_url: https://nes-tarot.com/tarot-meanings-pentacles-two/
+scraped_at: '2026-06-18'
+---
+
+# 53 錢幣二 / Two of Pentacles
+
+**小塔羅 Minor Arcana**
+
+> 能量的流動、平衡感、生命的浪潮
+
+## 思考重點 Reflection
+
+- 你能夠對任何事物保持著開放的想法，讓自己怡然做選擇嗎？
+- 你懂得讓所有事物保持「平衡」感嗎？
+- 你會怎樣利用你的技能，去達成你的目標呢？
+
+## 正位 Upright Meanings
+
+- 會努力，讓別人看來一點也不吃力
+- 有輕鬆掌握某些事的本事
+
+## 逆位 Reversed Meanings
+
+- 會沉迷於手上來來回回的事，包括成為工作狂
+- 不太願意展露真正的感受
+- 情緒高低起伏較大
+
+## 感情關係 Love & Relationships
+
+輕鬆地維持著的感覺、假裝完全不在乎的感覺、不想面對，但又不會不繼續下去
+
+## 職場 Career & Work
+
+需要追逐金錢或實績的工作、與「平衡」有關的工作，例如財富管理、在別人眼中，你可以「輕鬆做到」的工作 (而背�

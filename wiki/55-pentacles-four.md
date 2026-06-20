@@ -1,0 +1,60 @@
+---
+id: 55
+name: Four of Pentacles
+name_zh: 錢幣四
+arcana: minor
+suit: pentacles
+number: 4
+keywords:
+- 過度穩定
+- 停滯
+- 未能突破
+upright_meanings:
+- 穩健的
+- 擁有足夠財力或資源 (不代表可以有更多)
+reversed_meanings:
+- 比較自私
+- 有佔有慾
+- 貪心、吝嗇
+- 與他人比較有距離
+- 內心較封閉或固執
+- 比較自我中心
+local_image: '/assets/cards/55-pentacles-four.webp'
+image_url: /wp-content/uploads/tarot/pentacles-four.jpeg
+source_url: https://nes-tarot.com/tarot-meanings-pentacles-four/
+scraped_at: '2026-06-18'
+---
+
+# 55 錢幣四 / Four of Pentacles
+
+**小塔羅 Minor Arcana**
+
+> 過度穩定、停滯、未能突破
+
+## 思考重點 Reflection
+
+- 如果一件事情無法讓你感覺到快樂，這真的是你需要的嗎？
+- 你保留住的能力或資源，它們怎樣為你帶來好處？
+- 對於製造財富和守住財富，你有哪些想法？
+
+## 正位 Upright Meanings
+
+- 穩健的
+- 擁有足夠財力或資源 (不代表可以有更多)
+
+## 逆位 Reversed Meanings
+
+- 比較自私
+- 有佔有慾
+- 貪心、吝嗇
+- 與他人比較有距離
+- 內心較封閉或固執
+- 比較自我中心
+
+## 感情關係 Love & Relationships
+
+穩定的感覺、帶佔有慾的感覺、不想失去的感覺
+
+## 職場 Career & Work
+
+要以能夠穩住當下財政狀況為首要考量、與金錢息息相關的工作，例如銀行業務或櫃檯、負責「守住」的工作，例如保全/ 保安、財富管理、為展現「安穩」主軸的工作，�

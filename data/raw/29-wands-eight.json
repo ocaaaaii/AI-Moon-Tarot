@@ -1,0 +1,37 @@
+{
+  "id": 29,
+  "slug": "wands-eight",
+  "name_en": "Eight of Wands",
+  "name_zh": "權杖八",
+  "arcana": "minor",
+  "suit": "wands",
+  "number": 8,
+  "keywords": [
+    "目標",
+    "行動",
+    "順勢而為"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "你曾經有過做一件事情如有神助、一帆風順的感覺嗎？回想一下這件事情對自己而言的意義。",
+    "你有隨著生命的浪潮移動嗎？還是逆流而上呢？",
+    "若這張牌在牌陣中，權杖指向什麼？"
+  ],
+  "upright_meanings": [
+    "清晰的想法",
+    "目標明確",
+    "行動迅速敏捷"
+  ],
+  "reversed_meanings": [
+    "過於簡化",
+    "行動比思考快",
+    "容易失去動力"
+  ],
+  "love_reading": "勢如破竹的感覺、進展快速的感覺、目標明確的感覺",
+  "career_reading": "要有清晰明確的目標、意願和決心、選擇正快速成長的產業、有機會可選擇到海外發展、要動作快！",
+  "image_url": "/wp-content/uploads/tarot/wands-eight.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-wands-eight/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}

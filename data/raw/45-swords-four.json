@@ -1,0 +1,37 @@
+{
+  "id": 45,
+  "slug": "swords-four",
+  "name_en": "Four of Swords",
+  "name_zh": "寶劍四",
+  "arcana": "minor",
+  "suit": "swords",
+  "number": 4,
+  "keywords": [
+    "反思與回憶",
+    "停頓",
+    "初衷"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "在經歷了一場耗時激烈的大戰後，你還記得原本的初衷是甚麼嗎？",
+    "你有信念、信心停止抗爭，並選擇被動的方式解決問題嗎？",
+    "你有什麼為自己「療癒」的方法？"
+  ],
+  "upright_meanings": [
+    "懂得適時休息",
+    "會反思與內省",
+    "平靜而內向"
+  ],
+  "reversed_meanings": [
+    "無法離開舒適圈",
+    "懶散或不進取",
+    "傾向於被動 (負面理解)"
+  ],
+  "love_reading": "平靜的、沉澱的、享受的、與外界隔離的",
+  "career_reading": "做選擇前，思考或反思自己的需要、暫時不會有突破的進展、建議先以不變應萬變",
+  "image_url": "/wp-content/uploads/tarot/swords-four.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-swords-four/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}

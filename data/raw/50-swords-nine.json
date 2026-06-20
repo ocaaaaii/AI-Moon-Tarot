@@ -1,0 +1,35 @@
+{
+  "id": 50,
+  "slug": "swords-nine",
+  "name_en": "Nine of Swords",
+  "name_zh": "寶劍九",
+  "arcana": "minor",
+  "suit": "swords",
+  "number": 9,
+  "keywords": [
+    "自覺",
+    "自省",
+    "面對困擾"
+  ],
+  "summary": "",
+  "story": "",
+  "reflection": [
+    "有哪些事正如惡夢般纏繞住你？",
+    "你在逃避哪些事情？為什麼？",
+    "你願意接納你自身的黑暗面嗎？"
+  ],
+  "upright_meanings": [
+    "意識到壓力的存在",
+    "會面對事件的陰暗面"
+  ],
+  "reversed_meanings": [
+    "脈輪上三輪能量不足或被干擾",
+    "心理上壓迫感過大"
+  ],
+  "love_reading": "不想面對的感覺、重複又重複發生的感覺、壓力快爆炸的感覺、尷尬的感覺",
+  "career_reading": "可能會繼續困擾一段時間、需要你以平常心面對應聘時出現的壓力",
+  "image_url": "/wp-content/uploads/tarot/swords-nine.jpeg",
+  "source_url": "https://nes-tarot.com/tarot-meanings-swords-nine/",
+  "scraped_at": "2026-06-18",
+  "local_image_path": ""
+}
