@@ -60,6 +60,9 @@ export default function PortalPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
+        <div className="relative w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 rounded-full overflow-hidden shadow-[0_0_28px_rgba(212,168,89,0.35)]">
+          <Image src="/assets/logo-circle.png" alt="Moon Tarot" fill className="object-cover" sizes="96px" priority />
+        </div>
         <p className="text-morandi-lavender/50 text-xs tracking-[0.3em] uppercase">
           夜色之下
         </p>

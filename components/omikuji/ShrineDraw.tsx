@@ -187,7 +187,12 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
       }
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
-        setInterpretation("連線出了點問題，請稍後再試。");
+        // Show the actual error instead of a generic message — this used
+        // to discard err.message (set above from the server's own
+        // ApiError.error) and always show "連線出了點問題", which made
+        // every failure look identical and impossible to diagnose.
+        const detail = (err as Error).message;
+        setInterpretation(detail ? `連線出了點問題：${detail}` : "連線出了點問題，請稍後再試。");
       }
     } finally {
       setIsStreaming(false);

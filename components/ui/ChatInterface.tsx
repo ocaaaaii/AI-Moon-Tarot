@@ -168,7 +168,8 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
       setConversationHistory([{ role: "assistant", content: accumulated }]);
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
-        setReadingText("連線出了點問題，請稍後再試。");
+        const detail = (err as Error).message;
+        setReadingText(detail ? `連線出了點問題：${detail}` : "連線出了點問題，請稍後再試。");
       }
     } finally {
       setIsStreaming(false);
@@ -238,8 +239,10 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
       setFollowUpRounds((prev) => [...prev, { question: q, answer: accumulated }]);
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
-        setFollowUpText("連線出了點問題，請稍後再試。");
-        setFollowUpRounds((prev) => [...prev, { question: q, answer: "連線出了點問題，請稍後再試。" }]);
+        const detail = (err as Error).message;
+        const msg = detail ? `連線出了點問題：${detail}` : "連線出了點問題，請稍後再試。";
+        setFollowUpText(msg);
+        setFollowUpRounds((prev) => [...prev, { question: q, answer: msg }]);
       }
     } finally {
       setIsFollowUpStreaming(false);
