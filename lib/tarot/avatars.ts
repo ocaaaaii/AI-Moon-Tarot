@@ -38,6 +38,10 @@ export interface TarotAvatar {
   realName?: string;
   image: string;
   tagline: string;
+  /** one-line specialty shown in the avatar profile panel, e.g. "拆解焦慮卡關".
+   * Mirrors the same soul's shrine-side `bestFor` (lib/omikuji/avatars.ts) —
+   * same soul, same specialty, just told through a different door. */
+  bestFor: string;
   isMember: boolean;
   systemPrompt: string;
   accent: AvatarAccent;
@@ -60,6 +64,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     displayName: "Cynthia",
     image: "/assets/Cynthia.png",
     tagline: "🌕 月之女神 · 以牌為鏡",
+    bestFor: "看懂人生十字路口",
     isMember: false,
     systemPrompt: CYNTHIA_SYSTEM_PROMPT,
     accent: "lavender",
@@ -88,6 +93,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     realName: "黎明之神",
     image: "/assets/Eos.png",
     tagline: "🌅 黎明之神 · 曙光中的智者",
+    bestFor: "穩住信仰崩塌",
     isMember: true,
     systemPrompt: EOS_SYSTEM_PROMPT,
     accent: "gold",
@@ -116,6 +122,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     realName: "太陽神",
     image: "/assets/Helios.png",
     tagline: "☀️ 太陽神 · 一語道破的烈日",
+    bestFor: "戳破自我欺騙",
     isMember: true,
     systemPrompt: HELIOS_SYSTEM_PROMPT,
     accent: "slate",
@@ -144,6 +151,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     realName: "雅典娜",
     image: "/assets/Athena.png",
     tagline: "🦉 智慧女神 · 天馬行空的拆解大師",
+    bestFor: "拆解焦慮卡關",
     isMember: true,
     systemPrompt: ATHENA_SYSTEM_PROMPT,
     accent: "rose",
@@ -172,6 +180,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     realName: "海洋之神",
     image: "/assets/Poseidon.png",
     tagline: "🌊 海洋之神 · 順流而行的衝浪教練",
+    bestFor: "療癒焦慮內耗",
     isMember: true,
     systemPrompt: POSEIDON_SYSTEM_PROMPT,
     accent: "sage",
@@ -200,6 +209,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     realName: "永夜女神",
     image: "/assets/Nyx.png",
     tagline: "🌌 永夜女神 · 潛意識的靜謐解剖",
+    bestFor: "直視深層恐懼",
     isMember: true,
     systemPrompt: NYX_SYSTEM_PROMPT,
     accent: "mauve",
@@ -228,6 +238,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     realName: "春神",
     image: "/assets/Persephone.png",
     tagline: "🌸 春之女神 · 溫柔重生的治癒系",
+    bestFor: "走出失戀低潮",
     isMember: true,
     systemPrompt: PERSEPHONE_SYSTEM_PROMPT,
     accent: "stone",

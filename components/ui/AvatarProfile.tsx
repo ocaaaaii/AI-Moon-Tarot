@@ -89,6 +89,9 @@ export interface AvatarProfileData {
   displayName: string;
   image: string;
   tagline: string;
+  /** one-line specialty, e.g. "拆解焦慮卡關" — shown under the tagline so
+   * visitors can tell who's best for what before they start chatting. */
+  bestFor?: string;
   accent: Accent;
   bioLines: string[];
   traits: { icon: string; label: string }[];
@@ -162,6 +165,11 @@ export default function AvatarProfile({
           <p className="text-cream-300/50 text-[11px] tracking-widest mt-1.5 font-light">
             {avatar.tagline}
           </p>
+          {avatar.bestFor && (
+            <p className={`${c.revealHighlight} text-[11px] tracking-wide mt-2`}>
+              ✦ 擅長：{avatar.bestFor}
+            </p>
+          )}
         </motion.div>
       </motion.div>
 

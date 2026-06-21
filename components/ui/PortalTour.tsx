@@ -27,6 +27,12 @@ interface Slide {
   body: string;
   portrait?: string;
   isMember?: boolean;
+  /** romanized name shown alongside the Chinese display name, e.g.
+   * "天城月乃（Tsukino）" — pulled from each avatar's own `englishName`
+   * field, never the cross-shop alias. Shop-intro slides have none. */
+  englishName?: string;
+  /** one-line specialty, e.g. "療癒焦慮內耗" — from `bestFor`. */
+  bestFor?: string;
 }
 
 const SHOP_SLIDES: Slide[] = [
@@ -58,6 +64,8 @@ const tsukinoSlide: Slide[] = tsukino
         title: `這裡的主人是 ${tsukino.displayName}`,
         body: `${tsukino.tagline} ——「${tsukino.quoteLines.join("")}」`,
         portrait: tsukino.image,
+        englishName: tsukino.englishName,
+        bestFor: tsukino.bestFor,
       },
     ]
   : [];
@@ -69,6 +77,8 @@ const realmSlides: Slide[] = OMIKUJI_AVATARS.filter((a) => a.region).map((a) => 
   body: `${a.tagline} ——「${a.quoteLines.join("")}」`,
   portrait: a.image,
   isMember: a.isMember,
+  englishName: a.englishName,
+  bestFor: a.bestFor,
 }));
 
 const SLIDES: Slide[] = [...SHOP_SLIDES, ...tsukinoSlide, ...realmSlides];
@@ -170,7 +180,17 @@ export default function PortalTour({ onClose }: PortalTourProps) {
                 </span>
               )}
             </p>
-            <h2 className="font-serif text-2xl text-cream-100">{slide.title}</h2>
+            <h2 className="font-serif text-2xl text-cream-100">
+              {slide.title}
+              {slide.englishName && (
+                <span className="text-cream-200/45 font-sans text-base tracking-wide ml-2">
+                  ({slide.englishName})
+                </span>
+              )}
+            </h2>
+            {slide.bestFor && (
+              <p className="text-amber-200/70 text-xs tracking-wide">✦ 擅長：{slide.bestFor}</p>
+            )}
             <p className="text-cream-200/75 text-sm leading-relaxed max-w-md">{slide.body}</p>
           </motion.div>
         </AnimatePresence>

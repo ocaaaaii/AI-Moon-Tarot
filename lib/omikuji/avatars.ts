@@ -24,6 +24,13 @@ export interface OmikujiAvatar {
   id: string;
   displayName: string;
   realName?: string;
+  /** Romanized reading of displayName (e.g. 天城月乃 → "Tsukino") — purely
+   * a transliteration, NOT the cross-shop alias (that's revealTemplate's
+   * job). Safe to show anywhere, including the portal tour. */
+  englishName: string;
+  /** One-line "best for" specialty, shown in the portal tour so visitors
+   * can tell the six Sacred Realms souls apart before picking one. */
+  bestFor: string;
   image: string;
   tagline: string;
   isMember: boolean;
@@ -63,6 +70,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "tsukino",
     displayName: "天城月乃",
+    englishName: "Amagi Tsukino",
+    bestFor: "看懂人生十字路口",
     image: "/assets/Tsukino.png",
     tagline: "🌙 籤詩問事 · 神社的解籤人",
     isMember: false,
@@ -94,6 +103,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "akira",
     displayName: "東雲曉",
+    englishName: "Shinonome Akira",
+    bestFor: "穩住信仰崩塌",
     image: "/assets/Akira.png",
     tagline: "🕯️ 月神神社的守護者",
     isMember: true,
@@ -132,6 +143,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "haruma",
     displayName: "日向陽真",
+    englishName: "Hinata Haruma",
+    bestFor: "戳破自我欺騙",
     image: "/assets/Haruma.png",
     tagline: "☀️ 月神神社的挑釁者",
     isMember: true,
@@ -170,6 +183,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "iori",
     displayName: "神樂祈織",
+    englishName: "Kagura Iori",
+    bestFor: "拆解焦慮卡關",
     image: "/assets/Iori.png",
     tagline: "🦉 知惠の星 · 天才小巫女",
     isMember: true,
@@ -209,6 +224,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "ushio",
     displayName: "汐見潮",
+    englishName: "Shiomi Ushio",
+    bestFor: "療癒焦慮內耗",
     image: "/assets/Ushio.png",
     tagline: "🌊 月神神社的潮汐療癒師",
     isMember: true,
@@ -247,6 +264,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "maya",
     displayName: "九条萬夜",
+    englishName: "Kujo Maya",
+    bestFor: "直視深層恐懼",
     image: "/assets/Maya.png",
     tagline: "🌌 月神神社的永夜巫女",
     isMember: true,
@@ -285,6 +304,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
   {
     id: "kanon",
     displayName: "天城花音",
+    englishName: "Amagi Kanon",
+    bestFor: "走出失戀低潮",
     image: "/assets/Kanon.png",
     tagline: "🌸 月神神社的春之巫女",
     isMember: true,
