@@ -15,6 +15,7 @@
 - `/app`: Next.js App Router pages and API routes
   - `/app/tarot`: 月之塔羅店鋪 — single shared shop scene, avatar-switching via `AvatarSelector`
   - `/app/shrine`: 月神神社 — shared shrine scene by default; swaps to a per-persona Sacred Realms background + ritual for 6 of the 7 souls (see 🔮 Sacred Realms below)
+  - `/app/stories`: 月神天啟 (Sacred Chronicles) — the third portal door, see 📖 Sacred Chronicles below
 - `/components/ui`: Reusable UI components (buttons, cards, overlays), including the cross-shop persona system:
   - `AvatarSelector.tsx`: post-entry "choose your reader" screen (2 rows: 3 + 4, for 7 avatars per shop)
   - `AvatarProfile.tsx`: data-driven left-column character panel, themed by a 7-color accent palette (one per soul)
@@ -81,3 +82,12 @@ None of these mini-rituals draw an omikuji, so the CLAUDE.md scoped 凶/兇 exce
 - Any persistence across sessions (Haruma's bet isn't tracked, nothing remembers what you planted in 春之花園 yesterday).
 - Membership gating on these regions — same caveat as the Membership note above, no auth exists yet.
 - Anything beyond "type something → one short AI reply" — e.g. a real puzzle UI for 智慧花園, an actual akashic-record RAG for 夜星庭. The current build deliberately kept every region's *interaction* simple (one text box, one generated reply) so six regions could ship as variations on one component; if a region's concept later needs a genuinely different interaction shape, build that as its own feature, not a `RegionRitual` prop.
+
+## 📖 Sacred Chronicles (月神天啟) — third portal door (BUILT, story1 only)
+A cinematic slideshow of each soul's daily-life story (CG stills + narration), entered via a third door on the portal page (`/stories`) alongside the tarot shop and shrine.
+
+- **Data:** `/lib/stories/types.ts` (`Story`/`StorySlide` shape), `/lib/stories/storyN.ts` (one file per story, transcribed from that story's own `.md` source in `/public/assets/Storys/StoryN/`), `/lib/stories/stories.ts` (registry — `STORIES` array + `getStory(id)`). Same single-source-of-truth pattern as the avatar registries: adding story2 means adding `story2.ts` + one line in `stories.ts`, not touching the selector page or the viewer.
+- **Routes:** `/app/stories` (selector grid, reads `STORIES`), `/app/stories/[id]` (renders `StoryViewer` for that story, 404s via `notFound()` if the id isn't in the registry).
+- **Viewer:** `components/stories/StoryViewer.tsx` — manual-paced (not auto-advancing like `PortalTour`, since this is narrative content the reader should move through at their own speed: tap the left/right thirds of the image, the prev/next buttons, or arrow keys). Three motion effects, **all built on `motion/react` alone, no GSAP** (explicitly decided — the project has one animation library, and motion/react already covers everything asked for): (1) zoom & fade crossfade between slides, (2) the dialogue-box text parallaxes in ~0.2s after the image with a blur-to-clear ease, (3) a radial ambient glow behind the whole stage retunes color per-slide via each slide's `glowRGB` (warm gold for cozy beats, starry purple for divine ones).
+- **Assets:** images live in `/public/assets/Storys/封面.jpg` (cover, shown on the portal door + selector card) and `/public/assets/Storys/StoryN/NN.jpg`. Source files arrive as multi-MB unoptimized PNGs — always re-encode to JPEG (quality ~82-84) before wiring up a new story; this cut story1's images by ~85% with no visible quality loss (same lesson as the Sacred Realms region backgrounds and the portal tour photos).
+- **Monetization (月幣 → 御守 → unlock) is NOT built.** There's no currency/wallet/payment system anywhere in this project. `Story.locked` exists as a field for future use but nothing reads it yet — every story is freely viewable today. Do not invent a fake unlock mechanism; when a real account/payment system exists, gate `/app/stories/[id]/page.tsx` on it then.

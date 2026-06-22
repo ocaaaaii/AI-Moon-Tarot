@@ -41,6 +41,13 @@ const DOORS: Door[] = [
     image: "/assets/月神神社.jpg",
     glow: "rgba(212,168,89,0.35)",
   },
+  {
+    href: "/stories",
+    title: "月神天啟",
+    tagline: "群星與日常．在命運流轉中尋回羈絆",
+    image: "/assets/Storys/封面.jpg",
+    glow: "rgba(168,120,230,0.35)",
+  },
 ];
 
 export default function PortalPage() {
@@ -74,7 +81,7 @@ export default function PortalPage() {
           選一扇門
         </h1>
         <p className="text-morandi-stone/45 text-sm mt-3">
-          兩個能讓你向內尋找答案的地方
+          三個能讓你向內尋找答案的地方
         </p>
         <motion.button
           onClick={() => setShowTour(true)}
@@ -105,7 +112,7 @@ export default function PortalPage() {
         {showTour && <PortalTour onClose={() => setShowTour(false)} />}
       </AnimatePresence>
 
-      <div className="w-full max-w-3xl flex flex-col md:flex-row gap-5 md:gap-6">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-5 md:gap-6">
         {DOORS.map((door, i) => (
           <motion.div
             key={door.href}
