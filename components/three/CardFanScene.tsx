@@ -6,10 +6,10 @@
  * random in-plane tilt per card for a natural, not-machine-perfect look.
  */
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import * as THREE from "three";
 import type { CardRequest } from "@/lib/tarot/types";
-import CardMesh, { type CardInfo } from "./CardMesh";
+import CardMesh, { type CardInfo, SHUFFLE_DURATION, DEAL_STAGGER } from "./CardMesh";
 
 // ── Layout config ─────────────────────────────────────────────────────────────
 export const SPREAD_COUNT = 78; // the full deck, always laid out for the user to browse
@@ -69,7 +69,17 @@ function seeded(n: number): number {
 }
 
 // ── Flat spread builder ───────────────────────────────────────────────────────
-function buildSpread(ids: number[]): CardInfo[] {
+// `stackOriginX` is where the shuffle pile sits, in the *same local
+// coordinate space* as the final spread (x). CardDeckCanvas starts the
+// camera panned to the left edge of the 78-card row (panX = MAX_PAN at
+// mount), not the row's horizontal center — so a pile placed at local
+// x=0 (the spread's center) would land off-screen, outside the camera's
+// initial view, and the whole shuffle/deal animation would play
+// invisibly. Passing in the live `panX` value from the first render and
+// piling at `-panX` cancels that offset out, landing the pile exactly
+// where the fixed camera is actually looking (world x ≈ 0) regardless of
+// how MAX_PAN is tuned later.
+function buildSpread(ids: number[], stackOriginX: number): CardInfo[] {
   const center = (ids.length - 1) / 2;
   return ids.map((deckId, i) => {
     const x = (i - center) * SPACING;
@@ -82,11 +92,25 @@ function buildSpread(ids: number[]): CardInfo[] {
     // keeps that effect symmetric (a gentle fan curve) instead.
     const z = Math.abs(i - center) * 0.01 + (seeded(deckId) * 0.04 - 0.02);
     const rotZ = seeded(deckId + 77) * 0.1 - 0.05; // ±2.9° tilt
+
+    // Entrance: every card starts parked near the center (a loose pile,
+    // not perfectly stacked — a small random offset per card so it reads
+    // as a messy hand-held deck rather than 78 coincident planes), jitters
+    // there during the shared shuffle phase, then deals out to (x, 0, z)
+    // above — staggered by index so the deal cascades left-to-right.
+    const stackX = stackOriginX + (seeded(deckId + 200) - 0.5) * 0.05;
+    const stackZ = i * 0.0012;
+    const stackRotZ = seeded(deckId + 300) * 0.7 - 0.35; // messy ±20° pile
+    const dealDelay = SHUFFLE_DURATION + i * DEAL_STAGGER;
+
     return {
       deckId,
       basePos: new THREE.Vector3(x, 0, z),
       baseRotZ: rotZ,
       reversed: Math.random() < 0.35,
+      stackPos: new THREE.Vector3(stackX, 0, stackZ),
+      stackRotZ,
+      dealDelay,
     };
   });
 }
@@ -114,13 +138,27 @@ interface CardFanSceneProps {
 
 export default function CardFanScene({ spreadCount, onComplete, panX = 0 }: CardFanSceneProps) {
   const texture = useMemo(() => makeCardBackTexture(), []);
-  const spreadCards = useMemo(() => buildSpread(shuffleSlice(SPREAD_COUNT)), []);
+  // Deps are intentionally [] — this closes over whatever `panX` is on the
+  // very first render (CardDeckCanvas's initial pan, framing the row's
+  // left edge) and freezes it, so later scrolling doesn't keep moving the
+  // shuffle pile around.
+  const spreadCards = useMemo(() => buildSpread(shuffleSlice(SPREAD_COUNT), -panX), []);
 
   const [drawn, setDrawn] = useState<CardRequest[]>([]);
   const [drawingId, setDrawingId] = useState<number | null>(null);
+  // Block hover/click until the shuffle + deal entrance animation has had
+  // time to finish — otherwise a quick clicker could grab a card while
+  // it's still mid-flight from the shuffle pile to its spread position.
+  const [dealingDone, setDealingDone] = useState(false);
+
+  useEffect(() => {
+    const lastDealDelay = SHUFFLE_DURATION + (SPREAD_COUNT - 1) * DEAL_STAGGER;
+    const t = window.setTimeout(() => setDealingDone(true), (lastDealDelay + 0.45) * 1000);
+    return () => window.clearTimeout(t);
+  }, []);
 
   const drawnIds = useMemo(() => new Set(drawn.map((d) => d.id)), [drawn]);
-  const isDisabled = drawn.length >= spreadCount || drawingId !== null;
+  const isDisabled = !dealingDone || drawn.length >= spreadCount || drawingId !== null;
 
   const handleDraw = useCallback(
     (id: number, reversed: boolean) => {

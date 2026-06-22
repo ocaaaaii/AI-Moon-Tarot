@@ -172,7 +172,15 @@ export default function PortalPage() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.6 }}
       >
-        Developed by CA
+        Developed by{" "}
+        <a
+          href="https://ca-portfolio.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-morandi-stone/60 transition-colors duration-200"
+        >
+          CA
+        </a>
         <br />
         © 2026 AI MOON TAROT · All rights reserved.
       </motion.p>
