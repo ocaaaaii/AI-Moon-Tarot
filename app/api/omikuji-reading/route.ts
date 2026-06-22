@@ -29,7 +29,9 @@ import type { ApiError, HistoryMessage, OmikujiReadingRequest } from "@/lib/omik
 export const maxDuration = 60;
 
 const MODEL = "claude-sonnet-4-6";
-const MAX_TOKENS = 2000;
+// See app/api/reading/route.ts — same fix, same reason (replies were
+// occasionally getting cut off mid-sentence near the end).
+const MAX_TOKENS = 3000;
 const TEMPERATURE = 0.85;
 
 // ─── Request validation ───────────────────────────────────────────────────────

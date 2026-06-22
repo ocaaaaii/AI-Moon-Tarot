@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 
 import AvatarProfile from "@/components/ui/AvatarProfile";
 import AvatarSelector from "@/components/ui/AvatarSelector";
@@ -13,6 +13,7 @@ import { TAROT_AVATARS, getTarotAvatar } from "@/lib/tarot/avatars";
 export default function TarotPage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
+  const [showMobileInfo, setShowMobileInfo] = useState(false);
   const avatar = confirmedId ? getTarotAvatar(confirmedId) : null;
   const previewAvatar = previewId ? getTarotAvatar(previewId) : null;
   const profileAvatar = avatar ?? previewAvatar;
@@ -20,6 +21,7 @@ export default function TarotPage() {
   const handleChangeAvatar = () => {
     setConfirmedId(null);
     setPreviewId(null);
+    setShowMobileInfo(false);
   };
 
   return (
@@ -107,6 +109,16 @@ export default function TarotPage() {
                   <p className="text-cream-100 text-sm font-medium tracking-wide">{avatar.displayName}</p>
                   <p className="text-morandi-stone/45 text-xs">{avatar.tagline}</p>
                 </div>
+                {/* Desktop already shows the full AvatarProfile in the left
+                    column (hidden md:block there) — this button only
+                    exists for phones, where that column has nowhere to go. */}
+                <button
+                  onClick={() => setShowMobileInfo(true)}
+                  aria-label="角色介紹"
+                  className="md:hidden w-8 h-8 flex-shrink-0 rounded-full border border-morandi-stone/25 bg-black/25 text-cream-200/75 hover:text-cream-100 hover:border-morandi-lavender/45 text-xs flex items-center justify-center transition-colors duration-200"
+                >
+                  ⓘ
+                </button>
                 <button
                   onClick={handleChangeAvatar}
                   className="px-3 py-1.5 rounded-full border border-morandi-stone/25 bg-black/25 text-cream-200/75 hover:text-cream-100 hover:border-morandi-lavender/45 text-[11px] tracking-wide transition-colors duration-200"
@@ -114,6 +126,43 @@ export default function TarotPage() {
                   換人
                 </button>
               </motion.div>
+
+              {/* Mobile-only profile sheet — same AvatarProfile component
+                  the desktop left column uses, just shown as an overlay
+                  instead of a permanent sidebar. */}
+              <AnimatePresence>
+                {showMobileInfo && (
+                  <motion.div
+                    className="md:hidden fixed inset-0 z-40 flex items-end justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: "rgba(8,6,14,0.7)" }}
+                      onClick={() => setShowMobileInfo(false)}
+                    />
+                    <motion.div
+                      className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-3xl"
+                      style={{ background: "#150f24", border: "1px solid rgba(184,168,200,0.15)" }}
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <button
+                        onClick={() => setShowMobileInfo(false)}
+                        className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-cream-200/80 text-sm flex items-center justify-center"
+                      >
+                        ✕
+                      </button>
+                      <AvatarProfile avatar={avatar} shopLabel="A I  T A R O T" heroHeight={220} />
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Chat area */}
               <div className="flex-1 overflow-hidden">

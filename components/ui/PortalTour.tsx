@@ -181,7 +181,15 @@ export default function PortalTour({ onClose }: PortalTourProps) {
         ✕ 跳過導覽
       </button>
 
-      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-6 px-6 pb-12 pt-24 sm:pb-16">
+      {/* max-h + overflow-y-auto is the safety net for short mobile
+          viewports (especially in-app browsers whose URL bar eats real
+          screen height) — without it, the stacked portrait/kicker/
+          title/body/dots/buttons could add up to more than the visible
+          height and just get clipped with no way to reach the bottom
+          controls. Padding/gaps also shrink on mobile (sm: restores the
+          old desktop spacing) since pt-24 alone was a quarter of some
+          phones' usable height. */}
+      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-3 sm:gap-6 px-6 pb-6 sm:pb-16 pt-10 sm:pt-24 max-h-[100dvh] overflow-y-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
@@ -189,10 +197,10 @@ export default function PortalTour({ onClose }: PortalTourProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-xl flex flex-col items-center text-center gap-3"
+            className="w-full max-w-xl flex flex-col items-center text-center gap-2 sm:gap-3"
           >
             {slide.portrait && (
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border border-cream-200/30 shadow-[0_0_20px_rgba(255,255,255,0.15)] mb-1">
+              <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden border border-cream-200/30 shadow-[0_0_20px_rgba(255,255,255,0.15)] mb-1">
                 <Image src={slide.portrait} alt={slide.title} fill className="object-cover object-top" sizes="64px" />
               </div>
             )}
@@ -206,18 +214,18 @@ export default function PortalTour({ onClose }: PortalTourProps) {
                 </span>
               )}
             </p>
-            <h2 className="font-serif text-2xl text-cream-100">
+            <h2 className="font-serif text-xl sm:text-2xl text-cream-100">
               {slide.title}
               {slide.englishName && (
-                <span className="text-cream-200/45 font-sans text-base tracking-wide ml-2">
+                <span className="text-cream-200/45 font-sans text-sm sm:text-base tracking-wide ml-2">
                   ({slide.englishName})
                 </span>
               )}
             </h2>
             {slide.bestFor && (
-              <p className="text-amber-200/70 text-xs tracking-wide">✦ 擅長：{slide.bestFor}</p>
+              <p className="text-amber-200/70 text-[11px] sm:text-xs tracking-wide">✦ 擅長：{slide.bestFor}</p>
             )}
-            <p className="text-cream-200/75 text-sm leading-relaxed max-w-md">{slide.body}</p>
+            <p className="text-cream-200/75 text-xs sm:text-sm leading-relaxed max-w-md">{slide.body}</p>
           </motion.div>
         </AnimatePresence>
 

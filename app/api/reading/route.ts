@@ -26,7 +26,12 @@ import type { ReadingRequest, ApiError, HistoryMessage } from "@/lib/tarot/types
 export const maxDuration = 60;
 
 const MODEL = "claude-sonnet-4-6";
-const MAX_TOKENS = 3000;
+// Some personas (e.g. Athena's 4-chapter cute-particle-heavy style) write
+// long enough that 3000 wasn't always enough — readings were getting cut
+// off mid-sentence on the last chapter. Raised with headroom; Anthropic
+// only bills for tokens actually generated, so this costs nothing extra
+// for shorter replies.
+const MAX_TOKENS = 4096;
 const TEMPERATURE = 0.85;
 
 // ─── Request validation ───────────────────────────────────────────────────────

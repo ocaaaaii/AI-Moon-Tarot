@@ -25,6 +25,11 @@ export interface AvatarOption {
   image: string;
   tagline: string;
   isMember: boolean;
+  /** optional — only used by the mobile inline preview below the grid.
+   * Both TarotAvatar and OmikujiAvatar already have these, so the pages
+   * pass them through for free; nothing else needs to change. */
+  bestFor?: string;
+  bioLines?: string[];
 }
 
 interface AvatarSelectorProps {
@@ -87,14 +92,14 @@ export default function AvatarSelector({
         />
 
         {avatar.isMember && (
-          <div className="absolute top-2 right-2 bg-black/55 backdrop-blur-sm rounded-full px-2.5 py-1">
-            <span className="text-[10px] text-amber-200/85 tracking-wide">🔒 會員限定</span>
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-black/55 backdrop-blur-sm rounded-full px-1.5 sm:px-2.5 py-0.5 sm:py-1 max-w-[calc(100%-12px)]">
+            <span className="text-[9px] sm:text-[10px] text-amber-200/85 tracking-wide whitespace-nowrap">🔒 會員限定</span>
           </div>
         )}
 
-        <div className="absolute bottom-0 inset-x-0 p-3">
-          <p className="text-cream-100 text-sm font-medium">{avatar.displayName}</p>
-          <p className="text-cream-300/50 text-[10px] mt-0.5 leading-relaxed">{avatar.tagline}</p>
+        <div className="absolute bottom-0 inset-x-0 p-2 sm:p-3">
+          <p className="text-cream-100 text-xs sm:text-sm font-medium truncate">{avatar.displayName}</p>
+          <p className="text-cream-300/50 text-[9px] sm:text-[10px] mt-0.5 leading-relaxed line-clamp-2">{avatar.tagline}</p>
         </div>
       </motion.button>
     );
@@ -119,16 +124,50 @@ export default function AvatarSelector({
           flex-wrap was wrapping the 4-card row into 3+1 whenever the
           container wasn't quite wide enough for all 4 at a fixed card
           width; grid guarantees the row count regardless of width. */}
-      <div className="flex flex-col items-center gap-4 w-full max-w-2xl">
-        <div className="grid grid-cols-3 gap-4 w-full">
+      {/* Bottom row is grid-cols-2 on narrow phones, grid-cols-4 from sm up.
+          At 4 columns on a ~360px phone each card was only ~70px wide —
+          too narrow for the "🔒 會員限定" badge, which overflowed past the
+          card edge into its neighbor and looked like garbled overlapping
+          text. 2 columns gives each card roughly double the width. */}
+      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-2xl">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full">
           {avatars.slice(0, 3).map((avatar, i) => renderCard(avatar, i))}
         </div>
         {avatars.length > 3 && (
-          <div className="grid grid-cols-4 gap-4 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full">
             {avatars.slice(3).map((avatar, i) => renderCard(avatar, i + 3))}
           </div>
         )}
       </div>
+
+      {/* Mobile-only inline preview — the parent pages hide the full
+          AvatarProfile column below the md breakpoint (it's designed for
+          a wide left sidebar, not a narrow phone screen), so tapping a
+          card had nowhere to show that persona's intro at all on mobile.
+          This is a condensed stand-in just for phones; desktop already
+          gets the full profile in the left column, so this is md:hidden. */}
+      <AnimatePresence mode="wait">
+        {selected && (
+          <motion.div
+            key={`mobile-${selected.id}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden w-full max-w-sm rounded-2xl p-4 flex flex-col items-center text-center gap-1.5"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            <p className="text-cream-100 text-sm font-medium">{selected.displayName}</p>
+            <p className="text-morandi-stone/55 text-[11px]">{selected.tagline}</p>
+            {selected.bestFor && (
+              <p className="text-amber-200/70 text-[11px] tracking-wide">✦ 擅長：{selected.bestFor}</p>
+            )}
+            {selected.bioLines && selected.bioLines.length > 0 && (
+              <p className="text-cream-200/55 text-xs leading-relaxed mt-1">{selected.bioLines[0]}</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         {selected && (

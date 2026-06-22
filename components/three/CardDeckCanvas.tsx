@@ -24,7 +24,13 @@ interface CardDeckCanvasProps {
 }
 
 const CANVAS_HEIGHT = 400;
-const SCROLLBAR_GUTTER = 16;
+// 16px was a fine target for a mouse-driven scrollbar thumb, but on a
+// touchscreen there's no visible thumb to grab (mobile browsers don't
+// render custom ::-webkit-scrollbar styling at all) and a 16px-tall strip
+// is far too thin to reliably swipe with a finger — taps just missed it
+// and landed on the canvas instead, which doesn't pan. 40px is a much
+// more realistic touch target while still reading as a thin strip.
+const SCROLLBAR_GUTTER = 40;
 
 // How much of the row the camera frames at once, in the same world units as
 // SPACING — tuned to roughly match the current camera distance/fov. If the
@@ -68,9 +74,18 @@ export default function CardDeckCanvas({ spreadCount, onComplete }: CardDeckCanv
         </Canvas>
       </div>
 
+      {/* Swipe hint — on mobile there's no visible scrollbar thumb to
+          signal "this is draggable" the way a mouse-driven scrollbar does,
+          so spell it out once. */}
+      <p className="text-center text-morandi-stone/40 text-[11px] mt-1 tracking-wide">
+        ← 左右滑動，瀏覽全部 78 張 →
+      </p>
+
       {/* Proxy scrollbar — renders no visible cards itself, just a spacer
           sized relative to how much wider the full deck is than one
-          camera-frame's worth, so scrolling it pans panX above. */}
+          camera-frame's worth, so scrolling it pans panX above.
+          WebkitOverflowScrolling gives it momentum/inertia on iOS, which
+          overflow-x:auto alone doesn't always provide. */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -81,9 +96,27 @@ export default function CardDeckCanvas({ spreadCount, onComplete }: CardDeckCanv
           overflowX: "auto",
           overflowY: "hidden",
           marginTop: "4px",
+          WebkitOverflowScrolling: "touch",
         }}
       >
-        <div style={{ width: `${(TOTAL_WORLD_WIDTH / VISIBLE_WORLD_WIDTH) * 100}%`, height: 1 }} />
+        <div
+          style={{
+            width: `${(TOTAL_WORLD_WIDTH / VISIBLE_WORLD_WIDTH) * 100}%`,
+            height: SCROLLBAR_GUTTER,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {/* visible drag track, centered in the now-taller touch target */}
+          <div
+            style={{
+              width: "100%",
+              height: 4,
+              borderRadius: 4,
+              background: "rgba(184, 168, 200, 0.15)",
+            }}
+          />
+        </div>
       </div>
 
       <style jsx>{`

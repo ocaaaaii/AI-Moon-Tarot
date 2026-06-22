@@ -29,6 +29,7 @@ export default function ShrinePage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
   const [showRegionRitual, setShowRegionRitual] = useState(false);
+  const [showMobileInfo, setShowMobileInfo] = useState(false);
   const avatar = confirmedId ? getOmikujiAvatar(confirmedId) : null;
   const previewAvatar = previewId ? getOmikujiAvatar(previewId) : null;
   const profileAvatar = avatar ?? previewAvatar;
@@ -37,6 +38,7 @@ export default function ShrinePage() {
     setConfirmedId(null);
     setPreviewId(null);
     setShowRegionRitual(false);
+    setShowMobileInfo(false);
   };
 
   return (
@@ -154,6 +156,17 @@ export default function ShrinePage() {
                     {avatar.region.buttonLabel}
                   </button>
                 )}
+                {/* Desktop already shows the full AvatarProfile in the left
+                    column (hidden md:block there) — icon-only and md:hidden
+                    so it doesn't crowd the header next to the region button
+                    on phones, where space is already tight. */}
+                <button
+                  onClick={() => setShowMobileInfo(true)}
+                  aria-label="角色介紹"
+                  className="md:hidden w-8 h-8 flex-shrink-0 rounded-full border border-morandi-stone/25 bg-black/25 text-cream-200/75 hover:text-cream-100 hover:border-amber-300/45 text-xs flex items-center justify-center transition-colors duration-200"
+                >
+                  ⓘ
+                </button>
                 <button
                   onClick={handleChangeAvatar}
                   className="px-3 py-1.5 rounded-full border border-morandi-stone/25 bg-black/25 text-cream-200/75 hover:text-cream-100 hover:border-amber-300/45 text-[11px] tracking-wide transition-colors duration-200"
@@ -161,6 +174,42 @@ export default function ShrinePage() {
                   換人
                 </button>
               </motion.div>
+
+              {/* Mobile-only profile sheet — same AvatarProfile component
+                  the desktop left column uses, just shown as an overlay. */}
+              <AnimatePresence>
+                {showMobileInfo && (
+                  <motion.div
+                    className="md:hidden fixed inset-0 z-40 flex items-end justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: "rgba(8,6,14,0.7)" }}
+                      onClick={() => setShowMobileInfo(false)}
+                    />
+                    <motion.div
+                      className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-3xl"
+                      style={{ background: "#1a1410", border: "1px solid rgba(212,168,89,0.15)" }}
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <button
+                        onClick={() => setShowMobileInfo(false)}
+                        className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-cream-200/80 text-sm flex items-center justify-center"
+                      >
+                        ✕
+                      </button>
+                      <AvatarProfile avatar={avatar} shopLabel="月 神 神 社" heroHeight={220} />
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Draw + chat area */}
               <div className="flex-1 overflow-hidden">
