@@ -165,6 +165,17 @@ export default function PortalPage() {
           </motion.div>
         ))}
       </div>
+
+      <motion.p
+        className="mt-10 text-center text-morandi-stone/35 text-[11px] tracking-wide"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.6 }}
+      >
+        Developed by CA
+        <br />
+        © 2026 AI MOON TAROT · All rights reserved.
+      </motion.p>
     </main>
   );
 }
