@@ -37,13 +37,13 @@ interface Slide {
 
 const SHOP_SLIDES: Slide[] = [
   {
-    image: "/assets/月之塔羅店合照.png",
+    image: "/assets/月之塔羅店合照.jpg",
     kicker: "西洋塔羅線",
     title: "月之塔羅店鋪",
     body: "在向內尋找答案之前，先來看看這裡。七位風格迥異的塔羅師輪流坐鎮——有人溫柔，有人犀利，但沒有一位會替你下命運的判決。",
   },
   {
-    image: "/assets/月神神社大合照.png",
+    image: "/assets/月神神社大合照.jpg",
     kicker: "東方神社線",
     title: "月神神社",
     body: "穿過鳥居往裡走，是月神神社。七位解籤師各自守著一方天地，用籤詩回應每個深夜捎來的心事。",
@@ -59,7 +59,7 @@ const tsukino = OMIKUJI_AVATARS.find((a) => a.id === "tsukino");
 const tsukinoSlide: Slide[] = tsukino
   ? [
       {
-        image: "/assets/月神神社.png",
+        image: "/assets/月神神社.jpg",
         kicker: "月神的化身 · 神社主人",
         title: `這裡的主人是 ${tsukino.displayName}`,
         body: `${tsukino.tagline} ——「${tsukino.quoteLines.join("")}」`,
@@ -108,6 +108,23 @@ export default function PortalTour({ onClose }: PortalTourProps) {
     return () => window.clearTimeout(t);
   }, [index, isLast, next]);
 
+  // Warm the browser's image cache for every slide as soon as the tour
+  // opens, instead of only loading each background image right as its
+  // slide becomes current. Without this, a slide's image only starts
+  // fetching/decoding the moment you navigate to it — on a slow
+  // connection that shows up as a long black hold (the solid backdrop
+  // behind the crossfade) and feels like the whole page is reloading.
+  useEffect(() => {
+    SLIDES.forEach((s) => {
+      const img = new window.Image();
+      img.src = s.image;
+      if (s.portrait) {
+        const p = new window.Image();
+        p.src = s.portrait;
+      }
+    });
+  }, []);
+
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -123,14 +140,21 @@ export default function PortalTour({ onClose }: PortalTourProps) {
           own fade is now quick (0.2s) — it used to fade in parallel with
           the first slide's own 0.7s fade, and since opacity multiplies,
           that doubled up into a noticeably slow reveal on open. */}
-      <AnimatePresence mode="wait">
+      {/* No `mode="wait"` here on purpose — the old slide now stays
+          mounted and visible while the new one fades in on top of it, a
+          true overlapping crossfade. With `mode="wait"` the outgoing
+          slide had to fully disappear before the incoming one even
+          started, so on a slow connection there was a real gap where
+          only the solid black backdrop showed — exactly the "stuck on a
+          black screen, feels like the page is reloading" complaint. */}
+      <AnimatePresence>
         <motion.div
           key={index}
           className="absolute inset-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <Image
             src={slide.image}
@@ -172,10 +196,12 @@ export default function PortalTour({ onClose }: PortalTourProps) {
                 <Image src={slide.portrait} alt={slide.title} fill className="object-cover object-top" sizes="64px" />
               </div>
             )}
-            <p className="text-cream-300/55 text-[11px] tracking-[0.3em] uppercase flex items-center gap-2">
-              {slide.kicker}
+            <p className="flex items-center gap-2">
+              <span className="text-cream-100/85 text-[11px] tracking-[0.3em] uppercase bg-black/40 backdrop-blur-sm rounded-full px-3 py-1">
+                {slide.kicker}
+              </span>
               {slide.isMember && (
-                <span className="text-amber-200/80 bg-black/40 rounded-full px-2 py-0.5 text-[10px] tracking-wide">
+                <span className="text-amber-200/90 bg-black/40 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] tracking-wide">
                   🔒 會員限定
                 </span>
               )}

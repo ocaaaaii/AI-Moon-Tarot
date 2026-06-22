@@ -38,7 +38,7 @@ const DOORS: Door[] = [
     href: "/shrine",
     title: "月神神社",
     tagline: "籤詩與月光 · 在儀式裡安放心事",
-    image: "/assets/月神神社.png",
+    image: "/assets/月神神社.jpg",
     glow: "rgba(212,168,89,0.35)",
   },
 ];

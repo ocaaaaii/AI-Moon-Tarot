@@ -111,7 +111,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     systemPrompt: AKIRA_SYSTEM_PROMPT,
     accent: "slate",
     region: {
-      image: "/assets/黎明庭園.png",
+      image: "/assets/黎明庭園.jpg",
       title: "黎明庭園",
       subheading: "寫下一件你覺得自己絕對做不到的事",
       placeholder: "寫下那個你不相信自己能做到的事……",
@@ -151,7 +151,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     systemPrompt: HARUMA_SYSTEM_PROMPT,
     accent: "lavender",
     region: {
-      image: "/assets/烈陽殿.png",
+      image: "/assets/烈陽殿.jpg",
       title: "烈陽殿",
       subheading: "說出一個你正在逃避、或騙自己的事",
       placeholder: "你在拖延、或騙自己的，是什麼事？",
@@ -191,7 +191,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     systemPrompt: IORI_SYSTEM_PROMPT,
     accent: "rose",
     region: {
-      image: "/assets/智慧花園.png",
+      image: "/assets/智慧花園.jpg",
       title: "智慧花園",
       subheading: "把一個二選一的難題，丟給雅典娜的沙盤",
       placeholder: "寫下你的兩難（例如：要不要離職）……",
@@ -232,7 +232,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     systemPrompt: USHIO_SYSTEM_PROMPT,
     accent: "sage",
     region: {
-      image: "/assets/潮音池.png",
+      image: "/assets/潮音池.jpg",
       title: "潮音池",
       subheading: "把心裡的煩惱，交給水吧",
       placeholder: "寫下一件讓你煩心的事……",
@@ -272,7 +272,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     systemPrompt: MAYA_SYSTEM_PROMPT,
     accent: "mauve",
     region: {
-      image: "/assets/夜星庭.png",
+      image: "/assets/夜星庭.jpg",
       title: "夜星庭",
       subheading: "深夜限定。寫下一個反覆出現的夢，或揮之不去的宿命感",
       placeholder: "寫下那個夢，或那股感覺……",
@@ -312,7 +312,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     systemPrompt: KANON_SYSTEM_PROMPT,
     accent: "stone",
     region: {
-      image: "/assets/春之花園.png",
+      image: "/assets/春之花園.jpg",
       title: "春之花園",
       subheading: "把一段心碎，種成一顆種子吧",
       placeholder: "寫下一段讓你心碎的記憶……",
