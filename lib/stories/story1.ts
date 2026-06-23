@@ -58,7 +58,7 @@ export const STORY1: Story = {
     },
     {
       image: "/assets/Storys/Story1/08.jpg",
-      text: "她的靈魂有點疲憊，常仰望夜空發呆，渴望獲得真正的休息。",
+      text: "她的靈魂有些疲憊，常仰望夜空發呆，渴望獲得真正的休息。",
       glowRGB: COOL_SLATE,
     },
     {
