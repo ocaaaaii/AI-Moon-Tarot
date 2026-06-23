@@ -13,7 +13,7 @@
  * Response: { response: string } | { error: string, gated: true }
  */
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { completeLLM } from "@/lib/llm/complete";
 
 import { MIDNIGHT_COURTYARD_SYSTEM_PROMPT } from "@/lib/omikuji/midnightCourtyardPrompt";
 import type { ApiError } from "@/lib/omikuji/types";
@@ -21,7 +21,6 @@ import type { ApiError } from "@/lib/omikuji/types";
 // See app/api/reading/route.ts for why this is needed on Vercel.
 export const maxDuration = 60;
 
-const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 150;
 const TEMPERATURE = 0.95;
 
@@ -62,31 +61,13 @@ export async function POST(req: NextRequest): Promise<Response> {
     return NextResponse.json(error, { status: 400 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY is not configured" } satisfies ApiError,
-      { status: 500 }
-    );
-  }
-
-  const client = new Anthropic({ apiKey });
-
   try {
-    const message = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      temperature: TEMPERATURE,
-      system: MIDNIGHT_COURTYARD_SYSTEM_PROMPT,
-      messages: [
-        { role: "user", content: `使用者寫下反覆出現的夢，或揮之不去的宿命感：「${worry}」` },
-      ],
-    });
-
-    const text = message.content
-      .map((block) => (block.type === "text" ? block.text : ""))
-      .join("")
-      .trim();
+    const text = await completeLLM(
+      MIDNIGHT_COURTYARD_SYSTEM_PROMPT,
+      [{ role: "user", content: `使用者寫下反覆出現的夢，或揮之不去的宿命感：「${worry}」` }],
+      MAX_TOKENS,
+      TEMPERATURE
+    );
 
     if (!text) {
       throw new Error("Empty response from model");

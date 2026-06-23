@@ -9,7 +9,7 @@
  * Response: { response: string }
  */
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { completeLLM } from "@/lib/llm/complete";
 
 import { SANDBOX_SYSTEM_PROMPT } from "@/lib/omikuji/sandboxPrompt";
 import type { ApiError } from "@/lib/omikuji/types";
@@ -17,7 +17,6 @@ import type { ApiError } from "@/lib/omikuji/types";
 // See app/api/reading/route.ts for why this is needed on Vercel.
 export const maxDuration = 60;
 
-const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 250;
 const TEMPERATURE = 0.9;
 
@@ -45,31 +44,13 @@ export async function POST(req: NextRequest): Promise<Response> {
     return NextResponse.json(error, { status: 400 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY is not configured" } satisfies ApiError,
-      { status: 500 }
-    );
-  }
-
-  const client = new Anthropic({ apiKey });
-
   try {
-    const message = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      temperature: TEMPERATURE,
-      system: SANDBOX_SYSTEM_PROMPT,
-      messages: [
-        { role: "user", content: `使用者丟出的二選一難題：「${worry}」` },
-      ],
-    });
-
-    const text = message.content
-      .map((block) => (block.type === "text" ? block.text : ""))
-      .join("")
-      .trim();
+    const text = await completeLLM(
+      SANDBOX_SYSTEM_PROMPT,
+      [{ role: "user", content: `使用者丟出的二選一難題：「${worry}」` }],
+      MAX_TOKENS,
+      TEMPERATURE
+    );
 
     if (!text) {
       throw new Error("Empty response from model");

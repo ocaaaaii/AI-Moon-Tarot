@@ -18,19 +18,16 @@
  *   data: [DONE]\n\n
  */
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 
 import { buildUserMessage } from "@/lib/omikuji/contextBuilder";
 import { getOmikujiAvatar } from "@/lib/omikuji/avatars";
 import { loadOmikujiById } from "@/lib/omikuji/wikiLoader";
 import type { ApiError, HistoryMessage, OmikujiReadingRequest } from "@/lib/omikuji/types";
+import { streamLLM, type LLMMessage } from "@/lib/llm/stream";
 
 // See app/api/reading/route.ts for why this is needed on Vercel.
 export const maxDuration = 60;
 
-const MODEL = "claude-sonnet-4-6";
-// See app/api/reading/route.ts — same fix, same reason (replies were
-// occasionally getting cut off mid-sentence near the end).
 const MAX_TOKENS = 3000;
 const TEMPERATURE = 0.85;
 
@@ -122,43 +119,20 @@ export async function POST(req: NextRequest): Promise<Response> {
   const userMessage = buildUserMessage(request.question, entry);
   const avatar = getOmikujiAvatar(request.avatarId);
 
-  // 3. Stream from Claude API
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY is not configured" } satisfies ApiError,
-      { status: 500 }
-    );
-  }
-
-  const client = new Anthropic({ apiKey });
-
+  // 3. Stream from the active LLM provider (see lib/llm/stream.ts)
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const messages: Anthropic.MessageParam[] = [
+        const messages: LLMMessage[] = [
           { role: "user", content: userMessage },
           ...(request.history ?? []).map((h) => ({
-            role: h.role,
+            role: h.role as "user" | "assistant",
             content: h.content,
           })),
         ];
 
-        const anthropicStream = client.messages.stream({
-          model: MODEL,
-          max_tokens: MAX_TOKENS,
-          temperature: TEMPERATURE,
-          system: avatar.systemPrompt,
-          messages,
-        });
-
-        for await (const event of anthropicStream) {
-          if (
-            event.type === "content_block_delta" &&
-            event.delta.type === "text_delta"
-          ) {
-            controller.enqueue(sseChunk(event.delta.text));
-          }
+        for await (const chunk of streamLLM(avatar.systemPrompt, messages, MAX_TOKENS, TEMPERATURE)) {
+          controller.enqueue(sseChunk(chunk));
         }
 
         controller.enqueue(sseDone());

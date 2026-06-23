@@ -13,24 +13,20 @@
  *   data: [DONE]\n\n
  */
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 
 import { buildUserMessage } from "@/lib/tarot/contextBuilder";
 import { getTarotAvatar } from "@/lib/tarot/avatars";
 import { loadCards } from "@/lib/tarot/wikiLoader";
 import type { ReadingRequest, ApiError, HistoryMessage } from "@/lib/tarot/types";
+import { streamLLM, type LLMMessage } from "@/lib/llm/stream";
 
 // Vercel Hobby plan defaults serverless functions to a 5–10s timeout —
-// far too short for a streamed Claude reading. Raise it to the Hobby
-// plan's max (60s) so the function isn't killed mid-stream.
+// far too short for a streamed reading. Raise it to the Hobby plan's max
+// (60s) so the function isn't killed mid-stream.
 export const maxDuration = 60;
 
-const MODEL = "claude-sonnet-4-6";
-// Some personas (e.g. Athena's 4-chapter cute-particle-heavy style) write
-// long enough that 3000 wasn't always enough — readings were getting cut
-// off mid-sentence on the last chapter. Raised with headroom; Anthropic
-// only bills for tokens actually generated, so this costs nothing extra
-// for shorter replies.
+// Some personas (e.g. Athena's 4-chapter style) write long enough that
+// 3000 wasn't always enough. Raised with headroom.
 const MAX_TOKENS = 4096;
 const TEMPERATURE = 0.85;
 
@@ -143,44 +139,21 @@ export async function POST(req: NextRequest): Promise<Response> {
   }
   const avatar = getTarotAvatar(request.avatarId);
 
-  // 3. Stream from Claude API
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY is not configured" } satisfies ApiError,
-      { status: 500 }
-    );
-  }
-
-  const client = new Anthropic({ apiKey });
-
+  // 3. Stream from the active LLM provider (see lib/llm/stream.ts)
   const stream = new ReadableStream({
     async start(controller) {
       try {
         // Build multi-turn messages: initial context + optional follow-up history
-        const messages: Anthropic.MessageParam[] = [
+        const messages: LLMMessage[] = [
           { role: "user", content: userMessage },
           ...(request.history ?? []).map((h) => ({
-            role: h.role,
+            role: h.role as "user" | "assistant",
             content: h.content,
           })),
         ];
 
-        const anthropicStream = client.messages.stream({
-          model: MODEL,
-          max_tokens: MAX_TOKENS,
-          temperature: TEMPERATURE,
-          system: avatar.systemPrompt,
-          messages,
-        });
-
-        for await (const event of anthropicStream) {
-          if (
-            event.type === "content_block_delta" &&
-            event.delta.type === "text_delta"
-          ) {
-            controller.enqueue(sseChunk(event.delta.text));
-          }
+        for await (const chunk of streamLLM(avatar.systemPrompt, messages, MAX_TOKENS, TEMPERATURE)) {
+          controller.enqueue(sseChunk(chunk));
         }
 
         controller.enqueue(sseDone());
