@@ -66,3 +66,104 @@ scraped_at: '2026-06-18'
 ## 職場 Career & Work
 
 與「治療」相關的行業 (實際形容或象徵意義)、與健康相關的工作、負責調
+
+## 5W1H 看牌義
+是什麼/ What
+- 調節與平衡的掌握
+- 融合與調和的技巧
+- 不徐不疾的行動和態度
+為什麼/ Why
+- 因為[懂得]做到融合
+- 因為調解/調度有方
+- 因為慢條斯理
+是誰/ Who
+- 醫生、治療師、療癒者、健康督導人員
+- 調解員 (mediator)
+- 瑜珈導師
+- 老師、導師
+- 會計師
+- 藥劑師
+- 接線生
+- 配線技師
+- 混音工程師
+- 廚師
+- 調酒師
+- 朝聖者 (尋求心靈平衡)
+在哪裡/ Where
+- 診療室 (傾向於實際行動而非心靈)
+- 瑜珈中心
+- 聖堂、宗教會堂
+- 水壩、水閘
+- 廚房
+何時/ When
+- 等待時
+- 平心靜氣時
+- 治療、療癒時
+怎麼做/ How
+- 別急躁
+- 耐心等待
+- 取中庸之道
+- 自我控制 (克制)
+- 維持自己的節奏
+- 過火爐、薰香、重設 (Reset)
+- 多喝水
+
+## 感情關係與人際​Love, relationship and interpersonal
+正面或負面
+Positivity and negativity (Yes/ No)
+- 中立形容
+感受性
+Feelings (towards)
+- 淡然的
+- 恬適的
+- 自然的
+- 和諧的
+- 獨立自持的
+目前的身份狀態
+Single or availability
+- 單身
+復合的可能性
+Reconciliation
+- 可能，需要你平心靜氣解決問題
+是否有第三者
+The other person (infidelity)
+- 未有顯示或說明
+預測可能性
+Outcome or future (possibilities)
+- 未知，需要「調和」看看，在乎於行動
+
+## 職場與工作​Career, business and prospect
+轉職、招聘/應聘
+Career changes
+- 與「治療」相關的行業 (實際形容或象徵意義)
+- 與健康相關的工作
+- 負責調節、調整、平衡的工作
+遷升選擇、前景
+Career prospects
+- 需要你以耐心展現自己的能力
+- 等待
+有關正/兼職
+Slash life
+- 放慢速度，方可同樣兼顧生活
+工作時間分配
+Work-life balancing
+- 重點在於兩者之間的平衡
+創業
+Entrepreneurship
+- 提升、維護健康相關的行業
+- 身心靈或療癒行業
+
+## 學業及前景Studying and prospect
+選科
+Taking courses
+- 與健康相關科系
+- 「治療」科系 (包括象徵意義)
+- 教育系
+升學
+Going higher grades
+- 融合你的知識基礎、喜好或專長等重點，再作全盤考量
+- 選擇鼓勵學生有平衡的學習及生活 (study-life balance) 的學府
+進修
+Advanced studies
+- 以保持「和諧」為優先考量，在本業/本科基礎上循序漸進
+- 提升自己，追求心靈的成長與學養

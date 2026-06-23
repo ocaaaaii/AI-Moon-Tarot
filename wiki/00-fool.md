@@ -65,3 +65,87 @@ scraped_at: '2026-06-18'
 ## 職場 Career & Work
 
 多一點冒險精神，嘗試探索新的工作領域、較有創意或不那麼「尋常」的行業、主軸為「創新」但風險相對較高的行業、
+
+## 5W1H 看牌義
+是什麼/ What
+- 是一個勇敢、放膽去追求的故事
+- 是準備展開的偉大旅程
+為什麼/ Why
+- 因為願意勇敢迎接新開始
+- 因為天不怕地不怕…
+- 因為是一張白紙
+- 因為輕裝上路，靠山食山
+是誰/ Who
+- 新生兒
+- 行動力大於思考力的人
+- 一個「流浪」的人
+在哪裡/ Where
+- 懸崖邊、邊沿位置
+- 新的地方
+- 危險的地方
+何時/ When
+- 在新開始之時
+- 有危才有機之時
+怎麼做/ How
+- 跳下去！
+- 聽聽最親密朋友的意見
+- 該認真就認真，不要只顧著好不好玩
+
+## 感情關係與人際​Love, relationship and interpersonal
+正面或負面
+Positivity and negativity (Yes/ No)
+- 傾向正面
+感受性
+Feelings towards
+- 意念純淨、初戀的感覺
+- 義無反顧或不顧一切的感覺
+- 充滿新鮮感的感覺
+目前的身份狀態
+Single or availability
+- 單身
+復合的可能性
+Reconciliation
+- 可能，會有一個新開始
+是否有第三者
+The other person (infidelity)
+- 需要注意是否忽略了一些明顯提示
+預測可能性
+​Outcome or future (possibilities)
+- 未知，或需要你奮不顧身
+
+## 職場與工作​Career, business and prospect
+轉職、招聘/應聘
+Career changes
+- 多一點冒險精神，嘗試探索新的工作領域
+- 較有創意或不那麼「尋常」的行業
+- 主軸為「創新」但風險相對較高的行業
+- 初創公司
+- 旅遊業
+遷升選擇、前景
+Career prospects
+- 縱使有危才有機，不要忽略一些小警示
+- 不要只有三分鐘熱度
+有關正/兼職
+Slash life
+- 在正兼職之間要保持日程的靈活性
+生活及工作時間分配
+Work-life balancing
+- 日程時間分配要保持彈性，靈活變通
+- 多一點冒險精神
+創業
+Entrepreneurship
+- 靈活變通
+- 「勇敢」與「魯葬」只是一線之差
+- 「機會」與「風險」是雙面刃
+
+## 學業及前景Studying and prospect
+選科
+Taking courses
+- 選擇一個有風險、卻能讓你感覺有新鮮感的科目
+- 你有潛力與天賦去成就你希望選讀的科目
+升學
+Going higher grades
+- 從「零」開始，繼續為自己知識加值，勇敢做新鮮人吧！
+進修
+​Advanced studies
+- 這是一個將你帶上全新旅程的開始

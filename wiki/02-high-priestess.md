@@ -72,3 +72,92 @@ scraped_at: '2026-06-18'
 冷淡的、被動的、沉默的、低調的
 
 ## 職場 Career & W
+
+## 5W1H 看牌義
+是什麼/ What
+- 是背後有秘密的故事
+- 是需要心領神會的故事
+- 是內心深處的事
+- 未有故事表面的詮釋
+為什麼/ Why
+- 因為有不為人知的秘密
+- 因為傾向於被動
+- 因為內心的騷動
+- 因為解答在潛意識裡
+是誰/ Who
+- 女性 (尤其態度較冷淡的)
+- 內向的人 (I 型人)
+- 守秘密者
+- 神神秘秘的人
+- 有智慧的人
+- 保持中立的人
+- 悶騷…
+在哪裡/ Where
+- 潛意識裡
+- 幕後
+何時/ When
+- 月週期 (28-30 天)
+怎麼做/ How
+- 容許解答自行浮現
+- 什麼都不要做
+- 不變應萬變
+- 聆聽，但不要表態
+- 被動地處理 (冷處理)
+- 要保守秘密
+
+## 感情關係與人際​Love, relationship and interpersonal
+正面或負面
+Positivity and negativity (Yes/ No)
+- 中立形容
+感受性
+Feelings (towards)
+- 冷淡的
+- 被動的
+- 沉默的
+- 低調的
+目前的身份狀態
+Single or availability
+- 單身
+復合的可能性
+Reconciliation
+- 不太可能，因為你難以了解對方真正的想法和內心感受
+是否有第三者
+The other person (infidelity)
+- 未有顯示或說明，需要由你自己留意
+預測可能性
+Outcome or future (possibilities)
+- 未知
+
+## 職場與工作​Career, business and prospect
+轉職、招聘/應聘
+Career changes
+- 目前盡可能維持不變
+遷升選擇、前景
+Career prospects
+- 若有競爭對手，敵不動你不動
+有關正/兼職
+Slash life
+- 確保兩邊時間不會有衝突
+生活及工作時間分配
+Work-life balancing
+- 保持平衡並平均分配
+創業
+Entrepreneurship
+- 低調處理
+- 未必是好時機
+
+## 學業及前景Studying and prospect
+選科
+Taking courses
+- 傾向於靜態的科目 (必須靠唸書而非靠手藝或技術)
+- 本質上相對不進取的學科
+- 與女性議題有關的學科
+- 研究科系 (發掘未知)
+升學
+Going higher grades
+- 選擇作風較低調的學院
+- 較內斂靜態的地方
+進修
+Advanced studies
+- 首先專注於自己的本科，豐富自己的內涵後再考慮進修
+- 盡量以不變應萬變

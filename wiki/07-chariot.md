@@ -68,3 +68,103 @@ scraped_at: '2026-06-18'
 ## 職場 Career & Work
 
 與車輛相關行業、需要「操控」的職務，例如控制室、軍事相關行業
+
+## 5W1H 看牌義
+是什麼/ What
+- 發展自我的故事
+- 以意志力成就目標的故事
+- 極渴望成功的故事
+- 車輛 (任何)
+為什麼/ Why
+- 因為意志力強大
+- 因為渴望成功
+- 因為一步一步取得勝利
+- 因為嚴以律己
+是誰/ Who
+- 意志力強大的人
+- 控制員 (controller)
+- 持家者 (breadwinner)
+- 司機
+- 軍事人員
+- 紀律部隊
+在哪裡/ Where
+- 車輛上
+- 駕駛座上
+- 路途上 (在路上)
+何時/ When
+- 清楚了解目標的時候
+- 動機明確的時候
+- 準備好可以起步的時候
+- 「上車」之後 (任何象徵形容)
+怎麼做/ How
+- 迎面對質 (confrontation)
+- 專注，並集中精神
+- 移動 (物理上或心理上形容)
+- 清楚了解目標與前進方向
+- 必須有嚴格的自律性和紀律
+- 小心駛得萬年船，勿操之過急
+- 小心駕駛！
+
+## 感情關係與人際​Love, relationship and interpersonal
+正面或負面
+Positivity and negativity (Yes/ No)
+- 中立形容
+感受性
+Feelings (towards)
+- 有決心的
+- 會主動的
+- 會主導關係的
+- 較強勢的
+目前的身份狀態
+Single or availability
+- 不清楚，或者有目標
+復合的可能性
+Reconciliation
+- 可能，需要你主導行動但不保證成功
+是否有第三者
+The other person (infidelity)
+- 未有顯示或說明
+預測可能性
+Outcome or future (possibilities)
+- 未知
+
+## 職場與工作​Career, business and prospect
+轉職、招聘/應聘
+Career changes
+- 與車輛相關行業
+- 需要「操控」的職務，例如控制室
+- 軍事相關行業
+- 紀律部隊相關行業
+遷升選擇、前景
+Career prospects
+- 要清楚鎖定目標 (勿三心兩意)
+- 需要適當技術及經驗磨練
+有關正/兼職
+Slash life
+- 正兼職同樣重要，必需平衡兩者之間的發展
+生活及工作時間分配
+Work-life balancing
+- 必須 50-50 平均分配時間
+- 必須有嚴格的自律性
+創業
+Entrepreneurship
+- 與車輛相關、以車輛做主軸的行業
+- 需要「控制」的行業，例如 panel control
+- 必須有嚴格的自律性
+
+## 學業及前景Studying and prospect
+選科
+Taking courses
+- 要清楚了解渴望成就的目標
+- 雙主修科目 (必須要有能力掌握為前提)
+- 與地面移動或車輛相關科目
+- 軍事相關科目
+升學
+Going higher grades
+- 對可發展目標 (前途) 要有清晰的理解
+- 集中不多於兩個選項，勿三心兩意
+進修
+Advanced studies
+- 先清楚了解進修的目的，勿頭腦發熱追潮流跟風
+- 以「安全抵壘」為首要考量
+- 認真面對，而且要有嚴格的自律性

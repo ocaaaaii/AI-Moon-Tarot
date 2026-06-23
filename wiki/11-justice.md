@@ -67,3 +67,89 @@ scraped_at: '2026-06-18'
 ## 職場 Career & Work
 
 與法務相關的工作、職務涉及「判斷」或「篩選」的工�
+
+## 5W1H 看牌義
+是什麼/ What
+- 你*應得*的結果 (中性形容 – 種瓜得瓜、種豆得豆的故事)
+- 是一把「尺」(量度的準則)
+- 用作「判斷」的工具，例如重量計、溫度計
+為什麼/ Why
+- 因為公正嚴明
+- 因為有正當道理
+- 因為是必然的因果
+是誰/ Who
+- 從事法律業務相關人士
+- 公道伯、和事佬 (架樑/炸両)
+- 判官 (任何情況，包括做產品檢定)
+- 令人感覺較嚴厲的人
+- 為民請命的人
+在哪裡/ Where
+- 法務相關地方，包括律師事務所、法院等
+何時/ When
+- 理解問題之時
+- 明白責任所在之時
+怎麼做/ How
+- 做正確的事
+- 理解事件的必然因果
+- 要幫理不幫親
+- 要理據足夠
+- 不要偏私
+
+## 感情關係與人際​Love, relationship and interpersonal
+正面或負面
+Positivity and negativity (Yes/ No)
+- 中立形容
+感受性
+Feelings (towards)
+- 思考型
+- 較嚴肅拘謹
+- 較為冷淡
+- 誠實
+目前的身份狀態
+Single or availability
+- 不清楚
+復合的可能性
+Reconciliation
+- 未知，因為需要你先理解是怎樣的前因帶來當下的後果
+是否有第三者
+The other person (infidelity)
+- 未有顯示或說明
+預測可能性
+Outcome or future (possibilities)
+- 未知，需要你先了解當下的狀態
+
+## 職場與工作​Career, business and prospect
+轉職、招聘/應聘
+Career changes
+- 與法務相關的工作
+- 職務涉及「判斷」或「篩選」的工作，包括品質檢查 (QC)
+遷升選擇、前景
+Career prospects
+- 取決於過去的情境及發生過的事，帶出你*應得的*結果
+- 取決於判斷你的人
+有關正/兼職
+Slash life
+- 先應付好正職，達成你應有的使命再考慮其他
+生活及工作時間分配
+Work-life balancing
+- 以取得平衡為優先考量
+創業
+Entrepreneurship
+- 法務相關行業
+- 務必了解與創業有關的法規
+- 種瓜得瓜、種豆得豆
+
+## 學業及前景Studying and prospect
+選科
+Taking courses
+- 法律系相關科目
+- 理解過去的情境與決定，接受當下的必然結果；將來的局面取決你當下的反應和自由意志
+升學
+Going higher grades
+- 法律系比較有名的學府
+- 對所有學生一視同仁的學府 – 不開後門、不能靠關係
+- 別想靠背景或人脈取錄！
+進修
+Advanced studies
+- 法務相關或需要的內容，包括有益於合乎法規的課程，例如消防安全、勞動條例等
+- 種瓜得瓜、種豆得豆

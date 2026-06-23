@@ -62,3 +62,94 @@ scraped_at: '2026-06-18'
 ## 職場 Career & Work
 
 需要創意的工作、生產業 (任何形容)、與「美」有關的行業、需要照顧、孕育的行業，例如教育、可自
+
+## 5W1H 看牌義
+是什麼/ What
+- 是讓人滿足的感官享受
+- 是獲得豐收的季節
+- 是孕育及創造的起點
+- 是「美」
+為什麼/ Why
+- 因為有創造的天賦
+- 因為感官享受
+- 因為豐收期到了
+- 因為資源比較豐富
+是誰/ Who
+- 母親
+- 孕婦
+- 懂享受的人
+在哪裡/ Where
+- 大自然 (戶外)
+- 獲得感官享受的地方，包括餐廳或商場等娛樂場所
+- 可得到收穫的地方
+何時/ When
+- 待產中 (需要時間)
+- 秋收期間
+怎麼做/ How
+- 創造 (任何形容)
+- 滋養及養育 (任何形容)
+- 期待收穫
+- 吸引力法則
+
+## 感情關係與人際​Love, relationship and interpersonal
+正面或負面
+Positivity and negativity (Yes/ No)
+- 傾向正面
+感受性
+Feelings (towards)
+- 熱情的感覺
+- 較成熟
+- 感官感受較明顯
+目前的身份狀態
+Single or availability
+- 已有另一半
+復合的可能性
+Reconciliation
+- 可能，需要你的熱情及創意
+是否有第三者
+The other person (infidelity)
+- 未有顯示或說明
+預測可能性
+Outcome or future (possibilities)
+- 有機會
+
+## 職場與工作​Career, business and prospect
+轉職、招聘/應聘
+Career changes
+- 需要創意的工作
+- 生產業 (任何形容)
+- 與「美」有關的行業
+- 需要照顧、孕育的行業，例如教育
+- 可自信展現你自己的工作
+遷升選擇、前景
+Career prospects
+- 希望升遷需要有一定年資或資歷
+- 即將大豐收 (任何形容)
+有關正/兼職
+Slash life
+- 享受體驗比所有的考量更重要
+生活及工作時間分配
+Work-life balancing
+- 學會享受生活比一切重要
+- 享受當下生活的美麗與豐盛
+創業
+Entrepreneurship
+- 與創造、生產相關的行業
+- 想看見成果或收穫，需要一點時間
+
+## 學業及前景Studying and prospect
+選科
+Taking courses
+- 選擇與創造、創意相關的科目
+- 與「生產」有關的科目 (任何形容)
+- 要「美」有關的科目，例如美容、化妝
+升學
+Going higher grades
+- 較有創意的院校
+- 形象較為鮮明活潑的院校或地區
+- 教學資源較豐富的院校
+進修
+Advanced studies
+- 以長線發展為進修目標
+- 所有真正有助發展的進修都需要時間 (注意週末/速成班並非適當的選擇)
+- 需要你努力耕耘才可以大豐收
