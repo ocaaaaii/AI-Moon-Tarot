@@ -90,8 +90,16 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
 
   const [isCapturing, setIsCapturing] = useState(false);
 
+  // ── Follow-up (追問) state — one reply max, then prompt to redraw ─────────────
+  const [followUpQ, setFollowUpQ] = useState("");
+  const [followUpReply, setFollowUpReply] = useState("");
+  const [isFollowUpStreaming, setIsFollowUpStreaming] = useState(false);
+  const [followUpSubmitted, setFollowUpSubmitted] = useState(false);
+
   const abortRef = useRef<AbortController | null>(null);
+  const followUpAbortRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const followUpInputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const captureRef = useRef<HTMLDivElement>(null);
   const foldTimersRef = useRef<number[]>([]);
@@ -103,11 +111,11 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
       .catch(() => setLoadError(true));
   }, []);
 
-  // Clear any pending rack-reveal timers on unmount so they never fire
-  // setState on a component that's gone.
+  // Clear any pending rack-reveal timers + follow-up stream on unmount.
   useEffect(() => {
     return () => {
       foldTimersRef.current.forEach((id) => window.clearTimeout(id));
+      followUpAbortRef.current?.abort();
     };
   }, []);
 
@@ -199,6 +207,64 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
     }
   }, [current, question, avatar.id]);
 
+  // ── Follow-up (追問) — one reply max ─────────────────────────────────────────
+
+  const handleFollowUp = useCallback(async () => {
+    if (!followUpQ.trim() || !current) return;
+    setFollowUpSubmitted(true);
+    setFollowUpReply("");
+    setIsFollowUpStreaming(true);
+    followUpAbortRef.current = new AbortController();
+
+    try {
+      const res = await fetch("/api/omikuji-reading", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          omikujiId: current.id,
+          avatarId: avatar.id,
+          history: [
+            { role: "assistant", content: interpretation },
+            { role: "user", content: followUpQ.trim() },
+          ],
+        }),
+        signal: followUpAbortRef.current.signal,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error((err as { error?: string }).error ?? "Follow-up failed");
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("No response body");
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6).trim();
+          if (payload === "[DONE]") break;
+          try {
+            const p = JSON.parse(payload) as { chunk?: string; error?: string };
+            if (p.chunk) setFollowUpReply((t) => t + p.chunk);
+            else if (p.error) setFollowUpReply((t) => t + `（連線錯誤：${p.error}）`);
+          } catch { /* skip */ }
+        }
+      }
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        const detail = (err as Error).message;
+        setFollowUpReply(detail ? `連線出了點問題：${detail}` : "連線出了點問題，請稍後再試。");
+      }
+    } finally {
+      setIsFollowUpStreaming(false);
+    }
+  }, [followUpQ, current, question, interpretation, avatar.id]);
+
   // ── Share ────────────────────────────────────────────────────────────────────
 
   const handleShare = useCallback(async () => {
@@ -230,6 +296,7 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
     foldTimersRef.current.forEach((id) => window.clearTimeout(id));
     foldTimersRef.current = [];
     abortRef.current?.abort();
+    followUpAbortRef.current?.abort();
     setStep("idle");
     setQuestion("");
     setTubePhase("idle");
@@ -239,6 +306,10 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
     setFolding(false);
     setShowRack(false);
     setShowBlessing(false);
+    setFollowUpQ("");
+    setFollowUpReply("");
+    setIsFollowUpStreaming(false);
+    setFollowUpSubmitted(false);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
 
@@ -486,6 +557,87 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
               >
                 🔄 重新抽籤
               </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── 追問區 — one follow-up question, then prompt to redraw ── */}
+        <AnimatePresence>
+          {showActionArea && !followUpSubmitted && (
+            <motion.div
+              key="followup-input"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ delay: 0.5, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col gap-2"
+            >
+              <p className="text-morandi-stone/30 text-[11px] tracking-widest text-center">
+                還有一個問題想追問 ——
+              </p>
+              <div className="relative rounded-2xl border border-morandi-gold/15 bg-mystic-purple/20 focus-within:border-morandi-gold/40 transition-colors">
+                <textarea
+                  ref={followUpInputRef}
+                  value={followUpQ}
+                  onChange={(e) => setFollowUpQ(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleFollowUp();
+                  }}
+                  placeholder="輸入你的問題…"
+                  rows={2}
+                  maxLength={200}
+                  className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/30 text-sm p-3 pr-10 resize-none focus:outline-none leading-relaxed"
+                />
+                <motion.button
+                  disabled={followUpQ.trim().length < 2}
+                  onClick={handleFollowUp}
+                  whileHover={followUpQ.trim().length >= 2 ? { scale: 1.1 } : {}}
+                  whileTap={followUpQ.trim().length >= 2 ? { scale: 0.92 } : {}}
+                  className="absolute bottom-2.5 right-2.5 w-7 h-7 rounded-full bg-morandi-gold/15 border border-morandi-gold/25 flex items-center justify-center text-cream-200 disabled:opacity-20 hover:bg-morandi-gold/35 transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 12V2M7 2L3 6M7 2L11 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Follow-up exchange */}
+        <AnimatePresence>
+          {followUpSubmitted && (
+            <motion.div
+              key="followup-exchange"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col gap-3"
+            >
+              <UserBubble text={followUpQ} />
+              <ChatReading
+                text={followUpReply}
+                isStreaming={isFollowUpStreaming}
+                avatarSrc={avatar.image}
+                avatarAlt={avatar.displayName}
+              />
+              {!isFollowUpStreaming && followUpReply.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.35 }}
+                  className="flex justify-center"
+                >
+                  <motion.button
+                    onClick={resetAll}
+                    whileHover={{ scale: 1.04, boxShadow: "0 0 20px rgba(212,168,89,0.18)" }}
+                    whileTap={{ scale: 0.97 }}
+                    className="px-7 py-2.5 rounded-full border border-morandi-gold/40 bg-morandi-gold/10 text-cream-100 text-xs tracking-widest hover:bg-morandi-gold/22 hover:border-morandi-gold/60 transition-colors duration-300"
+                  >
+                    🌸 再抽一支籤
+                  </motion.button>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
