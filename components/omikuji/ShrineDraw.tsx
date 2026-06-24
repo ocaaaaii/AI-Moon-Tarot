@@ -96,6 +96,19 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
   const [isFollowUpStreaming, setIsFollowUpStreaming] = useState(false);
   const [followUpSubmitted, setFollowUpSubmitted] = useState(false);
 
+  // Enter-to-send toggle — shared localStorage key with ChatInterface
+  const [enterToSend, setEnterToSend] = useState(false);
+  useEffect(() => {
+    const saved = localStorage.getItem("enterToSend");
+    if (saved === "true") setEnterToSend(true);
+  }, []);
+  const toggleEnterToSend = () => {
+    setEnterToSend((v) => {
+      localStorage.setItem("enterToSend", String(!v));
+      return !v;
+    });
+  };
+
   const abortRef = useRef<AbortController | null>(null);
   const followUpAbortRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -581,7 +594,10 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
                   value={followUpQ}
                   onChange={(e) => setFollowUpQ(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleFollowUp();
+                    if (e.key === "Enter") {
+                      if (e.metaKey || e.ctrlKey) { e.preventDefault(); handleFollowUp(); }
+                      else if (enterToSend && !e.shiftKey) { e.preventDefault(); handleFollowUp(); }
+                    }
                   }}
                   placeholder="輸入你的問題…"
                   rows={2}
@@ -665,7 +681,10 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
                   setStep(e.target.value ? "typing" : "idle");
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmitQuestion();
+                  if (e.key === "Enter") {
+                    if (e.metaKey || e.ctrlKey) { e.preventDefault(); handleSubmitQuestion(); }
+                    else if (enterToSend && !e.shiftKey) { e.preventDefault(); handleSubmitQuestion(); }
+                  }
                 }}
                 placeholder={avatar.inputPlaceholder}
                 rows={3}
@@ -673,6 +692,18 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
                 className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/40 text-sm p-4 pr-12 resize-none focus:outline-none leading-relaxed"
               />
               <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                {/* Enter-to-send toggle */}
+                <button
+                  onClick={toggleEnterToSend}
+                  title={enterToSend ? "Enter 發送（點擊關閉）" : "點擊開啟 Enter 直接發送"}
+                  className={`text-[11px] px-2 py-0.5 rounded-md border font-mono transition-all duration-200 ${
+                    enterToSend
+                      ? "border-morandi-gold/55 text-morandi-gold/90 bg-morandi-gold/12 shadow-[0_0_8px_rgba(212,168,89,0.15)]"
+                      : "border-morandi-stone/40 text-morandi-stone/65 hover:border-morandi-gold/45 hover:text-morandi-gold/70 hover:bg-morandi-gold/8"
+                  }`}
+                >
+                  ↵
+                </button>
                 <span className="text-morandi-stone/30 text-xs">{question.length}/300</span>
                 <motion.button
                   disabled={question.trim().length < 2}
@@ -699,7 +730,22 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
                   transition={{ duration: 0.3 }}
                   className="flex flex-col gap-1.5"
                 >
-                  <p className="text-morandi-stone/30 text-[11px] tracking-widest mb-0.5">或者讓籤詩引路 ——</p>
+                  <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-0.5">
+                <p className="text-morandi-stone/60 text-[11px] tracking-widest">或者讓籤詩引路</p>
+                {enterToSend ? (
+                  <span className="px-1.5 py-0.5 rounded border border-morandi-gold/40 bg-morandi-gold/10 text-morandi-gold/80 text-[10px] font-mono">
+                    ↵ Enter 發送中
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-[10px]">
+                    <span className="px-1.5 py-0.5 rounded border border-morandi-stone/30 bg-morandi-stone/8 text-morandi-stone/65 font-mono">Shift+Enter</span>
+                    <span className="text-morandi-stone/45">換行</span>
+                    <span className="text-morandi-stone/30 mx-0.5">·</span>
+                    <span className="px-1.5 py-0.5 rounded border border-morandi-stone/30 bg-morandi-stone/8 text-morandi-stone/65 font-mono">↵</span>
+                    <span className="text-morandi-stone/45">點擊開啟 Enter 發送</span>
+                  </span>
+                )}
+              </div>
                   {avatar.suggestions.map(({ icon, text }, i) => (
                     <motion.button
                       key={text}

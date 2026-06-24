@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 
 import PortalTour from "@/components/ui/PortalTour";
+import FullscreenButton from "@/components/ui/FullscreenButton";
 import DeveloperBubble from "@/components/ui/DeveloperBubble";
 
 /**
@@ -57,6 +58,8 @@ export default function PortalPage() {
           "radial-gradient(ellipse 100% 80% at 50% 15%, rgba(45,31,74,0.5) 0%, #0a0712 70%)",
       }}
     >
+      <FullscreenButton borderColor="morandi-lavender" />
+
       <motion.div
         className="text-center mb-10"
         initial={{ opacity: 0, y: -12 }}

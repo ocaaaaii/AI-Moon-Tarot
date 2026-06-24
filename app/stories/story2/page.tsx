@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
+import FullscreenButton from "@/components/ui/FullscreenButton";
 
 import { getSeriesStories, getSeries } from "@/lib/stories/stories";
 
@@ -43,6 +44,8 @@ export default function Story2SelectorPage() {
       }}
     >
       {/* Back button */}
+      <FullscreenButton borderColor="morandi-gold" />
+
       <Link
         href="/stories"
         className="fixed top-4 left-4 z-20 px-3.5 py-1.5 rounded-full border border-morandi-gold/25 bg-black/35 backdrop-blur-sm text-cream-200/75 hover:text-cream-100 hover:border-morandi-gold/50 text-xs tracking-widest transition-colors duration-300"

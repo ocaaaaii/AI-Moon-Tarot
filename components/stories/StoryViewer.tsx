@@ -26,6 +26,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import FullscreenButton from "@/components/ui/FullscreenButton";
 import { motion, AnimatePresence } from "motion/react";
 
 import type { Story } from "@/lib/stories/types";
@@ -94,9 +95,12 @@ export default function StoryViewer({ story, backHref = "/stories" }: StoryViewe
         ← 返回篇章
       </Link>
 
-      <p className="fixed top-4 right-4 z-30 px-3 py-1.5 rounded-full bg-black/35 backdrop-blur-sm text-cream-200/60 text-xs tracking-wide">
-        {index + 1} / {story.slides.length}
-      </p>
+      <div className="fixed top-4 right-4 z-30 flex items-center gap-2">
+        <p className="px-3 py-1.5 rounded-full bg-black/35 backdrop-blur-sm text-cream-200/60 text-xs tracking-wide">
+          {index + 1} / {story.slides.length}
+        </p>
+        <FullscreenButton className="" borderColor="morandi-lavender" />
+      </div>
 
       {/* Stage — image fills most of the viewport, dialogue box overlays
           its lower portion */}

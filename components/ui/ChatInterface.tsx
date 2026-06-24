@@ -559,10 +559,10 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                 <button
                   onClick={toggleEnterToSend}
                   title={enterToSend ? "Enter 發送（點擊關閉）" : "點擊開啟 Enter 直接發送"}
-                  className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors duration-200 ${
+                  className={`text-[11px] px-2 py-0.5 rounded-md border font-mono transition-all duration-200 ${
                     enterToSend
-                      ? "border-morandi-lavender/50 text-morandi-lavender/80 bg-morandi-mauve/20"
-                      : "border-morandi-stone/20 text-morandi-stone/30 hover:border-morandi-stone/40"
+                      ? "border-morandi-lavender/55 text-morandi-lavender/90 bg-morandi-mauve/25 shadow-[0_0_8px_rgba(184,168,200,0.15)]"
+                      : "border-morandi-stone/40 text-morandi-stone/65 hover:border-morandi-lavender/45 hover:text-morandi-lavender/70 hover:bg-morandi-mauve/10"
                   }`}
                 >
                   ↵
@@ -593,12 +593,22 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                   transition={{ duration: 0.3 }}
                   className="flex flex-col gap-1.5"
                 >
-                  <p className="text-morandi-stone/30 text-[11px] tracking-widest mb-0.5">
-                    或者讓月亮引路
-                    <span className="ml-3 text-[10px] opacity-60">
-                      {enterToSend ? "↵ Enter 發送中" : "Shift+Enter 換行 · ↵ 點擊開啟 Enter 發送"}
-                    </span>
-                  </p>
+                  <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-0.5">
+                    <p className="text-morandi-stone/60 text-[11px] tracking-widest">或者讓月亮引路</p>
+                    {enterToSend ? (
+                      <span className="px-1.5 py-0.5 rounded border border-morandi-lavender/40 bg-morandi-mauve/20 text-morandi-lavender/80 text-[10px] font-mono">
+                        ↵ Enter 發送中
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-[10px]">
+                        <span className="px-1.5 py-0.5 rounded border border-morandi-stone/30 bg-morandi-stone/8 text-morandi-stone/65 font-mono">Shift+Enter</span>
+                        <span className="text-morandi-stone/45">換行</span>
+                        <span className="text-morandi-stone/30 mx-0.5">·</span>
+                        <span className="px-1.5 py-0.5 rounded border border-morandi-stone/30 bg-morandi-stone/8 text-morandi-stone/65 font-mono">↵</span>
+                        <span className="text-morandi-stone/45">點擊開啟 Enter 發送</span>
+                      </span>
+                    )}
+                  </div>
                   {avatar.suggestions.map(({ icon, text }, i) => (
                     <motion.button
                       key={text}

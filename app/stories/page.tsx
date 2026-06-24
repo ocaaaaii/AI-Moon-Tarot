@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 
+import FullscreenButton from "@/components/ui/FullscreenButton";
 import { TOP_LEVEL } from "@/lib/stories/stories";
 import { isStorySeries } from "@/lib/stories/types";
 
@@ -24,6 +25,8 @@ export default function StoriesPage() {
         background: "radial-gradient(ellipse 100% 80% at 50% 20%, rgba(74,61,31,0.4) 0%, #0a0712 100%)",
       }}
     >
+      <FullscreenButton borderColor="morandi-gold" />
+
       <Link
         href="/"
         className="fixed top-4 left-4 z-20 px-3.5 py-1.5 rounded-full border border-morandi-gold/25 bg-black/35 backdrop-blur-sm text-cream-200/75 hover:text-cream-100 hover:border-morandi-gold/50 text-xs tracking-widest transition-colors duration-300"
