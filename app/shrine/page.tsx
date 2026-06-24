@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
@@ -11,20 +11,6 @@ import ShrineDraw from "@/components/omikuji/ShrineDraw";
 import RegionRitual from "@/components/omikuji/RegionRitual";
 import { OMIKUJI_AVATARS, getOmikujiAvatar } from "@/lib/omikuji/avatars";
 
-/**
- * 月神神社 (Moon God Shrine) omikuji draw flow.
- * Mirrors app/tarot/page.tsx's split layout — a left character panel
- * (AvatarProfile) and a right chat column (header bar + ShrineDraw) — so
- * both product lines share the same level of visual polish, and the same
- * avatar-selector-before-chat flow.
- *
- * Sacred Realms (CLAUDE.md 🔮 Future Vision): when the active persona has
- * a `region` config, the page background swaps to that persona's scene
- * art, and a header button opens `RegionRitual` configured for that
- * region. Six of the seven souls have one now (everyone but Tsukino, the
- * shared default home base) — all driven by lib/omikuji/avatars.ts, no
- * per-persona branching here.
- */
 export default function ShrinePage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
@@ -41,6 +27,21 @@ export default function ShrinePage() {
     setShowMobileInfo(false);
   };
 
+  // Fullscreen
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
   return (
     <main
       className="relative min-h-screen flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden"
@@ -49,9 +50,7 @@ export default function ShrinePage() {
           "radial-gradient(ellipse 100% 80% at 50% 20%, rgba(74,61,31,0.45) 0%, #0f0a1a 100%)",
       }}
     >
-      {/* Sacred Realms — region background, only when the active persona
-          has one. Sits behind everything else (z-0); the gradient above
-          still shows through where the scene art doesn't cover. */}
+      {/* Sacred Realms region background */}
       {avatar?.region && (
         <>
           <Image
@@ -76,8 +75,25 @@ export default function ShrinePage() {
         href="/"
         className="fixed top-4 left-4 z-20 px-3.5 py-1.5 rounded-full border border-amber-300/25 bg-black/35 backdrop-blur-sm text-cream-200/75 hover:text-cream-100 hover:border-amber-300/50 text-xs tracking-widest transition-colors duration-300"
       >
-        ← 回到入口
+        {"←"} {"回到入口"}
       </Link>
+
+      {/* Fullscreen toggle — desktop only */}
+      <button
+        onClick={toggleFullscreen}
+        title={isFullscreen ? "退出全螢幕" : "全螢幕"}
+        className="hidden md:flex fixed top-4 right-4 z-20 w-8 h-8 items-center justify-center rounded-full border border-amber-300/25 bg-black/35 backdrop-blur-sm text-cream-200/60 hover:text-cream-100 hover:border-amber-300/50 transition-colors duration-300"
+      >
+        {isFullscreen ? (
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M5 1H1v4M9 1h4v4M5 13H1V9M9 13h4V9"/>
+          </svg>
+        ) : (
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/>
+          </svg>
+        )}
+      </button>
 
       {/* Brand header — mobile only */}
       <motion.div
@@ -104,7 +120,7 @@ export default function ShrinePage() {
           height: "clamp(580px, 82vh, 780px)",
         }}
       >
-        {/* Left: selected 解籤師's profile — hidden until chosen / on mobile */}
+        {/* Left: selected resolver's profile */}
         <div
           className="hidden md:block md:w-72 flex-shrink-0 overflow-y-auto"
           style={{
@@ -156,10 +172,6 @@ export default function ShrinePage() {
                     {avatar.region.buttonLabel}
                   </button>
                 )}
-                {/* Desktop already shows the full AvatarProfile in the left
-                    column (hidden md:block there) — icon-only and md:hidden
-                    so it doesn't crowd the header next to the region button
-                    on phones, where space is already tight. */}
                 <button
                   onClick={() => setShowMobileInfo(true)}
                   aria-label="角色介紹"
@@ -175,8 +187,7 @@ export default function ShrinePage() {
                 </button>
               </motion.div>
 
-              {/* Mobile-only profile sheet — same AvatarProfile component
-                  the desktop left column uses, just shown as an overlay. */}
+              {/* Mobile-only profile sheet */}
               <AnimatePresence>
                 {showMobileInfo && (
                   <motion.div
@@ -205,46 +216,43 @@ export default function ShrinePage() {
                       >
                         ✕
                       </button>
-                      <AvatarProfile avatar={avatar} shopLabel="月 神 神 社" heroHeight={220} />
+                      <AvatarProfile avatar={avatar} shopLabel="月 神 神 社" />
                     </motion.div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Draw + chat area */}
-              <div className="flex-1 overflow-hidden">
-                <ShrineDraw avatar={avatar} />
-              </div>
-
-              {/* Sacred Realms gimmick — overlays this column only */}
-              <AnimatePresence>
-                {showRegionRitual && avatar.region && (
-                  <RegionRitual
-                    title={avatar.region.title}
-                    subheading={avatar.region.subheading}
-                    placeholder={avatar.region.placeholder}
-                    releaseLabel={avatar.region.releaseLabel}
-                    restartLabel={avatar.region.restartLabel}
-                    apiEndpoint={avatar.region.apiEndpoint}
-                    accentRGB={avatar.region.accentRGB}
-                    twoPath={avatar.region.twoPath}
-                    onClose={() => setShowRegionRitual(false)}
-                  />
-                )}
-              </AnimatePresence>
+              <ShrineDraw avatar={avatar} />
             </>
           ) : (
             <AvatarSelector
               avatars={OMIKUJI_AVATARS}
-              heading="今晚想找誰為你解籤？"
-              subheading="選一位解籤師"
+              heading="選擇你的解籤師"
+              subheading="每一位都有不同的靈魂頻率——先感受看看吧"
               selectedId={previewId}
-              onPick={setPreviewId}
-              onConfirm={setConfirmedId}
+              onPick={(id) => setPreviewId(id)}
+              onConfirm={(id) => { setConfirmedId(id); setPreviewId(null); }}
             />
           )}
         </div>
       </motion.div>
+
+      {/* Sacred Realms overlay */}
+      <AnimatePresence>
+        {showRegionRitual && avatar?.region && (
+          <RegionRitual
+            title={avatar.region.title}
+            subheading={avatar.region.subheading}
+            placeholder={avatar.region.placeholder}
+            releaseLabel={avatar.region.releaseLabel}
+            restartLabel={avatar.region.restartLabel}
+            apiEndpoint={avatar.region.apiEndpoint}
+            accentRGB={avatar.region.accentRGB}
+            twoPath={avatar.region.twoPath}
+            onClose={() => setShowRegionRitual(false)}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }

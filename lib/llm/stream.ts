@@ -12,6 +12,7 @@
  */
 
 import { getLLMConfig } from "./config";
+import { WRITING_RULES } from "@/lib/shared/writingRules";
 
 export interface LLMMessage {
   role: "user" | "assistant";
@@ -25,6 +26,9 @@ export async function* streamLLM(
   temperature: number
 ): AsyncGenerator<string> {
   const config = getLLMConfig();
+  // Append shared writing rules to every system prompt so all personas
+  // avoid AI-ish phrasing patterns. Defined once in lib/shared/writingRules.ts.
+  const fullSystemPrompt = systemPrompt + WRITING_RULES;
 
   if (config.provider === "deepseek") {
     const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -35,7 +39,7 @@ export async function* streamLLM(
 
     const stream = await client.chat.completions.create({
       model: config.model,
-      messages: [{ role: "system", content: systemPrompt }, ...messages],
+      messages: [{ role: "system", content: fullSystemPrompt }, ...messages],
       max_tokens: maxTokens,
       temperature,
       stream: true,
@@ -56,7 +60,7 @@ export async function* streamLLM(
       model: config.model,
       max_tokens: maxTokens,
       temperature,
-      system: systemPrompt,
+      system: fullSystemPrompt,
       messages,
     });
 

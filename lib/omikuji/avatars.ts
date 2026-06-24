@@ -95,9 +95,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "把心裡的疑問告訴我——搖完籤筒，我們再一起讀懂它...",
     suggestions: [
-      { icon: "⛩️", text: "工作上一直卡關，是我能力不足嗎？" },
-      { icon: "🌸", text: "這段感情，我該不該再等下去？" },
-      { icon: "🍃", text: "最近總覺得不安，是哪裡出了問題？" },
+      { icon: "🌙", text: "他最近都不主動找我，是我太敏感，還是真的在走遠？" },
+      { icon: "⛩️", text: "我說要做一件事已經說了很久，但我一直沒有動" },
+      { icon: "🍃", text: "我一直在等一個時機，但等了很久，什麼都沒發生" },
     ],
   },
   {
@@ -135,9 +135,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "把心事說給老夫聽，孩子——搖完籤筒，我們再一起參透它...",
     suggestions: [
-      { icon: "⛩️", text: "我是不是一直在逃避該面對的事？" },
-      { icon: "📿", text: "最近諸事不順，是哪裡出了問題？" },
-      { icon: "🕯️", text: "我該放下的，到底是什麼？" },
+      { icon: "🌅", text: "我拼了很久，最後還是失敗了——我不知道還要不要繼續" },
+      { icon: "📿", text: "那個人說的話讓我開始懷疑自己，我到底哪裡錯了？" },
+      { icon: "🕯️", text: "我對未來完全沒有期待，不知道為什麼要繼續撐著" },
     ],
   },
   {
@@ -175,9 +175,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "嘖，說重點——你的煩惱是什麼？搖完籤筒我們再戳破它...",
     suggestions: [
-      { icon: "🔥", text: "我是不是又在找藉口拖延？" },
-      { icon: "⚔️", text: "這件事，我早就知道答案了吧？" },
-      { icon: "☀️", text: "我該怎麼把主場找回來？" },
+      { icon: "🔥", text: "我知道那段感情不健康，但就是捨不得斷——我在等什麼？" },
+      { icon: "⚔️", text: "其實我心裡已經知道答案了，但我想再確認一次" },
+      { icon: "☀️", text: "我說要改變已經說了好幾個月，但我一直沒有動" },
     ],
   },
   {
@@ -216,9 +216,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "說給祈織聽聽噠——心裡的小怪獸長什麼樣子呀？",
     suggestions: [
-      { icon: "🧩", text: "最近卡關了，是哪裡出問題呀？" },
-      { icon: "🌸", text: "這個煩惱，可以怎麼拆解？" },
-      { icon: "⭐", text: "下一步我該往哪裡走噠？" },
+      { icon: "🧩", text: "A 和 B 我想了很久都沒辦法決定，哪條路比較適合我？" },
+      { icon: "🌸", text: "我最近什麼事情都做不好，狀態很差，是我太悲觀了嗎？" },
+      { icon: "⭐", text: "這個問題我繞了好幾個月，就是找不到出口" },
     ],
   },
   {
@@ -256,9 +256,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "別急，慢慢說——搖完籤筒，我們順著水走...",
     suggestions: [
-      { icon: "🌙", text: "我是不是抓得太緊了？" },
-      { icon: "🌊", text: "最近心裡的浪，怎麼都平靜不下來？" },
-      { icon: "⚓", text: "我該放下的執著是什麼？" },
+      { icon: "🌊", text: "我知道我在內耗，但就是停不下來" },
+      { icon: "🌙", text: "最近什麼都覺得好沉，但說不清楚沉在哪裡" },
+      { icon: "⚓", text: "那件事我一直放不下，但放著也不知道能怎樣" },
     ],
   },
   {
@@ -296,9 +296,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "坐下吧，把執著放下——搖完籤筒再說。",
     suggestions: [
-      { icon: "🌙", text: "我是不是一直在逃避真相？" },
-      { icon: "🥀", text: "什麼執著，該讓它在夜裡死去？" },
-      { icon: "⭐", text: "我該守護的，是什麼？" },
+      { icon: "🌌", text: "我有一個念頭一直出現，但我不知道是直覺還是焦慮" },
+      { icon: "🥀", text: "我最近做了一個奇怪的夢，感覺和現在的事有關" },
+      { icon: "⭐", text: "我好像在怕一件說不清楚的事——你能幫我看嗎？" },
     ],
   },
   {
@@ -340,9 +340,9 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     ],
     inputPlaceholder: "說給花音聽呢——不管多難過，這裡都安全的喔。",
     suggestions: [
-      { icon: "🌸", text: "這段感情，我該怎麼放下呢？" },
-      { icon: "🌱", text: "我是不是一直走不出低潮？" },
-      { icon: "🦋", text: "新的開始，會在哪裡呢？" },
+      { icon: "🌸", text: "他已經不在了，但我腦子裡還是一直想他" },
+      { icon: "🌱", text: "我最近很努力假裝自己沒事，但其實沒有" },
+      { icon: "🦋", text: "我想重新開始，但不知道要先從哪裡動" },
     ],
   },
 ];

@@ -12,7 +12,7 @@
  */
 
 export interface StorySlide {
-  /** image path under /public, e.g. "/assets/Storys/Story1/01.jpg" */
+  /** image path under /public, e.g. "/assets/Stories/Story1/01.jpg" */
   image: string;
   /** narration text for this beat — 1:1 with story1.md's numbered lines */
   text: string;
@@ -31,6 +31,7 @@ export interface StorySlide {
 
 export interface Story {
   id: string;
+  type?: "story";
   title: string;
   /** one-line hook shown on the story's selector card */
   tagline: string;
@@ -38,4 +39,33 @@ export interface Story {
   /** not enforced yet — see file header */
   locked?: boolean;
   slides: StorySlide[];
+}
+
+/**
+ * A named collection of individual Story entries shown behind a sub-selector
+ * page. Clicking a StorySeries card navigates to /stories/{id} (a static
+ * sub-selector), NOT to the slide viewer.
+ *
+ * The discriminant `type: "series"` lets callers use isStorySeries() to
+ * distinguish from a plain Story without casting.
+ */
+export interface StorySeries {
+  id: string;
+  type: "series";
+  title: string;
+  tagline: string;
+  cover: string;
+  locked?: boolean;
+  /** IDs of the individual Story entries that belong to this series,
+   * in display order. The actual Story data lives in separate files
+   * (e.g. lib/stories/story2-kanon.ts). */
+  storyIds: string[];
+}
+
+/** Top-level item on the /stories selector page — either a standalone story
+ *  or a series that opens its own sub-selector. */
+export type StoryEntry = Story | StorySeries;
+
+export function isStorySeries(entry: StoryEntry): entry is StorySeries {
+  return entry.type === "series";
 }

@@ -32,11 +32,13 @@ import type { Story } from "@/lib/stories/types";
 
 interface StoryViewerProps {
   story: Story;
+  /** Where "← 返回篇章" and "回到篇章列表" should link. Defaults to /stories. */
+  backHref?: string;
 }
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as number[];
 
-export default function StoryViewer({ story }: StoryViewerProps) {
+export default function StoryViewer({ story, backHref = "/stories" }: StoryViewerProps) {
   const [index, setIndex] = useState(0);
   const slide = story.slides[index];
   const isFirst = index === 0;
@@ -86,7 +88,7 @@ export default function StoryViewer({ story }: StoryViewerProps) {
       />
 
       <Link
-        href="/stories"
+        href={backHref}
         className="fixed top-4 left-4 z-30 px-3.5 py-1.5 rounded-full border border-morandi-lavender/25 bg-black/35 backdrop-blur-sm text-cream-200/75 hover:text-cream-100 hover:border-morandi-lavender/50 text-xs tracking-widest transition-colors duration-300"
       >
         ← 返回篇章
@@ -112,8 +114,9 @@ export default function StoryViewer({ story }: StoryViewerProps) {
               src={slide.image}
               alt=""
               fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover object-top"
+              sizes="(max-width: 768px) 100vw, 860px"
+              quality={92}
               priority={index === 0}
             />
             {/* soft star-glow burst on entry — quick, fades fast, never
@@ -220,7 +223,7 @@ export default function StoryViewer({ story }: StoryViewerProps) {
             </button>
             {isLast ? (
               <Link
-                href="/stories"
+                href={backHref}
                 className="px-6 py-2.5 rounded-full border border-morandi-gold/50 bg-morandi-gold/15 text-cream-100 text-sm tracking-widest hover:bg-morandi-gold/25 transition-colors duration-300"
               >
                 回到篇章列表

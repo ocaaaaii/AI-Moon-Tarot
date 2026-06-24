@@ -4,15 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 
-import { STORIES } from "@/lib/stories/stories";
+import { TOP_LEVEL } from "@/lib/stories/stories";
+import { isStorySeries } from "@/lib/stories/types";
 
 /**
- * 月神天啟 (Sacred Chronicles) — story selector. Lists whatever's in
- * lib/stories/stories.ts; adding story2/story3 later means adding a
- * registry entry there, not touching this page.
+ * 月神天啟 (Sacred Chronicles) — story selector. Lists whatever is in
+ * lib/stories/stories.ts (TOP_LEVEL); adding story3 / a new series later
+ * means adding a registry entry there, not touching this page.
  *
- * 月幣/御守 unlock flow is intentionally not built — see lib/stories/types.ts.
- * Every story here is freely viewable for now.
+ * Each entry is either:
+ *  - Story       => href points to /stories/{id}  (slide viewer)
+ *  - StorySeries => href points to /stories/{id}  (static sub-selector page)
  */
 export default function StoriesPage() {
   return (
@@ -26,7 +28,7 @@ export default function StoriesPage() {
         href="/"
         className="fixed top-4 left-4 z-20 px-3.5 py-1.5 rounded-full border border-morandi-gold/25 bg-black/35 backdrop-blur-sm text-cream-200/75 hover:text-cream-100 hover:border-morandi-gold/50 text-xs tracking-widest transition-colors duration-300"
       >
-        ← 回到入口
+        {"←"} 回到入口
       </Link>
 
       <motion.div
@@ -41,45 +43,55 @@ export default function StoriesPage() {
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
-        {STORIES.map((story, i) => (
-          <motion.div
-            key={story.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 + i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Link href={`/stories/${story.id}`} className="group block">
-              <motion.div
-                className="relative w-full rounded-3xl overflow-hidden border"
-                style={{ aspectRatio: "3/4", borderColor: "rgba(212,168,89,0.18)" }}
-                whileHover={{ scale: 1.015 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <Image
-                  src={story.cover}
-                  alt={story.title}
-                  fill
-                  className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                  priority
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: "linear-gradient(to top, rgba(10,7,18,0.92) 0%, rgba(10,7,18,0.3) 50%, transparent 75%)",
-                  }}
-                />
-                <div className="absolute inset-x-0 bottom-0 p-5 text-center">
-                  <h2 className="font-serif text-xl text-cream-100 tracking-wide">{story.title}</h2>
-                  <p className="text-cream-200/60 text-xs mt-2 leading-relaxed">{story.tagline}</p>
-                  <p className="text-morandi-gold/70 text-[11px] tracking-widest mt-3">
-                    點擊閱讀
-                  </p>
-                </div>
-              </motion.div>
-            </Link>
-          </motion.div>
-        ))}
+        {TOP_LEVEL.map((entry, i) => {
+          const isSeries = isStorySeries(entry);
+          return (
+            <motion.div
+              key={entry.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 + i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Link href={`/stories/${entry.id}`} className="group block">
+                <motion.div
+                  className="relative w-full rounded-3xl overflow-hidden border"
+                  style={{ aspectRatio: "3/4", borderColor: "rgba(212,168,89,0.18)" }}
+                  whileHover={{ scale: 1.015 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Image
+                    src={entry.cover}
+                    alt={entry.title}
+                    fill
+                    className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    priority
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: "linear-gradient(to top, rgba(10,7,18,0.92) 0%, rgba(10,7,18,0.3) 50%, transparent 75%)",
+                    }}
+                  />
+                  {isSeries && (
+                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-black/50 border border-morandi-gold/30 backdrop-blur-sm">
+                      <span className="text-morandi-gold/80 text-[10px] tracking-widest">
+                        系列 · {entry.storyIds.length} 篇
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-center">
+                    <h2 className="font-serif text-base md:text-lg text-cream-100 tracking-wide leading-snug whitespace-pre-line">{entry.title}</h2>
+                    <p className="text-cream-200/60 text-[11px] mt-1.5 leading-relaxed whitespace-pre-line">{entry.tagline}</p>
+                    <p className="text-morandi-gold/70 text-[11px] tracking-widest mt-3">
+                      {isSeries ? "點擊展開系列" : "點擊閱讀"}
+                    </p>
+                  </div>
+                </motion.div>
+              </Link>
+                    </motion.div>
+          );
+        })}
       </div>
     </main>
   );

@@ -79,6 +79,19 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   const [isFollowUpStreaming, setIsFollowUpStreaming] = useState(false);
   const [followUpInput, setFollowUpInput] = useState("");
 
+  // Enter-to-send preference (persisted in localStorage)
+  const [enterToSend, setEnterToSend] = useState(false);
+  useEffect(() => {
+    const saved = localStorage.getItem("enterToSend");
+    if (saved === "true") setEnterToSend(true);
+  }, []);
+  const toggleEnterToSend = () => {
+    setEnterToSend((v) => {
+      localStorage.setItem("enterToSend", String(!v));
+      return !v;
+    });
+  };
+
   // Share
   const [isCapturing, setIsCapturing] = useState(false);
   const readingAreaRef = useRef<HTMLDivElement>(null);
@@ -460,7 +473,10 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                     value={followUpInput}
                     onChange={(e) => setFollowUpInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleFollowUp();
+                      if (e.key === "Enter") {
+                        if (enterToSend && !e.shiftKey) { e.preventDefault(); handleFollowUp(); }
+                        else if (e.metaKey || e.ctrlKey) handleFollowUp();
+                      }
                     }}
                     placeholder={`還有想追問 ${avatar.displayName} 的嗎？`}
                     rows={2}
@@ -528,7 +544,10 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                   setStep(e.target.value ? "typing" : "idle");
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmitQuestion();
+                  if (e.key === "Enter") {
+                    if (enterToSend && !e.shiftKey) { e.preventDefault(); handleSubmitQuestion(); }
+                    else if (e.metaKey || e.ctrlKey) handleSubmitQuestion();
+                  }
                 }}
                 placeholder={avatar.inputPlaceholder}
                 rows={3}
@@ -536,6 +555,18 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                 className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/40 text-sm p-4 pr-12 resize-none focus:outline-none leading-relaxed"
               />
               <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                {/* Enter-to-send toggle */}
+                <button
+                  onClick={toggleEnterToSend}
+                  title={enterToSend ? "Enter 發送（點擊關閉）" : "點擊開啟 Enter 直接發送"}
+                  className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors duration-200 ${
+                    enterToSend
+                      ? "border-morandi-lavender/50 text-morandi-lavender/80 bg-morandi-mauve/20"
+                      : "border-morandi-stone/20 text-morandi-stone/30 hover:border-morandi-stone/40"
+                  }`}
+                >
+                  ↵
+                </button>
                 <span className="text-morandi-stone/30 text-xs">{question.length}/300</span>
                 <motion.button
                   disabled={question.trim().length < 2}
@@ -562,7 +593,12 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                   transition={{ duration: 0.3 }}
                   className="flex flex-col gap-1.5"
                 >
-                  <p className="text-morandi-stone/30 text-[11px] tracking-widest mb-0.5">或者讓月亮引路 ——</p>
+                  <p className="text-morandi-stone/30 text-[11px] tracking-widest mb-0.5">
+                    或者讓月亮引路
+                    <span className="ml-3 text-[10px] opacity-60">
+                      {enterToSend ? "↵ Enter 發送中" : "Shift+Enter 換行 · ↵ 點擊開啟 Enter 發送"}
+                    </span>
+                  </p>
                   {avatar.suggestions.map(({ icon, text }, i) => (
                     <motion.button
                       key={text}
@@ -588,8 +624,6 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   );
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
@@ -612,13 +646,7 @@ function AssistantBlock({
   return (
     <div className="flex gap-3">
       <div className="relative w-8 h-8 rounded-full overflow-hidden border border-morandi-lavender/35 flex-shrink-0 mt-1 shadow-[0_0_10px_rgba(184,168,200,0.15)]">
-        <Image
-          src={avatarImage}
-          alt={avatarAlt}
-          fill
-          className="object-cover object-top"
-          sizes="32px"
-        />
+        <Image src={avatarImage} alt={avatarAlt} fill className="object-cover object-top" sizes="32px" />
       </div>
       <div className="flex-1 min-w-0">{children}</div>
     </div>

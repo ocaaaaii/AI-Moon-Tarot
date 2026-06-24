@@ -82,9 +82,9 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     ],
     inputPlaceholder: "慢慢說給我聽——每個細節都會在牌上現出來...",
     suggestions: [
-      { icon: "🌑", text: "現在的我，正在經歷什麼轉變？" },
-      { icon: "🌓", text: "我在這段關係裡，還沒看清的是什麼？" },
-      { icon: "🌕", text: "我需要放下什麼，才能繼續前行？" },
+      { icon: "🌑", text: "他最近都不主動找我，是我太敏感，還是真的在走遠？" },
+      { icon: "🌓", text: "我說要離職已經說了半年，但我一直沒有動——牌能看到原因嗎？" },
+      { icon: "🌕", text: "我一直在等一個時機，但等了很久，什麼都沒發生" },
     ],
   },
   {
@@ -111,9 +111,9 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     ],
     inputPlaceholder: "說給老朽聽聽吧，不急——黎明會等你把話說完...",
     suggestions: [
-      { icon: "🌑", text: "我正在經歷的，是哪一種黑夜？" },
-      { icon: "🌅", text: "我該如何面對眼前的試煉？" },
-      { icon: "☀️", text: "我要怎麼把力量找回來？" },
+      { icon: "🌅", text: "我拼了很久，最後還是失敗了——我不知道還要不要繼續" },
+      { icon: "🌄", text: "那個人說的話讓我開始懷疑自己，我到底哪裡錯了？" },
+      { icon: "☀️", text: "我對未來完全沒有期待，不知道為什麼要繼續撐著" },
     ],
   },
   {
@@ -140,9 +140,9 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     ],
     inputPlaceholder: "說重點，別鋪梗——你的問題是什麼？",
     suggestions: [
-      { icon: "🔥", text: "我是不是又在找藉口逃避？" },
-      { icon: "⚡", text: "這件事，我到底在怕什麼？" },
-      { icon: "☀️", text: "我該怎麼把主導權搶回來？" },
+      { icon: "🔥", text: "我知道那段感情不健康，但就是捨不得斷——我在等什麼？" },
+      { icon: "⚡", text: "其實我心裡已經知道答案了，但我想再確認一次" },
+      { icon: "☀️", text: "我說要改變已經說了好幾個月，但我一直沒有動" },
     ],
   },
   {
@@ -169,9 +169,9 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     ],
     inputPlaceholder: "說給雅典娜聽聽呀——什麼小怪獸在搗亂噠？",
     suggestions: [
-      { icon: "🧩", text: "最近的煩惱，到底卡在哪一塊？" },
-      { icon: "🌟", text: "我是不是把問題想得太可怕了？" },
-      { icon: "🦉", text: "下一步，我可以怎麼玩？" },
+      { icon: "🧩", text: "A 和 B 我想了很久都沒辦法決定，這兩條路哪個比較適合我？" },
+      { icon: "🌟", text: "我最近什麼事情都做不好，狀態很差，是我太悲觀了嗎？" },
+      { icon: "🦉", text: "這個問題我繞了好幾個月，就是找不到出口" },
     ],
   },
   {
@@ -198,9 +198,9 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     ],
     inputPlaceholder: "慢慢說，不急——讓心裡的浪先平靜一點再說...",
     suggestions: [
-      { icon: "🌊", text: "我是不是又在跟現實對抗？" },
-      { icon: "🐚", text: "這件事，我該放手了嗎？" },
-      { icon: "🏄", text: "我該怎麼順著水走？" },
+      { icon: "🌊", text: "我知道我在內耗，但就是停不下來" },
+      { icon: "🐚", text: "最近什麼都覺得好沉，但說不清楚沉在哪裡" },
+      { icon: "🏄", text: "那件事我一直放不下，但放著也不知道能怎樣" },
     ],
   },
   {
@@ -227,9 +227,9 @@ export const TAROT_AVATARS: TarotAvatar[] = [
     ],
     inputPlaceholder: "說，或者不說都可以——黑夜會等你。",
     suggestions: [
-      { icon: "🌌", text: "我在害怕面對的，是什麼？" },
-      { icon: "🕯️", text: "什麼東西，該讓它崩塌了？" },
-      { icon: "⭐", text: "我的潛意識，想告訴我什麼？" },
+      { icon: "🌌", text: "我有一個念頭一直出現，但我不知道是直覺還是焦慮" },
+      { icon: "🕯️", text: "我最近做了一個奇怪的夢，感覺和現在的事有關" },
+      { icon: "⭐", text: "我好像在怕一件說不清楚的事——你能幫我看嗎？" },
     ],
   },
   {
@@ -254,11 +254,11 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "這陣子受了好多委屈、經歷了很辛苦的低潮對不對？",
       "先深呼吸，聞一聞鬱金香的花香，我們一起看看卡牌溫暖的提示吧。",
     ],
-    inputPlaceholder: "說給我聽喔——不管多難過，這裡都安全的。",
+        inputPlaceholder: "說給我聽喔——不管多難過，這裡都安全的。",
     suggestions: [
-      { icon: "🌸", text: "這段感情，我該怎麼放過自己？" },
-      { icon: "🌱", text: "我是不是一直走不出低潮？" },
-      { icon: "🦋", text: "新的開始，會在哪裡？" },
+      { icon: "🌸", text: "他已經不在了，但我腦子裡還是一直想他" },
+      { icon: "🌱", text: "我最近很努力假裝自己沒事，但其實沒有" },
+      { icon: "🦋", text: "我想重新開始，但不知道要先從哪裡動" },
     ],
   },
 ];

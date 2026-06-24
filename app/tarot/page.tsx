@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
@@ -24,6 +24,22 @@ export default function TarotPage() {
     setShowMobileInfo(false);
   };
 
+  // Fullscreen
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const mainRef = useRef<HTMLDivElement>(null);
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+  useEffect(() => {
+    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8"
       style={{
@@ -34,8 +50,25 @@ export default function TarotPage() {
         href="/"
         className="fixed top-4 left-4 z-20 px-3.5 py-1.5 rounded-full border border-morandi-lavender/25 bg-black/35 backdrop-blur-sm text-cream-200/75 hover:text-cream-100 hover:border-morandi-lavender/50 text-xs tracking-widest transition-colors duration-300"
       >
-        ← 回到入口
+        {"←"} {"回到入口"}
       </Link>
+
+      {/* Fullscreen toggle */}
+      <button
+        onClick={toggleFullscreen}
+        title={isFullscreen ? "退出全螢幕" : "全螢幕"}
+        className="hidden md:flex fixed top-4 right-4 z-20 w-8 h-8 items-center justify-center rounded-full border border-morandi-lavender/25 bg-black/35 backdrop-blur-sm text-cream-200/60 hover:text-cream-100 hover:border-morandi-lavender/50 transition-colors duration-300"
+      >
+        {isFullscreen ? (
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M5 1H1v4M9 1h4v4M5 13H1V9M9 13h4V9"/>
+          </svg>
+        ) : (
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/>
+          </svg>
+        )}
+      </button>
 
       {/* Brand header — mobile only */}
       <motion.div
@@ -62,10 +95,7 @@ export default function TarotPage() {
           height: "clamp(580px, 82vh, 780px)",
         }}
       >
-        {/* Left: selected tarot master's profile — hidden until chosen, and
-            hidden on mobile (same reasoning as before: redundant with the
-            brand header + chat header bar, and would crowd the fixed-height
-            card on small screens) */}
+        {/* Left: selected tarot master's profile */}
         <div
           className="hidden md:block md:w-72 flex-shrink-0 overflow-y-auto"
           style={{
@@ -109,9 +139,6 @@ export default function TarotPage() {
                   <p className="text-cream-100 text-sm font-medium tracking-wide">{avatar.displayName}</p>
                   <p className="text-morandi-stone/45 text-xs">{avatar.tagline}</p>
                 </div>
-                {/* Desktop already shows the full AvatarProfile in the left
-                    column (hidden md:block there) — this button only
-                    exists for phones, where that column has nowhere to go. */}
                 <button
                   onClick={() => setShowMobileInfo(true)}
                   aria-label="角色介紹"
@@ -127,9 +154,7 @@ export default function TarotPage() {
                 </button>
               </motion.div>
 
-              {/* Mobile-only profile sheet — same AvatarProfile component
-                  the desktop left column uses, just shown as an overlay
-                  instead of a permanent sidebar. */}
+              {/* Mobile-only profile sheet */}
               <AnimatePresence>
                 {showMobileInfo && (
                   <motion.div
@@ -146,7 +171,7 @@ export default function TarotPage() {
                     />
                     <motion.div
                       className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-3xl"
-                      style={{ background: "#150f24", border: "1px solid rgba(184,168,200,0.15)" }}
+                      style={{ background: "#12091f", border: "1px solid rgba(184,168,200,0.15)" }}
                       initial={{ y: "100%" }}
                       animate={{ y: 0 }}
                       exit={{ y: "100%" }}
@@ -158,25 +183,22 @@ export default function TarotPage() {
                       >
                         ✕
                       </button>
-                      <AvatarProfile avatar={avatar} shopLabel="A I  T A R O T" heroHeight={220} />
+                      <AvatarProfile avatar={avatar} shopLabel="A I  T A R O T" />
                     </motion.div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Chat area */}
-              <div className="flex-1 overflow-hidden">
-                <ChatInterface avatar={avatar} />
-              </div>
+              <ChatInterface avatar={avatar} />
             </>
           ) : (
             <AvatarSelector
               avatars={TAROT_AVATARS}
-              heading="今天想找誰為你解牌？"
-              subheading="選一位塔羅師"
+              heading="選擇你的塔羅師"
+              subheading="每一位都有獨特的解讀風格——先看看她的介紹吧"
               selectedId={previewId}
-              onPick={setPreviewId}
-              onConfirm={setConfirmedId}
+              onPick={(id) => setPreviewId(id)}
+              onConfirm={(id) => { setConfirmedId(id); setPreviewId(null); }}
             />
           )}
         </div>

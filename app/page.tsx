@@ -6,16 +6,12 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 
 import PortalTour from "@/components/ui/PortalTour";
+import DeveloperBubble from "@/components/ui/DeveloperBubble";
 
 /**
  * Portal — the entry point. Two doors, two personas, one world left
  * deliberately unexplained: the shared identity behind Cynthia and 月乃 is
  * never stated here. The visitor simply chooses where to look inward.
- *
- * An optional guided tour (PortalTour) walks visitors through both shops
- * and all six Sacred Realms before they pick a door — explicitly
- * opt-in (a button, not an auto-play-on-load takeover) so repeat visitors
- * aren't forced through it every time.
  */
 
 interface Door {
@@ -45,7 +41,7 @@ const DOORS: Door[] = [
     href: "/stories",
     title: "月神天啟",
     tagline: "群星與日常．在命運流轉中尋回羈絆",
-    image: "/assets/Storys/封面.jpg",
+    image: "/assets/Stories/封面.jpg",
     glow: "rgba(168,120,230,0.35)",
   },
 ];
@@ -81,7 +77,7 @@ export default function PortalPage() {
           選一扇門
         </h1>
         <p className="text-morandi-stone/45 text-sm mt-3">
-          三個能讓你向內尋找答案的地方
+          這裡是讓你向內尋找答案的地方
         </p>
         <motion.button
           onClick={() => setShowTour(true)}
@@ -143,8 +139,6 @@ export default function PortalPage() {
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority={i === 0}
                 />
-
-                {/* legibility gradient */}
                 <div
                   className="absolute inset-0"
                   style={{
@@ -152,15 +146,10 @@ export default function PortalPage() {
                       "linear-gradient(to top, rgba(10,7,18,0.92) 0%, rgba(10,7,18,0.35) 45%, rgba(10,7,18,0.05) 70%)",
                   }}
                 />
-
-                {/* hover glow */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{
-                    boxShadow: `inset 0 0 80px ${door.glow}`,
-                  }}
+                  style={{ boxShadow: `inset 0 0 80px ${door.glow}` }}
                 />
-
                 <div className="absolute inset-x-0 bottom-0 p-6 text-center">
                   <h2 className="font-serif text-2xl text-cream-100 tracking-wide">
                     {door.title}
@@ -191,6 +180,8 @@ export default function PortalPage() {
         <br />
         © 2026 AI MOON TAROT · All rights reserved.
       </motion.p>
+
+      <DeveloperBubble />
     </main>
   );
 }
