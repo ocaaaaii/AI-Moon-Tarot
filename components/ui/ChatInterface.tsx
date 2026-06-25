@@ -5,8 +5,10 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import dynamic from "next/dynamic";
 import type { CardRequest, HistoryMessage } from "@/lib/tarot/types";
+import { MAJOR_IDS, MINOR_NUMBERED_IDS, COURT_IDS } from "@/lib/tarot/cardCategories";
 import DrawnCards from "./DrawnCards";
 import ChatReading from "./ChatReading";
+import QuestionRefine from "./QuestionRefine";
 
 // Three.js canvas — client-only (no SSR: uses document/WebGL)
 function DeckLoading() {
@@ -21,7 +23,7 @@ const CardDeckCanvas = dynamic(
   { ssr: false, loading: DeckLoading },
 );
 
-type Step = "idle" | "typing" | "stillness" | "spread" | "deck" | "reveal" | "reading";
+type Step = "idle" | "typing" | "stillness" | "refine" | "spread" | "deck" | "reveal" | "reading";
 
 interface CardMeta {
   id: number;
@@ -35,13 +37,29 @@ interface FollowUpRound {
   answer: string;
 }
 
-const SPREAD_OPTIONS = [
+const PHASE_CONFIG = [
+  { label: "天（靈魂課題）", desc: "大牌 · 22 張", allowedIds: new Set(MAJOR_IDS) },
+  { label: "地（現實事件）", desc: "數字牌 · 40 張", allowedIds: new Set(MINOR_NUMBERED_IDS) },
+  { label: "人（心態鏡子）", desc: "宮廷牌 · 16 張", allowedIds: new Set(COURT_IDS) },
+] as const;
+
+interface SpreadOption {
+  count: 1 | 2 | 3;
+  label: string;
+  sub: string;
+  positions: string[];
+  /** 天地人分類抽牌：自動從大牌/數字牌/宮廷牌各抽一張，跳過手動挑牌 */
+  categoryDraw?: boolean;
+}
+
+const SPREAD_OPTIONS: SpreadOption[] = [
   { count: 1 as const, label: "單張指引", sub: "當下最需要的訊息", positions: ["當下訊息"] },
   { count: 2 as const, label: "時間軸", sub: "過去 · 現在", positions: ["過去", "現在"] },
   { count: 2 as const, label: "選擇牌陣", sub: "選項 A · 選項 B", positions: ["選項 A", "選項 B"] },
   { count: 3 as const, label: "過去現在未來", sub: "過去 · 現在 · 未來", positions: ["過去", "現在", "未來"] },
   { count: 3 as const, label: "情況挑戰建議", sub: "情況 · 挑戰 · 建議", positions: ["情況", "挑戰", "建議"] },
   { count: 3 as const, label: "心身靈", sub: "心 · 身 · 靈", positions: ["心", "身", "靈"] },
+  { count: 3 as const, label: "天地人診斷", sub: "課題 · 事件 · 心態", positions: ["天（靈魂課題）", "地（現實事件）", "人（心態鏡子）"], categoryDraw: true },
 ];
 
 const slideUp = {
@@ -86,6 +104,12 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   // Stillness step auto-advance
   const stillnessTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Refine-question step state
+  const [refineSuggestions, setRefineSuggestions] = useState<string[]>([]);
+  const [refineIssueLabel, setRefineIssueLabel] = useState("");
+  const refineResultRef = useRef<{ shouldRefine: boolean; issueLabel?: string; suggestions?: string[] } | null>(null);
+  const refineWaitCountRef = useRef(0);
+
   // Enter-to-send preference (persisted in localStorage)
   const [enterToSend, setEnterToSend] = useState(false);
   useEffect(() => {
@@ -101,6 +125,10 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
   // Share
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isCategorySpread, setIsCategorySpread] = useState(false);
+  const [categoryCards, setCategoryCards] = useState<CardRequest[]>([]);
+  // Derive current phase from how many cards have been collected (no separate state needed)
+  const categoryPhase = Math.min(categoryCards.length, 2) as 0 | 1 | 2;
   const readingAreaRef = useRef<HTMLDivElement>(null);
 
   const abortRef = useRef<AbortController | null>(null);
@@ -124,16 +152,61 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [step, readingText, followUpText, followUpRounds]);
 
+
+
+  const advanceFromStillness = useCallback(() => {
+    if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
+    const result = refineResultRef.current;
+    if (result && result.shouldRefine && result.suggestions && result.suggestions.length > 0) {
+      setRefineSuggestions(result.suggestions);
+      setRefineIssueLabel(result.issueLabel ?? "");
+      setStep("refine");
+    } else {
+      setStep("spread");
+    }
+    refineResultRef.current = null;
+    refineWaitCountRef.current = 0;
+  }, []);
+
   const handleSubmitQuestion = useCallback(() => {
     if (question.trim().length < 2) return;
     setStep("stillness");
-    // Auto-advance to spread after 4 s; user can skip earlier
-    stillnessTimerRef.current = setTimeout(() => setStep("spread"), 4000);
-  }, [question]);
+    refineResultRef.current = null;
+    refineWaitCountRef.current = 0;
+
+    // Fire refine-question API in parallel with stillness animation
+    fetch("/api/refine-question", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: question.trim() }),
+    })
+      .then((r) => r.json())
+      .then((data: { shouldRefine: boolean; issueLabel?: string; suggestions?: string[] }) => {
+        refineResultRef.current = data;
+      })
+      .catch(() => {
+        refineResultRef.current = { shouldRefine: false };
+      });
+
+    // Auto-advance to spread/refine after 4 s
+    stillnessTimerRef.current = setTimeout(() => advanceFromStillness(), 4000);
+  }, [question, advanceFromStillness]);
 
   const handleCardsDrawn = useCallback((cards: CardRequest[]) => {
     setDrawnCards(cards);
     setStep("reveal");
+  }, []);
+
+  const handleCategoryPhaseComplete = useCallback((cards: CardRequest[]) => {
+    setCategoryCards((prev) => {
+      const next = [...prev, ...cards];
+      if (next.length >= 3) {
+        // All 3 phases done — proceed to reveal
+        setDrawnCards(next);
+        setStep("reveal");
+      }
+      return next;
+    });
   }, []);
 
   // ── Initial reading ──────────────────────────────────────────────────────────
@@ -305,6 +378,12 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
     setStep("idle");
     setQuestion("");
+    setIsCategorySpread(false);
+    setCategoryCards([]);
+    setRefineSuggestions([]);
+    setRefineIssueLabel("");
+    refineResultRef.current = null;
+    refineWaitCountRef.current = 0;
     setDrawnCards([]);
     setReadingText("");
     setIsStreaming(false);
@@ -325,7 +404,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     readingText.length > 0;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="relative flex flex-col h-full">
       {/* ── Scrollable message area ── */}
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5">
 
@@ -412,7 +491,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                 transition={{ delay: 1.5, duration: 0.6 }}
                 onClick={() => {
                   if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
-                  setStep("spread");
+                  advanceFromStillness();
                 }}
                 className="text-morandi-stone/35 text-[11px] tracking-widest hover:text-cream-200/55 transition-colors duration-300 border-b border-morandi-stone/20 hover:border-morandi-stone/40 pb-0.5"
               >
@@ -424,7 +503,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
         {/* User question bubble — shown outside screenshot during spread/deck/reveal/prereading only */}
         <AnimatePresence>
-          {(step === "spread" || step === "deck" || step === "reveal") && (
+          {(step === "refine" || step === "spread" || step === "deck" || step === "reveal") && (
             <motion.div key="question" {...slideUp}>
               <UserBubble text={question} />
             </motion.div>
@@ -433,6 +512,25 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
         {/* Spread picker */}
         <AnimatePresence>
+          {step === "refine" && (
+            <motion.div key="refine" {...slideUp}>
+              <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
+                <QuestionRefine
+                  avatarImage={avatar.image}
+                  avatarName={avatar.displayName}
+                  originalQuestion={question}
+                  issueLabel={refineIssueLabel}
+                  suggestions={refineSuggestions}
+                  onSelect={(refined) => {
+                    setQuestion(refined);
+                    setStep("spread");
+                  }}
+                  onSkip={() => setStep("spread")}
+                />
+              </AssistantBlock>
+            </motion.div>
+          )}
+
           {step === "spread" && (
             <motion.div key="spread" {...slideUp}>
               <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
@@ -446,7 +544,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                       transition={{ delay: i * 0.08, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => { setSpreadCount(option.count); setSpreadPositions(option.positions); setStep("deck"); }}
+                      onClick={() => { setSpreadCount(option.count); setSpreadPositions(option.positions); setIsCategorySpread(option.categoryDraw ?? false); setCategoryCards([]); setStep("deck"); }}
                       className="flex flex-col items-center px-5 py-3 rounded-xl border border-morandi-lavender/25 hover:border-morandi-lavender/60 hover:bg-morandi-mauve/20 text-sm transition-colors duration-200"
                     >
                       <span className="text-cream-200/90">{option.label}</span>
@@ -464,13 +562,66 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           {step === "deck" && (
             <motion.div key="deck" {...slideUp}>
               <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
-                <p className="text-cream-200/80 text-sm mb-1">
-                  深呼吸——感覺哪張牌在等你
-                </p>
-                <p className="text-morandi-stone/40 text-[11px] mb-4 tracking-wider">
-                  hover 查看 · 點擊抽取
-                </p>
-                <CardDeckCanvas spreadCount={spreadCount} onComplete={handleCardsDrawn} spreadPositions={spreadPositions} />
+                {isCategorySpread ? (
+                  <div className="flex flex-col gap-3 w-full">
+                    {/* Phase progress dots */}
+                    <div className="flex items-center gap-2 mb-1">
+                      {PHASE_CONFIG.map((phase, i) => (
+                        <Fragment key={phase.label}>
+                          <div className="flex flex-col items-center gap-1">
+                            <div
+                              className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] transition-all duration-300"
+                              style={{
+                                background: i < categoryPhase
+                                  ? "rgba(184,168,200,0.6)"
+                                  : i === categoryPhase
+                                    ? "rgba(184,168,200,0.2)"
+                                    : "rgba(184,168,200,0.06)",
+                                border: i === categoryPhase
+                                  ? "1px solid rgba(184,168,200,0.6)"
+                                  : "1px solid rgba(184,168,200,0.15)",
+                                color: i <= categoryPhase ? "rgba(235,225,245,0.9)" : "rgba(184,168,200,0.3)",
+                              }}
+                            >
+                              {i < categoryPhase ? "✓" : i + 1}
+                            </div>
+                            <span className="text-[9px] tracking-wider" style={{ color: i === categoryPhase ? "rgba(212,168,89,0.8)" : "rgba(166,153,185,0.35)" }}>
+                              {phase.label.split("（")[0]}
+                            </span>
+                          </div>
+                          {i < 2 && <div className="flex-1 h-px mt-[-10px]" style={{ background: i < categoryPhase ? "rgba(184,168,200,0.4)" : "rgba(184,168,200,0.1)" }} />}
+                        </Fragment>
+                      ))}
+                    </div>
+                    {/* Current phase label */}
+                    <div className="flex flex-col gap-0.5 mb-1">
+                      <p className="text-cream-200/90 text-sm">
+                        {PHASE_CONFIG[categoryPhase].label}
+                      </p>
+                      <p className="text-morandi-stone/45 text-[11px] tracking-wider">
+                        {PHASE_CONFIG[categoryPhase].desc} · 感覺哪張牌在等你
+                      </p>
+                    </div>
+                    {/* Filtered deck — key forces remount on phase change */}
+                    <CardDeckCanvas
+                      key={`category-phase-${categoryPhase}`}
+                      spreadCount={1}
+                      onComplete={handleCategoryPhaseComplete}
+                      spreadPositions={[PHASE_CONFIG[categoryPhase].label]}
+                      allowedIds={PHASE_CONFIG[categoryPhase].allowedIds}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-cream-200/80 text-sm mb-1">
+                      深呼吸——感覺哪張牌在等你
+                    </p>
+                    <p className="text-morandi-stone/40 text-[11px] mb-4 tracking-wider">
+                      hover 查看 · 點擊抽取
+                    </p>
+                    <CardDeckCanvas spreadCount={spreadCount} onComplete={handleCardsDrawn} spreadPositions={spreadPositions} />
+                  </>
+                )}
               </AssistantBlock>
             </motion.div>
           )}
@@ -490,7 +641,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
               {/* Cards — centered */}
               <div className="flex justify-center">
-                <DrawnCards key={metaReady ? "ready" : "loading"} cards={drawnCards} cardMeta={cardMeta} />
+                <DrawnCards key={metaReady ? "ready" : "loading"} cards={drawnCards} cardMeta={cardMeta} positions={spreadPositions} />
               </div>
 
               {/* Begin reading button */}
@@ -515,14 +666,14 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
               {/* Initial reading — full width */}
               {step === "reading" && (
-                <ChatReading text={readingText} isStreaming={isStreaming} />
+                <ChatReading text={readingText} isStreaming={isStreaming} avatarSrc={avatar.image} avatarAlt={avatar.displayName} />
               )}
 
               {/* Completed follow-up rounds */}
               {followUpRounds.map((round, i) => (
                 <Fragment key={`round-${i}`}>
                   <UserBubble text={round.question} />
-                  <ChatReading text={round.answer} isStreaming={false} />
+                  <ChatReading text={round.answer} isStreaming={false} avatarSrc={avatar.image} avatarAlt={avatar.displayName} />
                 </Fragment>
               ))}
 
@@ -530,7 +681,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
               {pendingFollowUpQ && (
                 <>
                   <UserBubble text={pendingFollowUpQ} />
-                  <ChatReading text={followUpText} isStreaming={isFollowUpStreaming} />
+                  <ChatReading text={followUpText} isStreaming={isFollowUpStreaming} avatarSrc={avatar.image} avatarAlt={avatar.displayName} />
                 </>
               )}
             </div>
@@ -638,7 +789,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                 className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/40 text-sm p-4 pr-12 resize-none focus:outline-none leading-relaxed"
               />
               <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                {/* Enter-to-send toggle */}
+{/* Enter-to-send toggle */}
                 <button
                   onClick={toggleEnterToSend}
                   title={enterToSend ? "Enter 發送（點擊關閉）" : "點擊開啟 Enter 直接發送"}
@@ -713,6 +864,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 }

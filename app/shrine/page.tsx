@@ -8,6 +8,10 @@ import { motion, AnimatePresence } from "motion/react";
 import AvatarProfile from "@/components/ui/AvatarProfile";
 import AvatarSelector from "@/components/ui/AvatarSelector";
 import ShrineDraw from "@/components/omikuji/ShrineDraw";
+import TokenDisplay from "@/components/ui/TokenDisplay";
+import SaisenRitual from "@/components/ui/SaisenRitual";
+import TokenInsufficient from "@/components/ui/TokenInsufficient";
+import { useTokens, useQuickMode } from "@/lib/tokens/useTokens";
 import RegionRitual from "@/components/omikuji/RegionRitual";
 import { OMIKUJI_AVATARS, getOmikujiAvatar } from "@/lib/omikuji/avatars";
 
@@ -16,6 +20,10 @@ export default function ShrinePage() {
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
   const [showRegionRitual, setShowRegionRitual] = useState(false);
   const [showMobileInfo, setShowMobileInfo] = useState(false);
+  const [shrineRitualDone, setShrineRitualDone] = useState(false);
+  const [showInsufficient, setShowInsufficient] = useState(false);
+  const { spend, canAfford } = useTokens();
+  const { quickMode } = useQuickMode();
   const avatar = confirmedId ? getOmikujiAvatar(confirmedId) : null;
   const previewAvatar = previewId ? getOmikujiAvatar(previewId) : null;
   const profileAvatar = avatar ?? previewAvatar;
@@ -25,6 +33,7 @@ export default function ShrinePage() {
     setPreviewId(null);
     setShowRegionRitual(false);
     setShowMobileInfo(false);
+    setShrineRitualDone(false);
   };
 
   // Fullscreen
@@ -164,6 +173,7 @@ export default function ShrinePage() {
                   <p className="text-cream-100 text-sm font-medium tracking-wide">{avatar.displayName}</p>
                   <p className="text-morandi-stone/45 text-xs">{avatar.tagline}</p>
                 </div>
+                <TokenDisplay />
                 {avatar.region && (
                   <button
                     onClick={() => setShowRegionRitual(true)}
@@ -222,7 +232,23 @@ export default function ShrinePage() {
                 )}
               </AnimatePresence>
 
-              <ShrineDraw avatar={avatar} />
+              {/* Saisen ritual — shown immediately after avatar confirmed, before chat */}
+              {!shrineRitualDone ? (
+                <div className="relative flex-1 overflow-hidden rounded-b-3xl">
+                  <SaisenRitual
+                    quickMode={quickMode}
+                    spend={spend}
+                    onComplete={() => setShrineRitualDone(true)}
+                    onInsufficient={() => {
+                      setShowInsufficient(true);
+                      setConfirmedId(null);
+                      setShrineRitualDone(false);
+                    }}
+                  />
+                </div>
+              ) : (
+                <ShrineDraw avatar={avatar} />
+              )}
             </>
           ) : (
             <AvatarSelector
@@ -231,7 +257,7 @@ export default function ShrinePage() {
               subheading="每一位都有不同的靈魂頻率——先感受看看吧"
               selectedId={previewId}
               onPick={(id) => setPreviewId(id)}
-              onConfirm={(id) => { setConfirmedId(id); setPreviewId(null); }}
+              onConfirm={(id) => { setConfirmedId(id); setPreviewId(null); setShrineRitualDone(false); }}
             />
           )}
         </div>
@@ -253,6 +279,8 @@ export default function ShrinePage() {
           />
         )}
       </AnimatePresence>
+      {/* Insufficient balance modal */}
+      <TokenInsufficient open={showInsufficient} onClose={() => setShowInsufficient(false)} />
     </main>
   );
 }

@@ -8,12 +8,20 @@ import { motion, AnimatePresence } from "motion/react";
 import AvatarProfile from "@/components/ui/AvatarProfile";
 import AvatarSelector from "@/components/ui/AvatarSelector";
 import ChatInterface from "@/components/ui/ChatInterface";
+import TokenDisplay from "@/components/ui/TokenDisplay";
+import TarotRitual from "@/components/ui/TarotRitual";
+import TokenInsufficient from "@/components/ui/TokenInsufficient";
+import { useTokens, useQuickMode } from "@/lib/tokens/useTokens";
 import { TAROT_AVATARS, getTarotAvatar } from "@/lib/tarot/avatars";
 
 export default function TarotPage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [confirmedId, setConfirmedId] = useState<string | null>(null);
   const [showMobileInfo, setShowMobileInfo] = useState(false);
+  const [tarotRitualDone, setTarotRitualDone] = useState(false);
+  const [showInsufficient, setShowInsufficient] = useState(false);
+  const { spend, canAfford } = useTokens();
+  const { quickMode, toggleQuickMode } = useQuickMode();
   const avatar = confirmedId ? getTarotAvatar(confirmedId) : null;
   const previewAvatar = previewId ? getTarotAvatar(previewId) : null;
   const profileAvatar = avatar ?? previewAvatar;
@@ -22,6 +30,7 @@ export default function TarotPage() {
     setConfirmedId(null);
     setPreviewId(null);
     setShowMobileInfo(false);
+    setTarotRitualDone(false);
   };
 
   // Fullscreen
@@ -52,6 +61,19 @@ export default function TarotPage() {
       >
         {"←"} {"回到入口"}
       </Link>
+
+      {/* Quick mode toggle */}
+      <button
+        onClick={toggleQuickMode}
+        title={quickMode ? "快速模式：開（點擊關閉）" : "點擊開啟快速模式（跳過儀式動畫）"}
+        className={`hidden md:flex fixed top-4 right-14 z-20 w-8 h-8 items-center justify-center rounded-full border bg-black/35 backdrop-blur-sm transition-colors duration-300 ${
+          quickMode
+            ? "border-amber-400/55 text-amber-400/90"
+            : "border-morandi-lavender/25 text-cream-200/60 hover:text-cream-100 hover:border-amber-400/50"
+        }`}
+      >
+        ⚡
+      </button>
 
       {/* Fullscreen toggle */}
       <button
@@ -139,6 +161,7 @@ export default function TarotPage() {
                   <p className="text-cream-100 text-sm font-medium tracking-wide">{avatar.displayName}</p>
                   <p className="text-morandi-stone/45 text-xs">{avatar.tagline}</p>
                 </div>
+                <TokenDisplay />
                 <button
                   onClick={() => setShowMobileInfo(true)}
                   aria-label="角色介紹"
@@ -189,7 +212,22 @@ export default function TarotPage() {
                 )}
               </AnimatePresence>
 
-              <ChatInterface avatar={avatar} />
+              {!tarotRitualDone ? (
+                <div className="relative flex-1 overflow-hidden">
+                  <TarotRitual
+                    quickMode={quickMode}
+                    spend={spend}
+                    onComplete={() => setTarotRitualDone(true)}
+                    onInsufficient={() => {
+                      setShowInsufficient(true);
+                      setConfirmedId(null);
+                      setTarotRitualDone(false);
+                    }}
+                  />
+                </div>
+              ) : (
+                <ChatInterface avatar={avatar} />
+              )}
             </>
           ) : (
             <AvatarSelector
@@ -203,6 +241,7 @@ export default function TarotPage() {
           )}
         </div>
       </motion.div>
+      <TokenInsufficient open={showInsufficient} onClose={() => setShowInsufficient(false)} />
     </main>
   );
 }

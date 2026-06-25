@@ -136,15 +136,24 @@ interface CardFanSceneProps {
    * scroll proxy so the camera can stay fixed (no FOV distortion) while
    * still letting the user pan across all 78 cards */
   panX?: number;
+  /** When set, only cards whose IDs are in this set are shown in the fan.
+   * Used for 天地人 category-split spreads. */
+  allowedIds?: ReadonlySet<number>;
 }
 
-export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, panX = 0 }: CardFanSceneProps) {
+export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, panX = 0, allowedIds }: CardFanSceneProps) {
   const texture = useMemo(() => makeCardBackTexture(), []);
   // Deps are intentionally [] — this closes over whatever `panX` is on the
   // very first render (CardDeckCanvas's initial pan, framing the row's
   // left edge) and freezes it, so later scrolling doesn't keep moving the
   // shuffle pile around.
-  const spreadCards = useMemo(() => buildSpread(shuffleSlice(SPREAD_COUNT), -panX), []);
+  const spreadCards = useMemo(() => {
+    const ids = allowedIds
+      ? shuffleSlice(SPREAD_COUNT).filter((id) => allowedIds.has(id))
+      : shuffleSlice(SPREAD_COUNT);
+    return buildSpread(ids, -panX);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // allowedIds is stable per mount; panX captured at initial render
 
   const [drawn, setDrawn] = useState<CardRequest[]>([]);
   const [drawingId, setDrawingId] = useState<number | null>(null);
@@ -154,7 +163,7 @@ export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, pan
   const [dealingDone, setDealingDone] = useState(false);
 
   useEffect(() => {
-    const lastDealDelay = SHUFFLE_DURATION + (SPREAD_COUNT - 1) * DEAL_STAGGER;
+    const lastDealDelay = SHUFFLE_DURATION + (spreadCards.length - 1) * DEAL_STAGGER;
     const t = window.setTimeout(() => setDealingDone(true), (lastDealDelay + 0.45) * 1000);
     return () => window.clearTimeout(t);
   }, []);

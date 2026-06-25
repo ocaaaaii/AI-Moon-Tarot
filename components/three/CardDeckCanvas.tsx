@@ -18,15 +18,19 @@ interface CardDeckCanvasProps {
   onComplete: (cards: CardRequest[]) => void;
   /** Position labels for the spread (e.g. ["過去","現在","未來"]) */
   spreadPositions?: string[];
+  /** When set, only cards in this set are shown (天地人 category mode) */
+  allowedIds?: ReadonlySet<number>;
 }
 
 const CANVAS_HEIGHT = 400;
 const PROXY_HEIGHT  = 56;
 const VISIBLE_WORLD_WIDTH = 3.6;
-const TOTAL_WORLD_WIDTH   = SPREAD_COUNT * SPACING;
-const MAX_PAN = Math.max(0, (TOTAL_WORLD_WIDTH - VISIBLE_WORLD_WIDTH) / 2);
 
-export default function CardDeckCanvas({ spreadCount, onComplete, spreadPositions }: CardDeckCanvasProps) {
+export default function CardDeckCanvas({ spreadCount, onComplete, spreadPositions, allowedIds }: CardDeckCanvasProps) {
+  const actualCardCount   = allowedIds?.size ?? SPREAD_COUNT;
+  const TOTAL_WORLD_WIDTH = actualCardCount * SPACING;
+  const MAX_PAN           = Math.max(0, (TOTAL_WORLD_WIDTH - VISIBLE_WORLD_WIDTH) / 2);
+
   const [panX,       setPanX]       = useState(MAX_PAN);
   const [scrollPct,  setScrollPct]  = useState(0);
   const [drawnCount, setDrawnCount] = useState(0);
@@ -42,7 +46,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
     const pct = max > 0 ? el.scrollLeft / max : 0;
     setScrollPct(pct);
     setPanX(MAX_PAN - pct * MAX_PAN * 2);
-  }, []);
+  }, [MAX_PAN]);
 
   // Pointer-drag on the custom track → update proxy scroll
   const scrubTo = useCallback((clientX: number) => {
@@ -55,7 +59,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
     proxy.scrollLeft = pct * max;
     setScrollPct(pct);
     setPanX(MAX_PAN - pct * MAX_PAN * 2);
-  }, []);
+  }, [MAX_PAN]);
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => { if (dragging.current) scrubTo(e.clientX); };
@@ -112,6 +116,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
             onComplete={onComplete}
             onCardDrawn={setDrawnCount}
             panX={panX}
+            allowedIds={allowedIds}
           />
         </Canvas>
       </div>
@@ -157,7 +162,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
             }} />
           </div>
           <p style={{ textAlign: "center", fontSize: 10, color: "rgba(166,153,185,0.38)", letterSpacing: "0.12em", margin: 0 }}>
-            ← 左右滑動，瀏覽全部 78 張 →
+            {`← 左右滑動，瀏覽全部 ${actualCardCount} 張 →`}
           </p>
         </div>
       </div>

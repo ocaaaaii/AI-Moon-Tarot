@@ -8,6 +8,8 @@ import { cardImagePath } from "@/lib/tarot/cardSlugs";
 interface DrawnCardsProps {
   cards: CardRequest[];
   cardMeta?: Record<number, { name_zh: string; name_en: string; local_image: string }>;
+  /** Per-card position labels (e.g. ["天（靈魂課題）","地（現實事件）","人（心態鏡子）"]) */
+  positions?: string[];
 }
 
 const POSITION_LABELS: Record<number, Record<number, string>> = {
@@ -16,7 +18,7 @@ const POSITION_LABELS: Record<number, Record<number, string>> = {
   3: { 0: "過去", 1: "現在", 2: "未來" },
 };
 
-export default function DrawnCards({ cards, cardMeta = {} }: DrawnCardsProps) {
+export default function DrawnCards({ cards, cardMeta = {}, positions }: DrawnCardsProps) {
   const [flipped, setFlipped] = useState<boolean[]>(Array(cards.length).fill(false));
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function DrawnCards({ cards, cardMeta = {} }: DrawnCardsProps) {
   return (
     <div className="flex justify-center gap-5 flex-wrap">
       {cards.map((card, i) => {
-        const label = POSITION_LABELS[cards.length]?.[i] ?? "";
+        const label = positions?.[i] ?? POSITION_LABELS[cards.length]?.[i] ?? "";
         const meta = cardMeta[card.id];
         const nameZh = meta?.name_zh ?? `#${card.id}`;
         const imageSrc = cardImagePath(card.id);
