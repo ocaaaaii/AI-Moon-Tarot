@@ -21,7 +21,7 @@ const CardDeckCanvas = dynamic(
   { ssr: false, loading: DeckLoading },
 );
 
-type Step = "idle" | "typing" | "spread" | "deck" | "reveal" | "reading";
+type Step = "idle" | "typing" | "stillness" | "spread" | "deck" | "reveal" | "reading";
 
 interface CardMeta {
   id: number;
@@ -79,6 +79,9 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   const [isFollowUpStreaming, setIsFollowUpStreaming] = useState(false);
   const [followUpInput, setFollowUpInput] = useState("");
 
+  // Stillness step auto-advance
+  const stillnessTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Enter-to-send preference (persisted in localStorage)
   const [enterToSend, setEnterToSend] = useState(false);
   useEffect(() => {
@@ -119,7 +122,9 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
   const handleSubmitQuestion = useCallback(() => {
     if (question.trim().length < 2) return;
-    setStep("spread");
+    setStep("stillness");
+    // Auto-advance to spread after 4 s; user can skip earlier
+    stillnessTimerRef.current = setTimeout(() => setStep("spread"), 4000);
   }, [question]);
 
   const handleCardsDrawn = useCallback((cards: CardRequest[]) => {
@@ -293,6 +298,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
   const handleReset = useCallback(() => {
     abortRef.current?.abort();
+    if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
     setStep("idle");
     setQuestion("");
     setDrawnCards([]);
@@ -340,7 +346,79 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           )}
         </AnimatePresence>
 
-        {/* User question bubble — shown outside screenshot during spread/deck/reveal only */}
+
+        {/* ── 靜心時刻 ──────────────────────────────────────────────────────── */}
+        <AnimatePresence>
+          {step === "stillness" && (
+            <motion.div
+              key="stillness"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.6 } }}
+              transition={{ duration: 0.5 }}
+              className="flex-1 flex flex-col items-center justify-center gap-8 py-12 px-6 text-center"
+            >
+              {/* Breathing orb */}
+              <div className="relative flex items-center justify-center">
+                {/* Outer glow ring */}
+                <motion.div
+                  animate={{ scale: [1, 1.18, 1], opacity: [0.2, 0.45, 0.2] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute w-36 h-36 rounded-full"
+                  style={{ background: "radial-gradient(circle, rgba(184,168,200,0.3) 0%, transparent 70%)" }}
+                />
+                {/* Inner orb */}
+                <motion.div
+                  animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative w-24 h-24 rounded-full flex items-center justify-center"
+                  style={{
+                    background: "radial-gradient(circle at 38% 32%, rgba(200,184,220,0.22) 0%, rgba(29,18,40,0.85) 100%)",
+                    border: "1px solid rgba(184,168,200,0.25)",
+                    boxShadow: "0 0 40px rgba(184,168,200,0.12), inset 0 0 20px rgba(184,168,200,0.06)",
+                  }}
+                >
+                  <span className="text-3xl select-none">🌙</span>
+                </motion.div>
+              </div>
+
+              {/* Sequential guiding text */}
+              <div className="flex flex-col gap-3">
+                {[
+                  { text: "靜下心……", delay: 0.4 },
+                  { text: "把這個問題放進心裡……", delay: 1.2 },
+                  { text: "感受它。", delay: 2.2 },
+                ].map(({ text, delay }) => (
+                  <motion.p
+                    key={text}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-cream-200/70 text-sm tracking-[0.15em] font-light"
+                  >
+                    {text}
+                  </motion.p>
+                ))}
+              </div>
+
+              {/* Skip button — appears after 1.5 s */}
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5, duration: 0.6 }}
+                onClick={() => {
+                  if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
+                  setStep("spread");
+                }}
+                className="text-morandi-stone/35 text-[11px] tracking-widest hover:text-cream-200/55 transition-colors duration-300 border-b border-morandi-stone/20 hover:border-morandi-stone/40 pb-0.5"
+              >
+                我準備好了 →
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* User question bubble — shown outside screenshot during spread/deck/reveal/prereading only */}
         <AnimatePresence>
           {(step === "spread" || step === "deck" || step === "reveal") && (
             <motion.div key="question" {...slideUp}>
@@ -420,7 +498,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                   transition={{ delay: 0.9, duration: 0.4 }}
                 >
                   <motion.button
-                    onClick={startReading}
+                    onClick={() => startReading()}
                     whileHover={{ scale: 1.04, boxShadow: "0 0 24px rgba(184,168,200,0.2)" }}
                     whileTap={{ scale: 0.97 }}
                     className="px-8 py-3 rounded-full border border-morandi-lavender/40 bg-morandi-mauve/15 text-cream-100 text-sm tracking-widest hover:bg-morandi-mauve/30 hover:border-morandi-lavender/60 transition-colors duration-300"
@@ -429,6 +507,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                   </motion.button>
                 </motion.div>
               )}
+
 
               {/* Initial reading — full width */}
               {step === "reading" && (

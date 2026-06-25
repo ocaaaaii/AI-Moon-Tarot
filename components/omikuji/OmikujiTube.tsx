@@ -191,7 +191,7 @@ export default function OmikujiTube({
         whileTap={isIdle ? { scale: 0.96 } : {}}
         className="px-7 py-2 rounded-full border border-morandi-lavender/50 bg-morandi-mauve/20 text-cream-100 text-sm tracking-widest hover:bg-morandi-mauve/35 transition-colors duration-300 disabled:opacity-50 disabled:cursor-wait"
       >
-        {phase === "idle" ? "🙏 搖籤筒" : phase === "shaking" ? "搖晃中…" : "籤已出"}
+        {phase === "idle" ? "搖籤筒" : phase === "shaking" ? "搖晃中…" : "籤已出"}
       </motion.button>
     </div>
   );

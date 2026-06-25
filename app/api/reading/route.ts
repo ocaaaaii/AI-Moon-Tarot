@@ -85,6 +85,8 @@ function validateRequest(body: unknown): ReadingRequest {
     throw new Error("`avatarId` must be a string if provided");
   }
 
+  const firstImpression = typeof req.firstImpression === "string" ? req.firstImpression.trim() : undefined;
+
   return {
     question: req.question.trim(),
     cards: (req.cards as Array<{ id: number; reversed?: boolean }>).map((c) => ({
@@ -93,6 +95,7 @@ function validateRequest(body: unknown): ReadingRequest {
     })),
     history,
     avatarId: req.avatarId as string | undefined,
+    firstImpression: firstImpression || undefined,
   };
 }
 
@@ -129,7 +132,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   let userMessage: string;
   try {
     const cards = loadCards(request.cards);
-    userMessage = buildUserMessage(request.question, cards);
+    userMessage = buildUserMessage(request.question, cards, request.firstImpression);
   } catch (err) {
     const error: ApiError = {
       error: "Failed to load card data",

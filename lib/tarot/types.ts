@@ -32,6 +32,9 @@ export interface ReadingRequest {
   /** Which tarot master is reading (see lib/tarot/avatars.ts). Omit to
    * fall back to the default free persona — keeps older clients working. */
   avatarId?: string;
+  /** Optional: the user's first impression / image that flashed when the card appeared.
+   * Collected by the pre-reading question step in ChatInterface. */
+  firstImpression?: string;
 }
 
 // ─── Card Data ────────────────────────────────────────────────────────────────

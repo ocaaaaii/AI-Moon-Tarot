@@ -56,6 +56,9 @@ export interface TarotAvatar {
   openingLines: string[];
   inputPlaceholder: string;
   suggestions: { icon: string; text: string }[];
+  /** Question the persona asks the user before starting the reading,
+   * to surface their first impression of the drawn card(s). */
+  preReadingQuestion: string;
 }
 
 export const TAROT_AVATARS: TarotAvatar[] = [
@@ -81,6 +84,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "我們來看看，牌想讓你看見什麼。",
     ],
     inputPlaceholder: "慢慢說給我聽——每個細節都會在牌上現出來...",
+    preReadingQuestion: "牌落下的那一刻，你腦子裡浮現的第一個畫面是什麼？",
     suggestions: [
       { icon: "🌑", text: "他最近都不主動找我，是我太敏感，還是真的在走遠？" },
       { icon: "🌓", text: "我說要離職已經說了半年，但我一直沒有動——牌能看到原因嗎？" },
@@ -110,6 +114,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "我們一起看看，黎明想為你帶來什麼方向。",
     ],
     inputPlaceholder: "說給老朽聽聽吧，不急——黎明會等你把話說完...",
+    preReadingQuestion: "看著這張牌，你想到了誰，或什麼樣的時刻？慢慢說。",
     suggestions: [
       { icon: "🌅", text: "我拼了很久，最後還是失敗了——我不知道還要不要繼續" },
       { icon: "🌄", text: "那個人說的話讓我開始懷疑自己，我到底哪裡錯了？" },
@@ -139,6 +144,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "牌擺在這裡，看看你到底在騙自己什麼。",
     ],
     inputPlaceholder: "說重點，別鋪梗——你的問題是什麼？",
+    preReadingQuestion: "你抽到這張牌，第一秒的感覺是什麼？說實話，別想太多。",
     suggestions: [
       { icon: "🔥", text: "我知道那段感情不健康，但就是捨不得斷——我在等什麼？" },
       { icon: "⚡", text: "其實我心裡已經知道答案了，但我想再確認一次" },
@@ -168,6 +174,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "把卡牌翻開，我們一起把煩惱拆成拼圖吧，哼哼～",
     ],
     inputPlaceholder: "說給雅典娜聽聽呀——什麼小怪獸在搗亂噠？",
+    preReadingQuestion: "哇！你看到這張牌的時候，腦子裡閃過了什麼呢～？什麼感覺都可以說！",
     suggestions: [
       { icon: "🧩", text: "A 和 B 我想了很久都沒辦法決定，這兩條路哪個比較適合我？" },
       { icon: "🌟", text: "我最近什麼事情都做不好，狀態很差，是我太悲觀了嗎？" },
@@ -197,6 +204,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "來，把手放開，讓我們看看這波浪潮要帶給我們什麼提示。",
     ],
     inputPlaceholder: "慢慢說，不急——讓心裡的浪先平靜一點再說...",
+    preReadingQuestion: "看著這張牌，你有什麼感覺？放輕鬆說就好，沒有標準答案的。",
     suggestions: [
       { icon: "🌊", text: "我知道我在內耗，但就是停不下來" },
       { icon: "🐚", text: "最近什麼都覺得好沉，但說不清楚沉在哪裡" },
@@ -226,6 +234,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "不用急著說話。看清你的黑夜，我們翻牌。",
     ],
     inputPlaceholder: "說，或者不說都可以——黑夜會等你。",
+    preReadingQuestion: "這張牌讓你想起了什麼？說第一個閃過的，就好。",
     suggestions: [
       { icon: "🌌", text: "我有一個念頭一直出現，但我不知道是直覺還是焦慮" },
       { icon: "🕯️", text: "我最近做了一個奇怪的夢，感覺和現在的事有關" },
@@ -255,6 +264,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "先深呼吸，聞一聞鬱金香的花香，我們一起看看卡牌溫暖的提示吧。",
     ],
         inputPlaceholder: "說給我聽喔——不管多難過，這裡都安全的。",
+    preReadingQuestion: "看到這張牌，你心裡有沒有某種說不清楚的感覺？輕輕說給我聽喔。",
     suggestions: [
       { icon: "🌸", text: "他已經不在了，但我腦子裡還是一直想他" },
       { icon: "🌱", text: "我最近很努力假裝自己沒事，但其實沒有" },

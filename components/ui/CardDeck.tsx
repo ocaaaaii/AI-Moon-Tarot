@@ -62,16 +62,23 @@ export default function CardDeck({ spreadCount, onComplete }: CardDeckProps) {
     <div className="flex flex-col gap-4 w-full">
       {/* Counter */}
       <div className="text-center">
-        <motion.span
-          key={remaining}
+        <motion.div
+          key={drawn.length}
           initial={{ opacity: 0, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="text-4xl font-light text-cream-100 block"
+          className="flex items-baseline justify-center gap-1"
         >
-          {remaining}
-        </motion.span>
-        <p className="text-morandi-stone text-sm mt-1">張待抽取</p>
+          <span className="text-4xl font-light text-cream-100">
+            {drawn.length < spreadCount ? drawn.length + 1 : spreadCount}
+          </span>
+          <span className="text-morandi-stone/60 text-lg font-light">
+            / {spreadCount}
+          </span>
+        </motion.div>
+        <p className="text-morandi-stone text-sm mt-1">
+          {drawn.length < spreadCount ? `第 ${drawn.length + 1} 張` : "抽牌完成"}
+        </p>
       </div>
 
       {/* Scrollable deck */}

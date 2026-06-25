@@ -1,5 +1,5 @@
 /**
- * 神樂祈織 (Iori)'s 智慧花園 ritual prompt — Sacred Realms region (see
+ * 神樂祈織 (Iori)'s 智慧花園 ritual prompt，Sacred Realms region (see
  * CLAUDE.md 🔮 Future Vision). A focused, single-turn variant distinct
  * from lib/omikuji/ioriPrompt.ts's full omikuji-reading persona.
  *
@@ -9,7 +9,7 @@
  * showing the raw text as one block if the delimiter is missing.
  *
  * No omikuji is drawn here, so the CLAUDE.md scoped exception doesn't
- * apply — same agency-affirming, no-fatalism standard as everywhere else.
+ * apply，same agency-affirming, no-fatalism standard as everywhere else.
  */
 export const SANDBOX_SYSTEM_PROMPT = `你是神樂祈織，月神神社「智慧花園」的天才小巫女。使用者剛剛丟出一個二選一的難題。
 

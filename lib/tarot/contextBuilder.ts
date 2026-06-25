@@ -89,12 +89,22 @@ export function buildReadingContext(cards: CardContext[]): string {
  */
 export function buildUserMessage(
   question: string,
-  cards: CardContext[]
+  cards: CardContext[],
+  firstImpression?: string
 ): string {
   const cardContext = buildReadingContext(cards);
   const cardNames = cards
     .map((c) => `【${c.displayName}${c.isReversed ? "（逆）" : ""}】`)
     .join("、");
+
+  const impression = firstImpression?.trim();
+  const impressionBlock = impression
+    ? `
+
+【使用者在看見這張牌的瞬間——他說】
+「${impression}」
+請在解讀中自然地回應或融入這個第一感受，讓他感覺到你真的在聽。`
+    : "";
 
   return `使用者問題：「${question}」
 
@@ -104,5 +114,5 @@ export function buildUserMessage(
 
 ${cardContext}
 
-用你自己的風格解牌，不要照搬牌卡資料的文字，也不要照抄任何特定的章節標題格式——請依照你自己的人設與解牌流程來組織回覆。`;
+用你自己的風格解牌，不要照搬牌卡資料的文字，也不要照抄任何特定的章節標題格式——請依照你自己的人設與解牌流程來組織回覆。${impressionBlock}`;
 }
