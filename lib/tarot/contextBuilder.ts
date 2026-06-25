@@ -26,9 +26,12 @@ function formatList(items: string[]): string {
 export function buildCardContext(
   card: CardContext,
   position = 0,
-  total = 1
+  total = 1,
+  customPositions?: string[]
 ): string {
-  const posLabel = SPREAD_LABELS[total]?.[position] ?? `第 ${position + 1} 張`;
+  const posLabel = customPositions?.[position]
+    ? `第 ${position + 1} 張（${customPositions[position]}）`
+    : (SPREAD_LABELS[total]?.[position] ?? `第 ${position + 1} 張`);
   const header = [
     "===",
     posLabel ? `${posLabel} ` : "",
@@ -78,9 +81,9 @@ export function buildCardContext(
 /**
  * Build the full context block for a multi-card reading.
  */
-export function buildReadingContext(cards: CardContext[]): string {
+export function buildReadingContext(cards: CardContext[], customPositions?: string[]): string {
   return cards
-    .map((card, i) => buildCardContext(card, i, cards.length))
+    .map((card, i) => buildCardContext(card, i, cards.length, customPositions))
     .join("\n\n");
 }
 
@@ -90,9 +93,10 @@ export function buildReadingContext(cards: CardContext[]): string {
 export function buildUserMessage(
   question: string,
   cards: CardContext[],
-  firstImpression?: string
+  firstImpression?: string,
+  spreadPositions?: string[]
 ): string {
-  const cardContext = buildReadingContext(cards);
+  const cardContext = buildReadingContext(cards, spreadPositions);
   const cardNames = cards
     .map((c) => `【${c.displayName}${c.isReversed ? "（逆）" : ""}】`)
     .join("、");

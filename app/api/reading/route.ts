@@ -86,6 +86,9 @@ function validateRequest(body: unknown): ReadingRequest {
   }
 
   const firstImpression = typeof req.firstImpression === "string" ? req.firstImpression.trim() : undefined;
+  const spreadPositions = Array.isArray(req.spreadPositions)
+    ? (req.spreadPositions as unknown[]).filter((p): p is string => typeof p === "string")
+    : undefined;
 
   return {
     question: req.question.trim(),
@@ -96,6 +99,7 @@ function validateRequest(body: unknown): ReadingRequest {
     history,
     avatarId: req.avatarId as string | undefined,
     firstImpression: firstImpression || undefined,
+    spreadPositions: spreadPositions?.length ? spreadPositions : undefined,
   };
 }
 
@@ -132,7 +136,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   let userMessage: string;
   try {
     const cards = loadCards(request.cards);
-    userMessage = buildUserMessage(request.question, cards, request.firstImpression);
+    userMessage = buildUserMessage(request.question, cards, request.firstImpression, request.spreadPositions);
   } catch (err) {
     const error: ApiError = {
       error: "Failed to load card data",
@@ -179,13 +183,10 @@ export async function POST(req: NextRequest): Promise<Response> {
 }
 
 // Handle preflight
+
 export async function OPTIONS(): Promise<Response> {
   return new Response(null, {
     status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
+    headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" },
   });
 }

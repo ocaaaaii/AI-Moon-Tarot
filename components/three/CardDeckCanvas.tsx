@@ -16,6 +16,8 @@ import CardFanScene, { SPREAD_COUNT, SPACING } from "./CardFanScene";
 interface CardDeckCanvasProps {
   spreadCount: 1 | 2 | 3;
   onComplete: (cards: CardRequest[]) => void;
+  /** Position labels for the spread (e.g. ["過去","現在","未來"]) */
+  spreadPositions?: string[];
 }
 
 const CANVAS_HEIGHT = 400;
@@ -24,9 +26,10 @@ const VISIBLE_WORLD_WIDTH = 3.6;
 const TOTAL_WORLD_WIDTH   = SPREAD_COUNT * SPACING;
 const MAX_PAN = Math.max(0, (TOTAL_WORLD_WIDTH - VISIBLE_WORLD_WIDTH) / 2);
 
-export default function CardDeckCanvas({ spreadCount, onComplete }: CardDeckCanvasProps) {
-  const [panX,      setPanX]      = useState(MAX_PAN);
-  const [scrollPct, setScrollPct] = useState(0);
+export default function CardDeckCanvas({ spreadCount, onComplete, spreadPositions }: CardDeckCanvasProps) {
+  const [panX,       setPanX]       = useState(MAX_PAN);
+  const [scrollPct,  setScrollPct]  = useState(0);
+  const [drawnCount, setDrawnCount] = useState(0);
   const scrollRef  = useRef<HTMLDivElement>(null);
   const trackRef   = useRef<HTMLDivElement>(null);
   const dragging   = useRef(false);
@@ -69,8 +72,32 @@ export default function CardDeckCanvas({ spreadCount, onComplete }: CardDeckCanv
   const thumbPct  = Math.max(8, Math.min(60, (VISIBLE_WORLD_WIDTH / TOTAL_WORLD_WIDTH) * 100));
   const thumbLeft = scrollPct * (100 - thumbPct);
 
+  const nextPosition = spreadPositions?.[drawnCount] ?? null;
+
   return (
     <div style={{ width: "100%" }}>
+      {/* Progress counter */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+          <span style={{ fontSize: 28, fontWeight: 300, color: "rgba(240,230,255,0.95)", lineHeight: 1 }}>
+            {drawnCount < spreadCount ? drawnCount + 1 : spreadCount}
+          </span>
+          <span style={{ fontSize: 14, color: "rgba(166,153,185,0.55)", fontWeight: 300 }}>
+            / {spreadCount}
+          </span>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <span style={{ fontSize: 11, color: "rgba(166,153,185,0.7)", letterSpacing: "0.08em" }}>
+            {drawnCount < spreadCount ? `第 ${drawnCount + 1} 張` : "抽牌完成"}
+          </span>
+          {nextPosition && drawnCount < spreadCount && (
+            <span style={{ fontSize: 11, color: "rgba(212,168,89,0.7)", letterSpacing: "0.06em" }}>
+              {nextPosition}
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* 3D canvas */}
       <div style={{ width: "100%", height: CANVAS_HEIGHT, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(184,168,200,0.08)" }}>
         <Canvas
@@ -80,7 +107,12 @@ export default function CardDeckCanvas({ spreadCount, onComplete }: CardDeckCanv
           dpr={[1, 2]}
           style={{ background: "transparent" }}
         >
-          <CardFanScene spreadCount={spreadCount} onComplete={onComplete} panX={panX} />
+          <CardFanScene
+            spreadCount={spreadCount}
+            onComplete={onComplete}
+            onCardDrawn={setDrawnCount}
+            panX={panX}
+          />
         </Canvas>
       </div>
 

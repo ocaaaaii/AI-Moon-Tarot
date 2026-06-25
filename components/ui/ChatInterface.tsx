@@ -36,9 +36,12 @@ interface FollowUpRound {
 }
 
 const SPREAD_OPTIONS = [
-  { count: 1 as const, label: "單張牌", sub: "聚焦當下" },
-  { count: 2 as const, label: "雙張牌", sub: "過去 · 現在" },
-  { count: 3 as const, label: "三張牌", sub: "過去 · 現在 · 未來" },
+  { count: 1 as const, label: "單張指引", sub: "當下最需要的訊息", positions: ["當下訊息"] },
+  { count: 2 as const, label: "時間軸", sub: "過去 · 現在", positions: ["過去", "現在"] },
+  { count: 2 as const, label: "選擇牌陣", sub: "選項 A · 選項 B", positions: ["選項 A", "選項 B"] },
+  { count: 3 as const, label: "過去現在未來", sub: "過去 · 現在 · 未來", positions: ["過去", "現在", "未來"] },
+  { count: 3 as const, label: "情況挑戰建議", sub: "情況 · 挑戰 · 建議", positions: ["情況", "挑戰", "建議"] },
+  { count: 3 as const, label: "心身靈", sub: "心 · 身 · 靈", positions: ["心", "身", "靈"] },
 ];
 
 const slideUp = {
@@ -65,6 +68,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   const [step, setStep] = useState<Step>("idle");
   const [question, setQuestion] = useState("");
   const [spreadCount, setSpreadCount] = useState<1 | 2 | 3>(3);
+  const [spreadPositions, setSpreadPositions] = useState<string[]>([]);
   const [drawnCards, setDrawnCards] = useState<CardRequest[]>([]);
   const [cardMeta, setCardMeta] = useState<Record<number, CardMeta>>({});
   const [metaReady, setMetaReady] = useState(false);
@@ -145,7 +149,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
       const res = await fetch("/api/reading", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, cards: drawnCards, avatarId: avatar.id }),
+        body: JSON.stringify({ question, cards: drawnCards, avatarId: avatar.id, spreadPositions }),
         signal: abortRef.current.signal,
       });
 
@@ -434,19 +438,19 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
               <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
                 <p className="text-cream-200/80 text-sm mb-4">選一個牌陣吧</p>
                 <div className="flex gap-2 flex-wrap">
-                  {SPREAD_OPTIONS.map(({ count, label, sub }, i) => (
+                  {SPREAD_OPTIONS.map((option, i) => (
                     <motion.button
-                      key={count}
+                      key={`${option.count}-${option.label}`}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.08, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => { setSpreadCount(count); setStep("deck"); }}
+                      onClick={() => { setSpreadCount(option.count); setSpreadPositions(option.positions); setStep("deck"); }}
                       className="flex flex-col items-center px-5 py-3 rounded-xl border border-morandi-lavender/25 hover:border-morandi-lavender/60 hover:bg-morandi-mauve/20 text-sm transition-colors duration-200"
                     >
-                      <span className="text-cream-200/90">{label}</span>
-                      <span className="text-morandi-stone/60 text-xs mt-0.5">{sub}</span>
+                      <span className="text-cream-200/90">{option.label}</span>
+                      <span className="text-morandi-stone/60 text-xs mt-0.5">{option.sub}</span>
                     </motion.button>
                   ))}
                 </div>
@@ -466,7 +470,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                 <p className="text-morandi-stone/40 text-[11px] mb-4 tracking-wider">
                   hover 查看 · 點擊抽取
                 </p>
-                <CardDeckCanvas spreadCount={spreadCount} onComplete={handleCardsDrawn} />
+                <CardDeckCanvas spreadCount={spreadCount} onComplete={handleCardsDrawn} spreadPositions={spreadPositions} />
               </AssistantBlock>
             </motion.div>
           )}

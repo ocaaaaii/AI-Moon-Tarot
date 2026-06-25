@@ -35,6 +35,9 @@ export interface ReadingRequest {
   /** Optional: the user's first impression / image that flashed when the card appeared.
    * Collected by the pre-reading question step in ChatInterface. */
   firstImpression?: string;
+  /** Named position labels for the spread, e.g. ["過去","現在","未來"].
+   * When present, contextBuilder uses these instead of the default generic labels. */
+  spreadPositions?: string[];
 }
 
 // ─── Card Data ────────────────────────────────────────────────────────────────
@@ -94,7 +97,7 @@ export interface StreamDone {
 
 export type StreamEvent = StreamChunk | StreamDone;
 
-// ─── Errors ───────────────────────────────────────────────────────────────────
+// ─── Errors ────────────────────────�
 
 export interface ApiError {
   error: string;

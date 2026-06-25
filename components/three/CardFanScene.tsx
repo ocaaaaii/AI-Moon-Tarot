@@ -130,13 +130,15 @@ interface CardFanSceneProps {
    * NOT the number of cards laid out, which is always the full SPREAD_COUNT */
   spreadCount: number;
   onComplete: (cards: CardRequest[]) => void;
+  /** fires after each individual card draw with the new drawn count */
+  onCardDrawn?: (count: number) => void;
   /** world-space X offset for the whole row, driven by CardDeckCanvas's
    * scroll proxy so the camera can stay fixed (no FOV distortion) while
    * still letting the user pan across all 78 cards */
   panX?: number;
 }
 
-export default function CardFanScene({ spreadCount, onComplete, panX = 0 }: CardFanSceneProps) {
+export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, panX = 0 }: CardFanSceneProps) {
   const texture = useMemo(() => makeCardBackTexture(), []);
   // Deps are intentionally [] — this closes over whatever `panX` is on the
   // very first render (CardDeckCanvas's initial pan, framing the row's
@@ -168,6 +170,7 @@ export default function CardFanScene({ spreadCount, onComplete, panX = 0 }: Card
         setDrawingId(null);
         setDrawn((prev) => {
           const next = [...prev, { id, reversed }];
+          onCardDrawn?.(next.length);
           if (next.length >= spreadCount) {
             setTimeout(() => onComplete(next), 200);
           }
