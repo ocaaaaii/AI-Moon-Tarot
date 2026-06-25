@@ -20,7 +20,7 @@ export const STORY2_TSUKINO: Story = {
     {
       image: "/assets/Stories/Story2/Tsukino/01.jpg",
       act: "第七章：天城月乃 🌙 Cynthia (辛西亞)——《命運之輪與星星：順應天時的佛系神啟》",
-      text: "紫金色奢華的占卜帳篷中，滿月高懸。月乃癱在沙發上撥弄著塔羅牌，慵懶地抱怨：「當神明代理人好累喔，每天看運勢流年，我都快長黑眼圈了……」",
+      text: "紫金色奢華的占卜帳篷中，滿月高懸。月乃癱在沙發上撥弄著塔羅牌，瞇著眼抱怨：「當神明代理人好累喔，每天看運勢流年，我都快長黑眼圈了……」",
       glowRGB: MOON_SILVER,
     },
     {
