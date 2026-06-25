@@ -99,7 +99,7 @@ export default function AvatarSelector({
 
         <div className="absolute bottom-0 inset-x-0 p-2 sm:p-3">
           <p className="text-cream-100 text-xs sm:text-sm font-medium truncate">{avatar.displayName}</p>
-          <p className="text-cream-300/50 text-[9px] sm:text-[10px] mt-0.5 leading-relaxed line-clamp-2">{avatar.tagline}</p>
+          <p className="text-cream-200/70 text-[10px] sm:text-xs mt-0.5 leading-relaxed line-clamp-2">{avatar.tagline}</p>
         </div>
       </motion.button>
     );
@@ -158,12 +158,12 @@ export default function AvatarSelector({
             style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
           >
             <p className="text-cream-100 text-sm font-medium">{selected.displayName}</p>
-            <p className="text-morandi-stone/55 text-[11px]">{selected.tagline}</p>
+            <p className="text-cream-200/65 text-xs">{selected.tagline}</p>
             {selected.bestFor && (
-              <p className="text-amber-200/70 text-[11px] tracking-wide">✦ 擅長：{selected.bestFor}</p>
+              <p className="text-amber-200/85 text-xs tracking-wide">✦ 擅長：{selected.bestFor}</p>
             )}
             {selected.bioLines && selected.bioLines.length > 0 && (
-              <p className="text-cream-200/55 text-xs leading-relaxed mt-1">{selected.bioLines[0]}</p>
+              <p className="text-cream-200/70 text-xs leading-relaxed mt-1">{selected.bioLines[0]}</p>
             )}
           </motion.div>
         )}

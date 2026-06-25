@@ -8,12 +8,7 @@ import { motion, AnimatePresence } from "motion/react";
 import PortalTour from "@/components/ui/PortalTour";
 import FullscreenButton from "@/components/ui/FullscreenButton";
 import DeveloperBubble from "@/components/ui/DeveloperBubble";
-
-/**
- * Portal — the entry point. Two doors, two personas, one world left
- * deliberately unexplained: the shared identity behind Cynthia and 月乃 is
- * never stated here. The visitor simply chooses where to look inward.
- */
+import TokenDisplay from "@/components/ui/TokenDisplay";
 
 interface Door {
   href: string;
@@ -49,6 +44,7 @@ const DOORS: Door[] = [
 
 export default function PortalPage() {
   const [showTour, setShowTour] = useState(false);
+  const [showTokenInfo, setShowTokenInfo] = useState(false);
 
   return (
     <main
@@ -82,6 +78,54 @@ export default function PortalPage() {
         <p className="text-morandi-stone/45 text-sm mt-3">
           這裡是讓你向內尋找答案的地方
         </p>
+
+        {/* 曜刻 balance + info */}
+        <motion.div
+          className="mt-4 flex flex-col items-center gap-1"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
+        >
+          <button
+            onClick={() => setShowTokenInfo(v => !v)}
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-300/20 bg-black/20 hover:border-amber-300/40 hover:bg-black/30 transition-colors duration-200"
+            aria-label="曜刻說明"
+          >
+            <TokenDisplay />
+            <span className="text-amber-300/50 text-[10px] tracking-widest ml-0.5">?</span>
+          </button>
+
+          <AnimatePresence>
+            {showTokenInfo && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="mt-1 max-w-xs rounded-2xl px-5 py-4 text-center"
+                style={{
+                  background: "rgba(22,14,8,0.92)",
+                  border: "1px solid rgba(212,168,89,0.18)",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                <p className="text-amber-300/95 text-sm tracking-widest mb-3">✶ 曜刻 ✶</p>
+                <p className="text-cream-100/90 text-sm leading-relaxed" style={{ letterSpacing: "0.06em" }}>
+                  星體交會、命運閃耀的瞬間。<br />
+                  在月之神社的世界裡，時間不是流逝的，<br />
+                  而是凝聚成一枚枚散發微光的金色星芒，<br />
+                  用來與神明、命運交換指引。
+                </p>
+                <div className="mt-3 pt-3 flex flex-col gap-1" style={{ borderTop: "1px solid rgba(212,168,89,0.12)" }}>
+                  <p className="text-amber-300/90 text-sm tracking-wide">每日 00:00 補充 +15 曜刻</p>
+                  <p className="text-cream-200/65 text-xs">塔羅占卜 / 神社抽籤 各 −1 曜刻</p>
+                  <p className="text-cream-200/45 text-xs">未用完自動累積</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
         <motion.button
           onClick={() => setShowTour(true)}
           initial={{ opacity: 0, y: 8 }}

@@ -54,7 +54,7 @@ export default function TarotRitual({ quickMode, onComplete, onInsufficient, spe
     // Phase 0 → Phase 1 after 1.9 s
     const t1 = setTimeout(() => setPhase(1), 1900);
     // Phase 1 → complete after additional 1.7 s
-    const t2 = setTimeout(onComplete, 1900 + 1700);
+    const t2 = setTimeout(onComplete, 1900 + 2000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

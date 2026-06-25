@@ -162,7 +162,7 @@ export default function AvatarProfile({
           >
             {avatar.displayName}
           </h2>
-          <p className="text-cream-300/50 text-[11px] tracking-widest mt-1.5 font-light">
+          <p className="text-cream-200/70 text-xs tracking-widest mt-1.5 font-light">
             {avatar.tagline}
           </p>
           {avatar.bestFor && (
@@ -176,7 +176,7 @@ export default function AvatarProfile({
       {/* ── Description ── */}
       <div className="px-6 pt-4 pb-5 flex flex-col gap-4">
         <motion.p
-          className="text-cream-200/55 text-xs leading-[1.9] font-light text-center"
+          className="text-cream-200/72 text-xs leading-[1.9] font-light text-center"
           {...fadeUp(0.65)}
         >
           {avatar.bioLines.map((line, i) => (
@@ -209,7 +209,7 @@ export default function AvatarProfile({
               transition={{ delay: 0.85 + i * 0.1, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
               <span className="text-sm opacity-55">{icon}</span>
-              <span className="text-morandi-stone/55 text-xs">{label}</span>
+              <span className="text-cream-200/65 text-xs">{label}</span>
             </motion.div>
           ))}
         </div>
@@ -217,7 +217,7 @@ export default function AvatarProfile({
         {/* The hidden-identity reveal — only some avatars have one */}
         {avatar.revealTemplate && (
           <motion.div className="pt-1" {...fadeUp(1.05)}>
-            <p className="text-morandi-stone/40 text-[11px] leading-relaxed text-center">
+            <p className="text-cream-200/60 text-[11px] leading-relaxed text-center">
               {avatar.revealTemplate.prefix}
               <span className={c.revealHighlight}>{avatar.displayName}</span>
               {avatar.revealTemplate.suffix}
@@ -226,7 +226,7 @@ export default function AvatarProfile({
         )}
 
         <motion.div className="pt-1" {...fadeUp(1.2)}>
-          <p className="text-morandi-stone/22 text-[11px] italic text-center leading-relaxed">
+          <p className="text-morandi-stone/45 text-[11px] italic text-center leading-relaxed">
             「{avatar.quoteLines.map((line, i) => (
               <span key={i}>
                 {line}

@@ -23,7 +23,7 @@ export default function ShrinePage() {
   const [shrineRitualDone, setShrineRitualDone] = useState(false);
   const [showInsufficient, setShowInsufficient] = useState(false);
   const { spend, canAfford } = useTokens();
-  const { quickMode } = useQuickMode();
+  const { quickMode, toggleQuickMode } = useQuickMode();
   const avatar = confirmedId ? getOmikujiAvatar(confirmedId) : null;
   const previewAvatar = previewId ? getOmikujiAvatar(previewId) : null;
   const profileAvatar = avatar ?? previewAvatar;
@@ -104,6 +104,26 @@ export default function ShrinePage() {
         )}
       </button>
 
+      {/* Quick mode toggle */}
+      <div className="flex fixed top-4 right-14 z-20 items-center gap-1.5">
+        {quickMode && (
+          <span className="text-amber-400/90 text-[10px] tracking-wide bg-black/50 px-2 py-0.5 rounded-full border border-amber-400/40 backdrop-blur-sm whitespace-nowrap">
+            跳過動畫
+          </span>
+        )}
+        <button
+          onClick={toggleQuickMode}
+          title={quickMode ? "跳過動畫模式已開啟，點擊關閉" : "開發者模式：點擊可跳過儀式動畫"}
+          className={`w-8 h-8 flex items-center justify-center rounded-full border bg-black/35 backdrop-blur-sm transition-colors duration-300 ${
+            quickMode
+              ? "border-amber-400/70 text-amber-400"
+              : "border-white/15 text-cream-200/40 hover:text-cream-100 hover:border-amber-400/40"
+          }`}
+        >
+          ⚡
+        </button>
+      </div>
+
       {/* Brand header — mobile only */}
       <motion.div
         className="relative z-10 md:hidden text-center mb-6"
@@ -169,15 +189,15 @@ export default function ShrinePage() {
                     sizes="36px"
                   />
                 </div>
-                <div className="flex-1">
-                  <p className="text-cream-100 text-sm font-medium tracking-wide">{avatar.displayName}</p>
-                  <p className="text-morandi-stone/45 text-xs">{avatar.tagline}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-cream-100 text-sm font-medium tracking-wide truncate">{avatar.displayName}</p>
+                  <p className="text-morandi-stone/45 text-xs truncate">{avatar.tagline}</p>
                 </div>
                 <TokenDisplay />
                 {avatar.region && (
                   <button
                     onClick={() => setShowRegionRitual(true)}
-                    className="px-3 py-1.5 rounded-full border border-amber-300/25 bg-black/25 text-cream-200/85 hover:text-cream-100 hover:border-amber-300/45 text-[11px] tracking-wide transition-colors duration-200"
+                    className="flex-shrink-0 px-2.5 py-1.5 rounded-full border border-amber-300/25 bg-black/25 text-cream-200/85 hover:text-cream-100 hover:border-amber-300/45 text-[11px] tracking-wide transition-colors duration-200 whitespace-nowrap"
                   >
                     {avatar.region.buttonLabel}
                   </button>
@@ -191,7 +211,7 @@ export default function ShrinePage() {
                 </button>
                 <button
                   onClick={handleChangeAvatar}
-                  className="px-3 py-1.5 rounded-full border border-morandi-stone/25 bg-black/25 text-cream-200/75 hover:text-cream-100 hover:border-amber-300/45 text-[11px] tracking-wide transition-colors duration-200"
+                  className="flex-shrink-0 px-2.5 py-1.5 rounded-full border border-morandi-stone/25 bg-black/25 text-cream-200/75 hover:text-cream-100 hover:border-amber-300/45 text-[11px] tracking-wide transition-colors duration-200 whitespace-nowrap"
                 >
                   換人
                 </button>
@@ -280,7 +300,10 @@ export default function ShrinePage() {
         )}
       </AnimatePresence>
       {/* Insufficient balance modal */}
-      <TokenInsufficient open={showInsufficient} onClose={() => setShowInsufficient(false)} />
+      <TokenInsufficient
+        open={showInsufficient}
+        onClose={() => setShowInsufficient(false)}
+      />
     </main>
   );
 }

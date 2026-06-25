@@ -63,17 +63,24 @@ export default function TarotPage() {
       </Link>
 
       {/* Quick mode toggle */}
-      <button
-        onClick={toggleQuickMode}
-        title={quickMode ? "快速模式：開（點擊關閉）" : "點擊開啟快速模式（跳過儀式動畫）"}
-        className={`hidden md:flex fixed top-4 right-14 z-20 w-8 h-8 items-center justify-center rounded-full border bg-black/35 backdrop-blur-sm transition-colors duration-300 ${
-          quickMode
-            ? "border-amber-400/55 text-amber-400/90"
-            : "border-morandi-lavender/25 text-cream-200/60 hover:text-cream-100 hover:border-amber-400/50"
-        }`}
-      >
-        ⚡
-      </button>
+      <div className="flex fixed top-4 right-14 z-20 items-center gap-1.5">
+        {quickMode && (
+          <span className="text-amber-400/90 text-[10px] tracking-wide bg-black/50 px-2 py-0.5 rounded-full border border-amber-400/40 backdrop-blur-sm whitespace-nowrap">
+            跳過動畫
+          </span>
+        )}
+        <button
+          onClick={toggleQuickMode}
+          title={quickMode ? "跳過動畫模式已開啟，點擊關閉" : "開發者模式：點擊可跳過儀式動畫"}
+          className={`w-8 h-8 flex items-center justify-center rounded-full border bg-black/35 backdrop-blur-sm transition-colors duration-300 ${
+            quickMode
+              ? "border-amber-400/70 text-amber-400"
+              : "border-white/15 text-cream-200/40 hover:text-cream-100 hover:border-amber-400/40"
+          }`}
+        >
+          ⚡
+        </button>
+      </div>
 
       {/* Fullscreen toggle */}
       <button
