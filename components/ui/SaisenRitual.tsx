@@ -51,8 +51,8 @@ export default function SaisenRitual({ quickMode, onComplete, onInsufficient, sp
       return () => clearTimeout(t);
     }
 
-    const t1 = setTimeout(() => setPhase(1), 2000);
-    const t2 = setTimeout(onComplete, 2000 + 2000);
+    const t1 = setTimeout(() => setPhase(1), 2500);
+    const t2 = setTimeout(onComplete, 2500 + 3500);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
