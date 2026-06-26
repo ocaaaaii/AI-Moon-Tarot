@@ -54,7 +54,7 @@ export default function QuestionRefine({
         </div>
         <div className="flex flex-col gap-2">
           <p className="text-cream-200 text-sm leading-relaxed font-medium">
-            在抜牌之前，讓我幫你把這個問題說得更準確一點。
+            在抽牌之前，讓我幫你把這個問題說得更準確一點。
           </p>
           <p className="text-morandi-stone/65 text-xs leading-relaxed">
             問題越具體，牌就越能直擊你的狀況。
@@ -142,7 +142,7 @@ export default function QuestionRefine({
                   border: "1px solid rgba(184,168,200,0.45)",
                 }}
               >
-                用這個問題抜牌
+                用這個問題抽牌
               </button>
               <button
                 onClick={() => setCustomMode(false)}
