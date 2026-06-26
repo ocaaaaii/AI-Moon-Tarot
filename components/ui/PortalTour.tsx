@@ -49,16 +49,16 @@ const SHOP_SLIDES: Slide[] = [
     body: "穿過鳥居往裡走，是月神神社。七位解籤師各自守著一方天地，用籤詩回應每個深夜捎來的心事。神社深處還藏著六座聖域，各有儀式等你。",
   },
   {
-    image: "/assets/眾神之庭.jpg",
+    image: "/assets/眾神之庭導覽.jpg",
     kicker: "週神諭 · Pick-a-Card",
     title: "眾神之庭",
     body: "星象流轉，神諭低語。在眾神之庭翻開你的本週神諭——Pick-a-Card，讓這一週的宇宙訊息悄悄落在你掌心。",
   },
   {
-    image: "/assets/Stories/封面.jpg",
+    image: "/assets/月神天啟.jpg",
     kicker: "神明的日常故事",
     title: "月神天啟",
-    body: "七位神明的日常切片，用圖文劇場的方式靜靜講完。翻開下一頁，你會發現，他們跟你一樣，都在努力活著。",
+    body: "角色們的日常切片，用圖文劇場的方式講解給每一位到來的客人。",
   },
 ];
 
