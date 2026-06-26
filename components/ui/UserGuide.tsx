@@ -29,7 +29,7 @@ const STEPS: SpotlightStep[] = [
   {
     icon: "🌙",
     glowColor: "rgba(184,168,200,0.7)",
-    title: "歡迎來到月之神社",
+    title: "歡迎來到 AI MOON TAROT",
     description:
       "這裡有四扇門：塔羅店鋪、月神神社、眾神之庭、月神天啟。每扇門都有七位個性截然不同的靈魂在等你。\n\n封測期間，所有功能完全免費開放，歡迎深入體驗！",
     tip: "封測截止：2026 年 7 月 3 日 · 填完問卷送 CA 一份愛 🙏",
@@ -386,7 +386,7 @@ export default function UserGuide({ onClose }: UserGuideProps) {
         {!useDOMSpotlight && (
           <motion.div
             key={`card-${index}`}
-            className="fixed inset-0 flex items-center justify-center p-4"
+            className="fixed inset-0 flex items-center justify-center p-4 pb-20"
             style={{ zIndex: 55, pointerEvents: "none" }}
           >
             <motion.div
