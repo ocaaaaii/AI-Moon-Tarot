@@ -447,8 +447,65 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
         )}
       </AnimatePresence>
 
+      {/* ── Initial question input bar ── */}
+      <AnimatePresence>
+        {(step === "idle" || step === "typing") && (
+          <motion.div
+            key="question-input"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 border-t border-morandi-lavender/10 bg-black/20 px-4 pt-3 pb-4"
+          >
+            {/* Suggestion chips */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {avatar.suggestions.map((s) => (
+                <button
+                  key={s.text}
+                  onClick={() => { setQuestion(s.text); setStep("typing"); setTimeout(() => inputRef.current?.focus(), 50); }}
+                  className="flex items-center gap-1 px-3 py-1 rounded-full border border-morandi-lavender/20 bg-morandi-mauve/10 text-morandi-stone/70 text-xs tracking-wide hover:bg-morandi-mauve/20 hover:text-cream-200/80 transition-colors duration-200"
+                >
+                  <span>{s.icon}</span>
+                  <span>{s.text}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Textarea + send */}
+            <div className="relative rounded-2xl border border-morandi-lavender/20 bg-mystic-purple/10 focus-within:border-morandi-lavender/40 transition-colors">
+              <textarea
+                ref={inputRef}
+                value={question}
+                onChange={(e) => { setQuestion(e.target.value); setStep(e.target.value ? "typing" : "idle"); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmitQuestion();
+                  }
+                }}
+                placeholder={avatar.inputPlaceholder}
+                rows={2}
+                maxLength={300}
+                className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/35 text-sm p-3 pr-12 resize-none focus:outline-none leading-relaxed"
+              />
+              <motion.button
+                onClick={handleSubmitQuestion}
+                disabled={question.trim().length < 2}
+                whileHover={question.trim().length >= 2 ? { scale: 1.08 } : {}}
+                whileTap={question.trim().length >= 2 ? { scale: 0.94 } : {}}
+                className="absolute right-2.5 bottom-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-30"
+                style={{ background: question.trim().length >= 2 ? "rgba(212,168,89,0.25)" : "rgba(184,168,200,0.1)", border: "1px solid rgba(212,168,89,0.3)" }}
+              >
+                <span className="text-morandi-gold text-sm">↑</span>
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Scrollable message area ── */}
-      <div className="relative z-10 flex-1 overflow-y-auto p-6 flex flex-col gap-5">
+      <div className="relative z-10 flex-1 overflow-y-auto p-6 flex flex-col gap-5" style={{ order: -1 }}>
         {loadError && (
           <p className="text-morandi-rose/70 text-xs">
             無法載入籤詩資料，請確認 /wiki-omikuji 已建立。
@@ -731,6 +788,9 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Scroll anchor — keeps latest content in view */}
+        <div ref={bottomRef} />
       </div>
     </div>
   );

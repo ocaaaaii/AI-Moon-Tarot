@@ -662,7 +662,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
               <UserBubble text={question} />
 
               {/* Cards — centered */}
-              <div className="flex justify-center pb-10">
+              <div className="flex justify-center pb-10" style={{ isolation: "isolate" }}>
                 <DrawnCards key={metaReady ? "ready" : "loading"} cards={drawnCards} cardMeta={cardMeta} positions={spreadPositions} />
               </div>
 
@@ -670,6 +670,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
               {step === "reveal" && (
                 <motion.div
                   className="flex justify-center"
+                  style={{ position: "relative", zIndex: 10 }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.9, duration: 0.4 }}

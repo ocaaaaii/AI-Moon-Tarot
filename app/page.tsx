@@ -292,7 +292,7 @@ export default function PortalPage() {
         © 2026 AI MOON TAROT · All rights reserved.
       </motion.p>
 
-      <DeveloperBubble hidden={showGuide} />
+      <DeveloperBubble hidden={showGuide || showTour} />
     </main>
   );
 }
