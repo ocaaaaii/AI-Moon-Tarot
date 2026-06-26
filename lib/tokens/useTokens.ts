@@ -7,7 +7,7 @@ const KEY_BALANCE    = "tsuki_yokokku_balance";
 const KEY_LAST_GRANT = "tsuki_yokokku_last_grant";
 const KEY_QUICK_MODE = "tsuki_quick_mode";
 
-export const DAILY_AMOUNT  = 20; // v5 launch: 20 per day
+export const DAILY_AMOUNT  = 24; // v5 launch: 24 per day
 export const COST_PER_USE  = 1;  // 1 曜刻 per divination / draw
 
 function todayStr(): string {

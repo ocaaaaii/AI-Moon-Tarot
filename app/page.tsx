@@ -149,7 +149,7 @@ export default function PortalPage() {
                   用來與神明、命運交換指引。
                 </p>
                 <div className="mt-3 pt-3 flex flex-col gap-1" style={{ borderTop: "1px solid rgba(212,168,89,0.12)" }}>
-                  <p className="text-amber-300/90 text-sm tracking-wide">每日 00:00 補充 +20 曜刻</p>
+                  <p className="text-amber-300/90 text-sm tracking-wide">每日 00:00 補充 +24 曜刻</p>
                   <p className="text-cream-200/65 text-xs">塔羅占卜 / 神社抽籤 各 −1 曜刻</p>
                   <p className="text-cream-200/45 text-xs">未用完自動累積</p>
                 </div>
