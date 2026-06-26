@@ -662,14 +662,14 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
               <UserBubble text={question} />
 
               {/* Cards — centered */}
-              <div className="flex justify-center">
+              <div className="flex justify-center pb-10">
                 <DrawnCards key={metaReady ? "ready" : "loading"} cards={drawnCards} cardMeta={cardMeta} positions={spreadPositions} />
               </div>
 
               {/* Begin reading button */}
               {step === "reveal" && (
                 <motion.div
-                  className="mt-2 flex justify-center"
+                  className="flex justify-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.9, duration: 0.4 }}
