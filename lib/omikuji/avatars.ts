@@ -80,7 +80,7 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
     bioLines: ["我不算命，我陪你", "把心裡已經知道的答案，慢慢說出來。"],
     traits: [
       { icon: "🍵", label: "說話慢慢的，像泡開的一壺茶" },
-      { icon: "📜", label: "用最簡單的故事，說懂最複雜的籤詩" },
+      { icon: "📜", label: "最簡單的故事，說懂最複雜的籤詩" },
       { icon: "🌙", label: "把答案，留在你自己心裡" },
     ],
     quoteLines: ["籤詩不是命運的判決", "是月光暫時借你的一面鏡子"],

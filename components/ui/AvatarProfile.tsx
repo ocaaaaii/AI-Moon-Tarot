@@ -166,7 +166,7 @@ export default function AvatarProfile({
             {avatar.tagline}
           </p>
           {avatar.bestFor && (
-            <p className={`${c.revealHighlight} text-[11px] tracking-wide mt-2`}>
+            <p className={`${c.revealHighlight} text-xs tracking-wide mt-2`}>
               ✦ 擅長：{avatar.bestFor}
             </p>
           )}
@@ -176,7 +176,7 @@ export default function AvatarProfile({
       {/* ── Description ── */}
       <div className="px-6 pt-4 pb-5 flex flex-col gap-4">
         <motion.p
-          className="text-cream-200/72 text-xs leading-[1.9] font-light text-center"
+          className="text-cream-200/82 text-[13px] leading-[1.9] font-light text-center"
           {...fadeUp(0.65)}
         >
           {avatar.bioLines.map((line, i) => (
@@ -208,8 +208,8 @@ export default function AvatarProfile({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.85 + i * 0.1, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
-              <span className="text-sm opacity-55">{icon}</span>
-              <span className="text-cream-200/65 text-xs">{label}</span>
+              <span className="text-sm opacity-70">{icon}</span>
+              <span className="text-cream-200/80 text-[13px]">{label}</span>
             </motion.div>
           ))}
         </div>
@@ -217,7 +217,7 @@ export default function AvatarProfile({
         {/* The hidden-identity reveal — only some avatars have one */}
         {avatar.revealTemplate && (
           <motion.div className="pt-1" {...fadeUp(1.05)}>
-            <p className="text-cream-200/60 text-[11px] leading-relaxed text-center">
+            <p className="text-cream-200/72 text-xs leading-relaxed text-center">
               {avatar.revealTemplate.prefix}
               <span className={c.revealHighlight}>{avatar.displayName}</span>
               {avatar.revealTemplate.suffix}
@@ -226,7 +226,7 @@ export default function AvatarProfile({
         )}
 
         <motion.div className="pt-1" {...fadeUp(1.2)}>
-          <p className="text-morandi-stone/45 text-[11px] italic text-center leading-relaxed">
+          <p className="text-cream-200/55 text-xs italic text-center leading-relaxed">
             「{avatar.quoteLines.map((line, i) => (
               <span key={i}>
                 {line}

@@ -240,7 +240,7 @@ export default function TarotPage() {
             <AvatarSelector
               avatars={TAROT_AVATARS}
               heading="選擇你的塔羅師"
-              subheading="每一位都有獨特的解讀風格——先看看她的介紹吧"
+              subheading="每一位都有獨特的解讀風格，先看看祂的介紹吧"
               selectedId={previewId}
               onPick={(id) => setPreviewId(id)}
               onConfirm={(id) => { setConfirmedId(id); setPreviewId(null); }}

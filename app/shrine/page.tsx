@@ -274,7 +274,7 @@ export default function ShrinePage() {
             <AvatarSelector
               avatars={OMIKUJI_AVATARS}
               heading="選擇你的解籤師"
-              subheading="每一位都有不同的靈魂頻率——先感受看看吧"
+              subheading="每一位都有不同的靈魂頻率，先感受看看吧"
               selectedId={previewId}
               onPick={(id) => setPreviewId(id)}
               onConfirm={(id) => { setConfirmedId(id); setPreviewId(null); setShrineRitualDone(false); }}

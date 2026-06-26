@@ -113,7 +113,7 @@ export default function AvatarSelector({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-morandi-stone/45 text-xs tracking-[0.3em] uppercase mb-1">{subheading}</p>
+        <p className="text-cream-200/70 text-xs tracking-[0.2em] mb-1">{subheading}</p>
         <h2 className="font-serif text-xl text-cream-100">{heading}</h2>
       </motion.div>
 

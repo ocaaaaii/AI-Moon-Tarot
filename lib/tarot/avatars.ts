@@ -83,7 +83,7 @@ export const TAROT_AVATARS: TarotAvatar[] = [
       "把你心裡最沉的那個問題說出來——",
       "我們來看看，牌想讓你看見什麼。",
     ],
-    inputPlaceholder: "慢慢說給我聽——每個細節都會在牌上現出來...",
+    inputPlaceholder: "說吧，月亮替你守著秘密…",
     preReadingQuestion: "牌落下的那一刻，你腦子裡浮現的第一個畫面是什麼？",
     suggestions: [
       { icon: "🌑", text: "他最近都不主動找我，是我太敏感，還是真的在走遠？" },
