@@ -14,7 +14,7 @@ import type { CardRequest } from "@/lib/tarot/types";
 import CardFanScene, { SPREAD_COUNT, SPACING } from "./CardFanScene";
 
 interface CardDeckCanvasProps {
-  spreadCount: 1 | 2 | 3;
+  spreadCount: 1 | 2 | 3 | 7;
   onComplete: (cards: CardRequest[]) => void;
   /** Position labels for the spread (e.g. ["過去","現在","未來"]) */
   spreadPositions?: string[];
@@ -171,5 +171,5 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
         .cdeck-proxy::-webkit-scrollbar { display: none; }
       `}</style>
     </div>
-  );
+  )
 }

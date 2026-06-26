@@ -19,6 +19,10 @@ local_image: '/assets/cards/44-swords-three.webp'
 image_url: /wp-content/uploads/tarot/swords-three.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-three/
 scraped_at: '2026-06-18'
+dominant_colors:
+- gray
+- blue
+- white
 ---
 
 # 44 寶劍三 / Three of Swords

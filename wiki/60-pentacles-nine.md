@@ -25,6 +25,10 @@ local_image: '/assets/cards/60-pentacles-nine.webp'
 image_url: /wp-content/uploads/tarot/pentacles-nine.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-nine/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- blue
 ---
 
 # 60 錢幣九 / Nine of Pentacles

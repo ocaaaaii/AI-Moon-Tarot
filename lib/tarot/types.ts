@@ -18,10 +18,12 @@ export interface HistoryMessage {
   content: string;
 }
 
+export type SpreadType = "normal" | "chakra";
+
 export interface ReadingRequest {
   /** The user's question in Traditional Chinese */
   question: string;
-  /** 1–3 card draws */
+  /** 1–7 card draws (up to 7 for chakra spread) */
   cards: CardRequest[];
   /**
    * Optional conversation history for follow-up questions.
@@ -38,6 +40,8 @@ export interface ReadingRequest {
   /** Named position labels for the spread, e.g. ["過去","現在","未來"].
    * When present, contextBuilder uses these instead of the default generic labels. */
   spreadPositions?: string[];
+  /** Spread type — "chakra" allows up to 7 cards from Major Arcana only */
+  spreadType?: SpreadType;
 }
 
 // ─── Card Data ────────────────────────────────────────────────────────────────
@@ -56,6 +60,8 @@ export interface CardFrontmatter {
   image_url: string;
   source_url: string;
   scraped_at: string;
+  /** Dominant colors in the RWS card image, e.g. ["red", "gold", "white"] */
+  dominant_colors?: string[];
 }
 
 export interface CardContext {
@@ -83,23 +89,19 @@ export interface CardContext {
   displayName: string;
   /** e.g. "正位 (Upright)" or "逆位 (Reversed)" */
   positionLabel: string;
+  /** Dominant colors in the RWS card image, e.g. ["red", "gold", "white"] */
+  dominantColors: string[];
 }
 
-// ─── SSE Streaming ────────────────────────────────────────────────────────────
-
-export interface StreamChunk {
-  chunk: string;
-}
-
-export interface StreamDone {
-  done: true;
-}
-
-export type StreamEvent = StreamChunk | StreamDone;
-
-// ─── Errors ────────────────────────�
+// ─── SSE Streaming ──────────────────────────────────
 
 export interface ApiError {
   error: string;
+  code?: string;
   details?: string;
+}
+
+export interface SseChunk {
+  chunk?: string;
+  error?: string;
 }

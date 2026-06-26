@@ -25,6 +25,10 @@ local_image: '/assets/cards/71-court-swords-knight.webp'
 image_url: /wp-content/uploads/tarot/court-swords-knight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-swords-knight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- white
 ---
 
 # 71 寶劍騎士 / Knight of Swords

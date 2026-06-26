@@ -21,6 +21,10 @@ local_image: '/assets/cards/24-wands-three.webp'
 image_url: /wp-content/uploads/tarot/wands-three.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-three/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- green
 ---
 
 # 24 權杖三 / Three of Wands

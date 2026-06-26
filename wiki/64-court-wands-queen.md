@@ -26,6 +26,10 @@ local_image: '/assets/cards/64-court-wands-queen.webp'
 image_url: /wp-content/uploads/tarot/court-wands-queen.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-wands-queen/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- green
 ---
 
 # 64 權杖皇后 / Queen of Wands

@@ -21,6 +21,10 @@ local_image: '/assets/cards/41-cups-ten.webp'
 image_url: /wp-content/uploads/tarot/cups-ten.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-ten/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- orange
 ---
 
 # 41 聖杯十 / Ten of Cups

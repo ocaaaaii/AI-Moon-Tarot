@@ -21,6 +21,10 @@ local_image: '/assets/cards/48-swords-seven.webp'
 image_url: /wp-content/uploads/tarot/swords-seven.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-seven/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- gold
 ---
 
 # 48 寶劍七 / Seven of Swords

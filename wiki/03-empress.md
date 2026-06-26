@@ -22,6 +22,10 @@ local_image: '/assets/cards/03-empress.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-empress.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-empress/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- yellow
 ---
 
 # 03 III 皇后​ / The Empress

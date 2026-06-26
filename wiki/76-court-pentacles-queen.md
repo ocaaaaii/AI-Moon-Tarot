@@ -24,6 +24,10 @@ local_image: '/assets/cards/76-court-pentacles-queen.webp'
 image_url: /wp-content/uploads/tarot/court-pentacles-queen.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-pentacles-queen/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- blue
 ---
 
 # 76 錢幣皇后 / Queen of Pentacles

@@ -21,6 +21,10 @@ local_image: '/assets/cards/43-swords-two.webp'
 image_url: /wp-content/uploads/tarot/swords-two.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-two/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- white
 ---
 
 # 43 寶劍二 / Two of Swords

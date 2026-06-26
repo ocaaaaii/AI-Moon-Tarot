@@ -26,6 +26,10 @@ local_image: '/assets/cards/20-judgement.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-judgement.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-judgement/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- white
 ---
 
 # 20 XX 審判​ / Judgement

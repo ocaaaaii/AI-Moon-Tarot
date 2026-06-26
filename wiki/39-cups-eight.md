@@ -19,6 +19,10 @@ local_image: '/assets/cards/39-cups-eight.webp'
 image_url: /wp-content/uploads/tarot/cups-eight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-eight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- orange
+- gold
 ---
 
 # 39 聖杯八 / Eight of Cups

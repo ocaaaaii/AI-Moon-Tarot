@@ -19,6 +19,10 @@ local_image: '/assets/cards/35-cups-four.webp'
 image_url: /wp-content/uploads/tarot/cups-four.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-four/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- gold
 ---
 
 # 35 聖杯四 / Four of Cups

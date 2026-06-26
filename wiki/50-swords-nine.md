@@ -19,6 +19,10 @@ local_image: '/assets/cards/50-swords-nine.webp'
 image_url: /wp-content/uploads/tarot/swords-nine.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-nine/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- black
 ---
 
 # 50 寶劍九 / Nine of Swords

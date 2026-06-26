@@ -28,6 +28,10 @@ local_image: '/assets/cards/77-court-pentacles-king.webp'
 image_url: /wp-content/uploads/tarot/court-pentacles-king.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-pentacles-king/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- brown
 ---
 
 # 77 錢幣國王 / King of Pentacles

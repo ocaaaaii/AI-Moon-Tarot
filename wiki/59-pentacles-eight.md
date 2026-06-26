@@ -23,6 +23,10 @@ local_image: '/assets/cards/59-pentacles-eight.webp'
 image_url: /wp-content/uploads/tarot/pentacles-eight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-eight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- brown
 ---
 
 # 59 錢幣八 / Eight of Pentacles

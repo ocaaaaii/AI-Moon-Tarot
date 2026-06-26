@@ -23,6 +23,10 @@ local_image: '/assets/cards/55-pentacles-four.webp'
 image_url: /wp-content/uploads/tarot/pentacles-four.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-four/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- gray
 ---
 
 # 55 錢幣四 / Four of Pentacles

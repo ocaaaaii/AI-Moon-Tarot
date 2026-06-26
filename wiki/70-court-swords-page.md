@@ -26,6 +26,10 @@ local_image: '/assets/cards/70-court-swords-page.webp'
 image_url: /wp-content/uploads/tarot/court-swords-page.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-swords-page/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- white
 ---
 
 # 70 寶劍侍衛 / Page of Swords

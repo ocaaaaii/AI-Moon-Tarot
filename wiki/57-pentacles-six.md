@@ -21,6 +21,10 @@ local_image: '/assets/cards/57-pentacles-six.webp'
 image_url: /wp-content/uploads/tarot/pentacles-six.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-six/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- blue
 ---
 
 # 57 錢幣六 / Six of Pentacles

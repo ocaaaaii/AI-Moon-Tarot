@@ -26,6 +26,10 @@ local_image: '/assets/cards/65-court-wands-king.webp'
 image_url: /wp-content/uploads/tarot/court-wands-king.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-wands-king/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- red
 ---
 
 # 65 權杖國王 / King of Wands

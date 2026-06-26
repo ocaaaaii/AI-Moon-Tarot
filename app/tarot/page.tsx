@@ -249,6 +249,14 @@ export default function TarotPage() {
         </div>
       </motion.div>
       <TokenInsufficient open={showInsufficient} onClose={() => setShowInsufficient(false)} />
+
+      {/* Oracle entrance */}
+      <Link
+        href="/tarot/oracle"
+        className="fixed bottom-6 right-6 z-20 group flex items-center gap-2 px-4 py-2 rounded-full border border-morandi-lavender/25 bg-black/40 backdrop-blur-sm hover:border-morandi-lavender/50 hover:bg-black/60 transition-all duration-300"
+      >
+        <span className="text-morandi-lavender/70 group-hover:text-morandi-lavender/90 text-xs tracking-widest transition-colors">✦ 週神諭</span>
+      </Link>
     </main>
   );
 }

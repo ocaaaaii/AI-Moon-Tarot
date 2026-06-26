@@ -3,7 +3,7 @@
  * Converts CardContext objects into a rich LLM-ready context string
  * for Cynthia's reading.
  */
-import type { CardContext } from "./types";
+import type { CardContext, SpreadType } from "./types";
 
 // Spread position labels per total card count
 const SPREAD_LABELS: Record<number, Record<number, string>> = {
@@ -75,6 +75,10 @@ export function buildCardContext(
     lines.push("【職場事業指引】", card.careerReading, "");
   }
 
+  if (card.dominantColors.length > 0) {
+    lines.push(`【牌面主色調】${card.dominantColors.join("、")}`, "");
+  }
+
   return lines.join("\n");
 }
 
@@ -88,13 +92,14 @@ export function buildReadingContext(cards: CardContext[], customPositions?: stri
 }
 
 /**
- * Assemble the complete human message sent to Cynthia.
+ * Assemble the complete human message sent to the tarot persona.
  */
 export function buildUserMessage(
   question: string,
   cards: CardContext[],
   firstImpression?: string,
-  spreadPositions?: string[]
+  spreadPositions?: string[],
+  spreadType?: SpreadType
 ): string {
   const cardContext = buildReadingContext(cards, spreadPositions);
   const cardNames = cards
@@ -110,13 +115,21 @@ export function buildUserMessage(
 請在解讀中自然地回應或融入這個第一感受，讓他感覺到你真的在聽。`
     : "";
 
-  return `使用者問題：「${question}」
+  const chakraNote = spreadType === "chakra"
+    ? `
 
-本次抽到 ${cards.length} 張牌：${cardNames}
+【牌陣類型：七脈輪牌陣】
+本次使用七脈輪牌陣，7 張大阿爾克納牌對應使用者的七個能量中心（海底輪→頂輪）。
+每張牌對應的脈輪位置已標示在牌卡資料中，請按位置順序解讀，不要自行重排。`
+    : "";
 
-以下是牌卡資料，請嚴格以此為依據進行解讀：
+  return `你是塔羅師，使用者抽到了以下的牌，請根據使用者的問題給予解讀。
 
 ${cardContext}
 
-用你自己的風格解牌，不要照搬牌卡資料的文字，也不要照抄任何特定的章節標題格式——請依照你自己的人設與解牌流程來組織回覆。${impressionBlock}`;
+---
+
+使用者的問題：「${question}」
+
+本次抽到的牌：${cardNames}${impressionBlock}${chakraNote}`;
 }

@@ -21,6 +21,10 @@ local_image: '/assets/cards/32-cups-ace.webp'
 image_url: /wp-content/uploads/tarot/cups-ace.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-ace/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- white
+- gold
 ---
 
 # 32 聖杯王牌 / Ace of Cups

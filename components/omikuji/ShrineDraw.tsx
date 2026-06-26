@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 /**
  * ShrineDraw — the full chat-based 月神神社 draw flow, mirroring
  * components/ui/ChatInterface.tsx (the tarot flow) so both personas share
@@ -21,7 +23,7 @@
  * than as an unmitigated prophecy.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -64,6 +66,8 @@ export interface ShrineDrawAvatar {
   openingLines: string[];
   inputPlaceholder: string;
   suggestions: { icon: string; text: string }[];
+  followUpInvite: string;
+  followUpPlaceholder: string;
 }
 
 interface ShrineDrawProps {
@@ -90,6 +94,14 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
 
   const [isCapturing, setIsCapturing] = useState(false);
 
+  // Follow-up conversation state
+  const [conversationHistory, setConversationHistory] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [followUpRounds, setFollowUpRounds] = useState<{ question: string; answer: string }[]>([]);
+  const [followUpInput, setFollowUpInput] = useState("");
+  const [isFollowUpStreaming, setIsFollowUpStreaming] = useState(false);
+  const [pendingFollowUpQ, setPendingFollowUpQ] = useState<string | null>(null);
+  const [followUpText, setFollowUpText] = useState("");
+  const followUpRef = useRef<HTMLTextAreaElement>(null);
 
   // Enter-to-send toggle — shared localStorage key with ChatInterface
   const [enterToSend, setEnterToSend] = useState(false);
@@ -169,6 +181,7 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
     setInterpretation("");
     setIsStreaming(true);
     abortRef.current = new AbortController();
+    let accumulated = "";
 
     try {
       const res = await fetch("/api/omikuji-reading", {
@@ -197,6 +210,7 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
           try {
             const p = JSON.parse(payload) as { chunk?: string; error?: string };
             if (p.chunk) {
+              accumulated += p.chunk;
               setInterpretation((t) => t + p.chunk);
             } else if (p.error) {
               // Route returns HTTP 200 even when the Anthropic call itself
@@ -208,6 +222,8 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
           }
         }
       }
+      // Save initial interpretation to history for follow-ups
+      setConversationHistory([{ role: "assistant", content: accumulated }]);
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
         // Show the actual error instead of a generic message — this used
@@ -221,6 +237,78 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
       setIsStreaming(false);
     }
   }, [current, question, avatar.id]);
+
+  // ── Follow-up ────────────────────────────────────────────────────────────────
+
+  const handleFollowUp = useCallback(async () => {
+    const q = followUpInput.trim();
+    if (!q || isFollowUpStreaming || !current) return;
+
+    setFollowUpInput("");
+    setPendingFollowUpQ(q);
+    setFollowUpText("");
+    setIsFollowUpStreaming(true);
+    abortRef.current = new AbortController();
+
+    const history: { role: "user" | "assistant"; content: string }[] = [
+      ...conversationHistory,
+      ...followUpRounds.flatMap((r) => [
+        { role: "user" as const, content: r.question },
+        { role: "assistant" as const, content: r.answer },
+      ]),
+      { role: "user" as const, content: q },
+    ];
+
+    let followAccumulated = "";
+    try {
+      const res = await fetch("/api/omikuji-reading", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, omikujiId: current.id, avatarId: avatar.id, history }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error((err as { error?: string }).error ?? "Follow-up failed");
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("No response body");
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value, { stream: true }).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const payload = line.slice(6).trim();
+          if (payload === "[DONE]") break;
+          try {
+            const p = JSON.parse(payload) as { chunk?: string; error?: string };
+            if (p.chunk) {
+              followAccumulated += p.chunk;
+              setFollowUpText((t) => t + p.chunk);
+            } else if (p.error) {
+              setFollowUpText((t) => t + `（連線時發生錯誤：${p.error}）`);
+            }
+          } catch { /* skip */ }
+        }
+      }
+      setFollowUpRounds((prev) => [...prev, { question: q, answer: followAccumulated }]);
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        const detail = (err as Error).message;
+        const msg = detail ? `連線出了點問題：${detail}` : "連線出了點問題，請稍後再試。";
+        setFollowUpText(msg);
+        setFollowUpRounds((prev) => [...prev, { question: q, answer: msg }]);
+      }
+    } finally {
+      setIsFollowUpStreaming(false);
+      setPendingFollowUpQ(null);
+      setFollowUpText("");
+    }
+  }, [followUpInput, isFollowUpStreaming, current, conversationHistory, followUpRounds, question, avatar.id]);
 
   // ── Share ────────────────────────────────────────────────────────────────────
 
@@ -263,6 +351,12 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
     setFolding(false);
     setShowRack(false);
     setShowBlessing(false);
+    setConversationHistory([]);
+    setFollowUpRounds([]);
+    setPendingFollowUpQ(null);
+    setFollowUpText("");
+    setIsFollowUpStreaming(false);
+    setFollowUpInput("");
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
 
@@ -294,7 +388,7 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
     foldTimersRef.current.push(t1, t2);
   }, [current, resetAll]);
 
-  const showActionArea = step === "reading" && !isStreaming && interpretation.length > 0;
+  const showActionArea = step === "reading" && !isStreaming && !isFollowUpStreaming && !pendingFollowUpQ && interpretation.length > 0;
 
   return (
     <div className="relative flex flex-col h-full">
@@ -518,9 +612,70 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
                   avatarAlt={avatar.displayName}
                 />
               )}
+
+              {/* Completed follow-up rounds */}
+              {followUpRounds.map((round, i) => (
+                <Fragment key={`shrine-round-${i}`}>
+                  <UserBubble text={round.question} />
+                  <ChatReading text={round.answer} isStreaming={false} avatarSrc={avatar.image} avatarAlt={avatar.displayName} />
+                </Fragment>
+              ))}
+
+              {/* Actively streaming follow-up */}
+              {pendingFollowUpQ && (
+                <>
+                  <UserBubble text={pendingFollowUpQ} />
+                  <ChatReading text={followUpText} isStreaming={isFollowUpStreaming} avatarSrc={avatar.image} avatarAlt={avatar.displayName} />
+                </>
+              )}
             </div>
           </motion.div>
         )}
+
+        {/* Follow-up input — shown after interpretation is done */}
+        <AnimatePresence>
+          {showActionArea && (
+            <motion.div
+              key="followup-shrine"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.25, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
+                <p className="text-cream-200/60 text-sm mb-3 leading-relaxed">{avatar.followUpInvite}</p>
+                <div className="relative rounded-2xl border border-morandi-gold/20 bg-mystic-purple/20 focus-within:border-morandi-gold/40 transition-colors">
+                  <textarea
+                    ref={followUpRef}
+                    value={followUpInput}
+                    onChange={(e) => setFollowUpInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        if (enterToSend && !e.shiftKey) { e.preventDefault(); handleFollowUp(); }
+                        else if (e.metaKey || e.ctrlKey) handleFollowUp();
+                      }
+                    }}
+                    placeholder={avatar.followUpPlaceholder}
+                    rows={2}
+                    maxLength={200}
+                    className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/35 text-sm p-3 pr-10 resize-none focus:outline-none leading-relaxed"
+                  />
+                  <motion.button
+                    disabled={followUpInput.trim().length < 2}
+                    onClick={handleFollowUp}
+                    whileHover={followUpInput.trim().length >= 2 ? { scale: 1.1 } : {}}
+                    whileTap={followUpInput.trim().length >= 2 ? { scale: 0.92 } : {}}
+                    className="absolute bottom-2.5 right-2.5 w-7 h-7 rounded-full bg-morandi-gold/20 border border-morandi-gold/30 flex items-center justify-center text-cream-200 disabled:opacity-20 hover:bg-morandi-gold/40 transition-colors"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                      <path d="M7 12V2M7 2L3 6M7 2L11 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </motion.button>
+                </div>
+              </AssistantBlock>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Action row — only after the interpretation has been read */}
         <AnimatePresence>
@@ -576,152 +731,41 @@ export default function ShrineDraw({ avatar }: ShrineDrawProps) {
             </motion.div>
           )}
         </AnimatePresence>
-
-
-                <div ref={bottomRef} />
       </div>
-
-      {/* ── Input area ── */}
-      <AnimatePresence>
-        {(step === "idle" || step === "typing") && (
-          <motion.div
-            key="input"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="border-t border-morandi-lavender/10 p-4 flex flex-col gap-3"
-          >
-            <div className="relative rounded-2xl border border-morandi-gold/20 bg-mystic-purple/30 focus-within:border-morandi-gold/50 transition-colors">
-              <textarea
-                ref={inputRef}
-                value={question}
-                onChange={(e) => {
-                  setQuestion(e.target.value);
-                  setStep(e.target.value ? "typing" : "idle");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    if (e.metaKey || e.ctrlKey) { e.preventDefault(); handleSubmitQuestion(); }
-                    else if (enterToSend && !e.shiftKey) { e.preventDefault(); handleSubmitQuestion(); }
-                  }
-                }}
-                placeholder={avatar.inputPlaceholder}
-                rows={3}
-                maxLength={300}
-                className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/40 text-sm p-4 pr-12 resize-none focus:outline-none leading-relaxed"
-              />
-              <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                {/* Enter-to-send toggle */}
-                <button
-                  onClick={toggleEnterToSend}
-                  title={enterToSend ? "Enter 發送（點擊關閉）" : "點擊開啟 Enter 直接發送"}
-                  className={`text-[11px] px-2 py-0.5 rounded-md border font-mono transition-all duration-200 ${
-                    enterToSend
-                      ? "border-morandi-gold/55 text-morandi-gold/90 bg-morandi-gold/12 shadow-[0_0_8px_rgba(212,168,89,0.15)]"
-                      : "border-morandi-stone/40 text-morandi-stone/65 hover:border-morandi-gold/45 hover:text-morandi-gold/70 hover:bg-morandi-gold/8"
-                  }`}
-                >
-                  ↵
-                </button>
-                <span className="text-morandi-stone/30 text-xs">{question.length}/300</span>
-                <motion.button
-                  disabled={question.trim().length < 2}
-                  onClick={handleSubmitQuestion}
-                  whileHover={question.trim().length >= 2 ? { scale: 1.1 } : {}}
-                  whileTap={question.trim().length >= 2 ? { scale: 0.92 } : {}}
-                  className="w-8 h-8 rounded-full bg-morandi-gold/20 border border-morandi-gold/30 flex items-center justify-center text-cream-200 disabled:opacity-20 hover:bg-morandi-gold/40 transition-colors"
-                >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M7 12V2M7 2L3 6M7 2L11 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </motion.button>
-              </div>
-            </div>
-
-            {/* Suggestions */}
-            <AnimatePresence>
-              {step === "idle" && (
-                <motion.div
-                  key="suggestions"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col gap-1.5"
-                >
-                  <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mb-0.5">
-                <p className="text-morandi-stone/60 text-[11px] tracking-widest">或者讓籤詩引路</p>
-                {enterToSend ? (
-                  <span className="px-1.5 py-0.5 rounded border border-morandi-gold/40 bg-morandi-gold/10 text-morandi-gold/80 text-[10px] font-mono">
-                    ↵ Enter 發送中
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 text-[10px]">
-                    <span className="px-1.5 py-0.5 rounded border border-morandi-stone/30 bg-morandi-stone/8 text-morandi-stone/65 font-mono">Shift+Enter</span>
-                    <span className="text-morandi-stone/45">換行</span>
-                    <span className="text-morandi-stone/30 mx-0.5">·</span>
-                    <span className="px-1.5 py-0.5 rounded border border-morandi-stone/30 bg-morandi-stone/8 text-morandi-stone/65 font-mono">↵</span>
-                    <span className="text-morandi-stone/45">點擊開啟 Enter 發送</span>
-                  </span>
-                )}
-              </div>
-                  {avatar.suggestions.map(({ icon, text }, i) => (
-                    <motion.button
-                      key={text}
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.05 * i, duration: 0.3 }}
-                      onClick={() => {
-                        setQuestion(text);
-                        setStep("typing");
-                        inputRef.current?.focus();
-                      }}
-                      className="flex items-center gap-2.5 text-left group transition-all duration-200"
-                    >
-                      <span className="text-base opacity-50 group-hover:opacity-90 transition-opacity">{icon}</span>
-                      <span className="text-morandi-stone/45 text-xs group-hover:text-cream-200/70 transition-colors border-b border-transparent group-hover:border-morandi-gold/30">
-                        {text}
-                      </span>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function AssistantBlock({
+  avatarImage,
+  avatarAlt,
+  children,
+}: {
+  avatarImage: string;
+  avatarAlt: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5 border border-morandi-lavender/20">
+        <Image src={avatarImage} alt={avatarAlt} fill className="object-cover object-top" sizes="32px" />
+      </div>
+      <div className="flex-1 min-w-0">{children}</div>
+    </div>
+  );
+}
 
 function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[75%] rounded-2xl rounded-tr-sm bg-morandi-lavender/20 border border-morandi-lavender/20 px-4 py-3">
-        <p className="text-cream-100 text-sm">{text}</p>
+      <div
+        className="max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-cream-100/90 leading-relaxed"
+        style={{ background: "rgba(120,90,160,0.22)", border: "1px solid rgba(184,168,200,0.15)" }}
+      >
+        {text}
       </div>
-    </div>
-  );
-}
-
-function AssistantBlock({
-  children,
-  avatarImage,
-  avatarAlt,
-}: {
-  children: React.ReactNode;
-  avatarImage: string;
-  avatarAlt: string;
-}) {
-  return (
-    <div className="flex gap-3">
-      <div className="relative w-8 h-8 rounded-full overflow-hidden border border-morandi-gold/35 flex-shrink-0 mt-1 shadow-[0_0_10px_rgba(212,168,89,0.15)]">
-        <Image src={avatarImage} alt={avatarAlt} fill className="object-cover object-top" sizes="32px" />
-      </div>
-      <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
 }

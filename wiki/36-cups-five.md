@@ -20,6 +20,10 @@ local_image: '/assets/cards/36-cups-five.webp'
 image_url: /wp-content/uploads/tarot/cups-five.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-five/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- silver
 ---
 
 # 36 聖杯五 / Five of Cups

@@ -20,6 +20,10 @@ local_image: '/assets/cards/53-pentacles-two.webp'
 image_url: /wp-content/uploads/tarot/pentacles-two.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-two/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- blue
 ---
 
 # 53 錢幣二 / Two of Pentacles

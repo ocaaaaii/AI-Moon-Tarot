@@ -23,6 +23,10 @@ local_image: '/assets/cards/68-court-cups-queen.webp'
 image_url: /wp-content/uploads/tarot/court-cups-queen.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-cups-queen/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- silver
+- green
 ---
 
 # 68 聖杯皇后 / Queen of Cups

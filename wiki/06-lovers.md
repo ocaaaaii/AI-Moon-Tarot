@@ -27,6 +27,10 @@ local_image: '/assets/cards/06-lovers.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-lovers.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-lovers/
 scraped_at: '2026-06-18'
+dominant_colors:
+- gold
+- blue
+- green
 ---
 
 # 06 VI 戀人​ / The Lovers

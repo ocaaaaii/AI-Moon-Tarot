@@ -22,6 +22,10 @@ local_image: '/assets/cards/10-wheel-of-fortune.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-wheel-of-fortune.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wheel-of-fortune/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- red
 ---
 
 # 10 X 命運之輪​ / Wheel of Fortune

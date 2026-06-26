@@ -27,6 +27,10 @@ local_image: '/assets/cards/15-devil.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-devil.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-devil/
 scraped_at: '2026-06-18'
+dominant_colors:
+- black
+- red
+- gold
 ---
 
 # 15 XV 惡魔​ / The Devil

@@ -24,6 +24,10 @@ local_image: '/assets/cards/21-world.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-world.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-world/
 scraped_at: '2026-06-18'
+dominant_colors:
+- purple
+- green
+- gold
 ---
 
 # 21 XXI 世界​ / The World

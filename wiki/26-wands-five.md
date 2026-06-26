@@ -21,6 +21,10 @@ local_image: '/assets/cards/26-wands-five.webp'
 image_url: /wp-content/uploads/tarot/wands-five.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-five/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- red
+- blue
 ---
 
 # 26 權杖五 / Five of Wands

@@ -22,6 +22,10 @@ local_image: '/assets/cards/69-court-cups-king.webp'
 image_url: /wp-content/uploads/tarot/court-cups-king.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-cups-king/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- orange
 ---
 
 # 69 聖杯國王 / King of Cups

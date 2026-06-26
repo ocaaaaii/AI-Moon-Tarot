@@ -25,6 +25,10 @@ local_image: '/assets/cards/17-star.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-star.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-star/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- white
 ---
 
 # 17 XVII 星星​ / The Star

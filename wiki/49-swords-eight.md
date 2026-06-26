@@ -21,6 +21,10 @@ local_image: '/assets/cards/49-swords-eight.webp'
 image_url: /wp-content/uploads/tarot/swords-eight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-eight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- black
 ---
 
 # 49 寶劍八 / Eight of Swords

@@ -18,6 +18,10 @@ local_image: '/assets/cards/16-tower.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-tower.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-tower/
 scraped_at: '2026-06-18'
+dominant_colors:
+- black
+- orange
+- red
 ---
 
 # 16 XVI 高塔​ / The Tower

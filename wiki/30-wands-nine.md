@@ -20,6 +20,10 @@ local_image: '/assets/cards/30-wands-nine.webp'
 image_url: /wp-content/uploads/tarot/wands-nine.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-nine/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- gray
 ---
 
 # 30 權杖九 / Nine of Wands

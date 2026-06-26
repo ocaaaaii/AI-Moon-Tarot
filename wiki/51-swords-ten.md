@@ -22,6 +22,10 @@ local_image: '/assets/cards/51-swords-ten.webp'
 image_url: /wp-content/uploads/tarot/swords-ten.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-ten/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- red
 ---
 
 # 51 寶劍十 / Ten of Swords

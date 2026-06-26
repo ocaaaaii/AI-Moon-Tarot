@@ -26,6 +26,10 @@ local_image: '/assets/cards/63-court-wands-knight.webp'
 image_url: /wp-content/uploads/tarot/court-wands-knight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-wands-knight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- red
 ---
 
 # 63 權杖騎士​ / Knight of Wands

@@ -139,21 +139,25 @@ export function loadCard(id: number, reversed = false): CardContext {
     activeMeanings,
     displayName,
     positionLabel,
+    dominantColors: fm.dominant_colors ?? [],
   };
 }
 
 /**
- * Load multiple cards at once (1–3 cards).
+ * Load multiple cards at once (1–7 cards).
+ * chakra spreads allow up to 7; normal spreads allow up to 3.
  *
- * @param requests  Array of { id, reversed? }
- * @returns         Array of CardContext in the same order
+ * @param requests   Array of { id, reversed? }
+ * @param isChakra   When true, lifts the limit to 7 cards
+ * @returns          Array of CardContext in the same order
  */
-export function loadCards(requests: CardRequest[]): CardContext[] {
+export function loadCards(requests: CardRequest[], isChakra = false): CardContext[] {
   if (requests.length === 0) {
     throw new Error("At least 1 card is required");
   }
-  if (requests.length > 3) {
-    throw new RangeError(`Maximum 3 cards per reading (received ${requests.length})`);
+  const maxCards = isChakra ? 7 : 3;
+  if (requests.length > maxCards) {
+    throw new Error(`Max ${maxCards} cards allowed (got ${requests.length})`);
   }
-  return requests.map(({ id, reversed = false }) => loadCard(id, reversed));
+  return requests.map((r) => loadCard(r.id, r.reversed));
 }

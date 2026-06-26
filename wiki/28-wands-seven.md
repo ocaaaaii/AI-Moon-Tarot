@@ -20,6 +20,10 @@ local_image: '/assets/cards/28-wands-seven.webp'
 image_url: /wp-content/uploads/tarot/wands-seven.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-seven/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- blue
 ---
 
 # 28 權杖七 / Seven of Wands

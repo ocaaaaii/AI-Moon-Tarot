@@ -20,6 +20,10 @@ local_image: '/assets/cards/34-cups-three.webp'
 image_url: /wp-content/uploads/tarot/cups-three.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-three/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- green
+- orange
 ---
 
 # 34 聖杯三 / Three of Cups

@@ -28,6 +28,10 @@ local_image: '/assets/cards/73-court-swords-king.webp'
 image_url: /wp-content/uploads/tarot/court-swords-king.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-swords-king/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- gold
 ---
 
 # 73 寶劍國王 / King of Swords

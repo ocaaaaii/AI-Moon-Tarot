@@ -26,6 +26,10 @@ local_image: '/assets/cards/08-strength.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-strength.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-strength/
 scraped_at: '2026-06-18'
+dominant_colors:
+- white
+- yellow
+- gold
 ---
 
 # 08 VIII 力量​ / Strength

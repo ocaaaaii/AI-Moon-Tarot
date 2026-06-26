@@ -19,6 +19,10 @@ local_image: '/assets/cards/27-wands-six.webp'
 image_url: /wp-content/uploads/tarot/wands-six.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-six/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- blue
 ---
 
 # 27 權杖六 / Six of Wands

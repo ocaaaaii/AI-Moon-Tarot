@@ -30,6 +30,10 @@ local_image: '/assets/cards/72-court-swords-queen.webp'
 image_url: /wp-content/uploads/tarot/court-swords-queen.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-swords-queen/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- white
 ---
 
 # 72 寶劍皇后 / Queen of Swords

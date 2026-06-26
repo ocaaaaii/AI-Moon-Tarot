@@ -21,6 +21,10 @@ local_image: '/assets/cards/40-cups-nine.webp'
 image_url: /wp-content/uploads/tarot/cups-nine.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-nine/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- yellow
 ---
 
 # 40 聖杯九 / Nine of Cups

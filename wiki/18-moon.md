@@ -24,6 +24,10 @@ local_image: '/assets/cards/18-moon.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-moon.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-moon/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- gold
 ---
 
 # 18 XVIII 月亮​ / The Moon

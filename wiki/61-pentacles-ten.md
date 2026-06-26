@@ -22,6 +22,10 @@ local_image: '/assets/cards/61-pentacles-ten.webp'
 image_url: /wp-content/uploads/tarot/pentacles-ten.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-ten/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- blue
 ---
 
 # 61 錢幣十 / Ten of Pentacles

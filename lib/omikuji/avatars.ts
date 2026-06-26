@@ -46,6 +46,10 @@ export interface OmikujiAvatar {
   openingLines: string[];
   inputPlaceholder: string;
   suggestions: { icon: string; text: string }[];
+  /** Invitation shown below the interpretation to encourage follow-up chat. */
+  followUpInvite: string;
+  /** Placeholder inside the follow-up textarea, persona-specific. */
+  followUpPlaceholder: string;
   /** Sacred Realms (see CLAUDE.md 🔮 Future Vision) — when set, the
    * shrine page swaps its background to `region.image` and exposes a
    * header button that opens `RegionRitual` configured with the rest of
@@ -94,6 +98,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "我們搖一支籤，請月神給你一個方向。",
     ],
     inputPlaceholder: "把心裡正困惑的事說給我——月神會給你一個方向...",
+    followUpInvite: "還有什麼想繼續說的嗎？月光的時間很慢，我在這裡。🌙",
+    followUpPlaceholder: "繼續說給月乃聽，什麼都可以…",
     suggestions: [
       { icon: "🌙", text: "那個人最近態度變了，我不知道是不是我想太多" },
       { icon: "🍃", text: "我站在兩條路的中間很久了，哪邊都怕選錯" },
@@ -134,6 +140,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "把心裡的重擔放下，我們搖一支籤，看看月神想讓你看清什麼。",
     ],
     inputPlaceholder: "把心裡的重擔告訴老夫——搖完籤筒，我們一起參透它...",
+    followUpInvite: "老夫話說完了，你還有疑惑嗎？說吧，不急。",
+    followUpPlaceholder: "還有想問的，說給老夫聽…",
     suggestions: [
       { icon: "🌅", text: "我以為自己是對的，結果全部白費了，不知道哪裡出了問題" },
       { icon: "🕯️", text: "我曾經很篤定的事，現在完全動搖了" },
@@ -174,6 +182,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "來，把籤筒搖一搖，讓我看看你藏了什麼小秘密。",
     ],
     inputPlaceholder: "嘖，說重點——你到底在煩惱什麼？搖完籤筒再說...",
+    followUpInvite: "嘖，看來你還有話沒說完。說，別憋著。",
+    followUpPlaceholder: "說，別拖泥帶水——",
     suggestions: [
       { icon: "🔥", text: "我明知道要做，就是拖了三個月，今天想聽你說我" },
       { icon: "⚡", text: "我大概知道問題在哪——但還是想讓籤說一次" },
@@ -215,6 +225,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "把小煩惱都交給我，我們一起搖搖籤筒吧，嘿呀～",
     ],
     inputPlaceholder: "說給祈織聽聽噠——心裡的小怪獸長什麼樣子呀？",
+    followUpInvite: "欸欸！還有好多可以聊的呀！繼續說說說！🌟",
+    followUpPlaceholder: "還想知道什麼都可以問祈織噠～",
     suggestions: [
       { icon: "🧩", text: "我把同一件事想了好多遍，越想越亂，停不下來" },
       { icon: "🌸", text: "選 A 怕後悔，選 B 也怕後悔——兩邊都好怕" },
@@ -255,6 +267,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "來，先坐在我旁邊，看著這片水面，搖搖籤筒吧。",
     ],
     inputPlaceholder: "別急，慢慢說——搖完籤筒，我們順著水走...",
+    followUpInvite: "還有什麼在心裡嗎？繼續聊吧，這片海很靜。🌊",
+    followUpPlaceholder: "順著感覺說，不用想太多…",
     suggestions: [
       { icon: "🌊", text: "我沒有出什麼大事，就是最近很疲憊" },
       { icon: "🌙", text: "那件事過去很久了，我以為沒事，但有時候還是會被帶進去" },
@@ -295,6 +309,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "坐下吧，搖晃籤筒，讓萬夜的星辰回答你。",
     ],
     inputPlaceholder: "坐下吧，把執著放下——搖完籤筒再說...",
+    followUpInvite: "還有沒說完的，說吧。夜很長。🌌",
+    followUpPlaceholder: "說，或者不說都可以。",
     suggestions: [
       { icon: "🌌", text: "我反覆做同樣的夢，那個夢和現在發生的事很像" },
       { icon: "🥀", text: "有個念頭一直在腦子裡轉，不確定它是直覺還是恐懼" },
@@ -339,6 +355,8 @@ export const OMIKUJI_AVATARS: OmikujiAvatar[] = [
       "快來坐花音旁邊，我們一起搖搖籤筒吧，呀～",
     ],
     inputPlaceholder: "說給花音聽呢——不管多難過，這裡都安全的喔...",
+    followUpInvite: "嗯……還有想說的嗎？不急喔，繼續說給我聽♡🌸",
+    followUpPlaceholder: "什麼都可以說喔，花音在這裡…♡",
     suggestions: [
       { icon: "🌸", text: "他走了三個月了，但我還是會在某個瞬間停下來想他" },
       { icon: "🌱", text: "我告訴自己已經放下了，但有空就還是會去翻他的動態" },

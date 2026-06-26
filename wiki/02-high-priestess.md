@@ -29,6 +29,10 @@ local_image: '/assets/cards/02-high-priestess.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-high-priestess.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-high-priestess/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- white
+- silver
 ---
 
 # 02 II 女祭司 / The High Priestess

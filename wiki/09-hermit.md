@@ -25,6 +25,10 @@ local_image: '/assets/cards/09-hermit.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-hermit.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-hermit/
 scraped_at: '2026-06-18'
+dominant_colors:
+- gray
+- gold
+- blue
 ---
 
 # 09 IX 隱修者 / The Hermit

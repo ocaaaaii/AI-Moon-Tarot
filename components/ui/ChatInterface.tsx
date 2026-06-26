@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, Fragment } from "react";
+import React, { useState, useCallback, useEffect, useRef, Fragment } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import dynamic from "next/dynamic";
-import type { CardRequest, HistoryMessage } from "@/lib/tarot/types";
+import type { CardRequest, HistoryMessage, SpreadType } from "@/lib/tarot/types";
 import { MAJOR_IDS, MINOR_NUMBERED_IDS, COURT_IDS } from "@/lib/tarot/cardCategories";
 import DrawnCards from "./DrawnCards";
 import ChatReading from "./ChatReading";
@@ -44,13 +44,17 @@ const PHASE_CONFIG = [
 ] as const;
 
 interface SpreadOption {
-  count: 1 | 2 | 3;
+  count: 1 | 2 | 3 | 7;
   label: string;
   sub: string;
   positions: string[];
   /** 天地人分類抽牌：自動從大牌/數字牌/宮廷牌各抽一張，跳過手動挑牌 */
   categoryDraw?: boolean;
+  /** 七脈輪牌陣：只用 22 張大阿爾克納，spreadType → "chakra" */
+  chakraDraw?: boolean;
 }
+
+const CHAKRA_POSITIONS = ["海底輪", "臍輪", "太陽神經叢", "心輪", "喉輪", "眉心輪", "頂輪"];
 
 const SPREAD_OPTIONS: SpreadOption[] = [
   { count: 1 as const, label: "單張指引", sub: "當下最需要的訊息", positions: ["當下訊息"] },
@@ -60,6 +64,7 @@ const SPREAD_OPTIONS: SpreadOption[] = [
   { count: 3 as const, label: "情況挑戰建議", sub: "情況 · 挑戰 · 建議", positions: ["情況", "挑戰", "建議"] },
   { count: 3 as const, label: "心身靈", sub: "心 · 身 · 靈", positions: ["心", "身", "靈"] },
   { count: 3 as const, label: "天地人診斷", sub: "課題 · 事件 · 心態", positions: ["天（靈魂課題）", "地（現實事件）", "人（心態鏡子）"], categoryDraw: true },
+  { count: 7 as const, label: "七脈輪掃描", sub: "22 大牌 · 能量全身掃描", positions: CHAKRA_POSITIONS, chakraDraw: true },
 ];
 
 const slideUp = {
@@ -76,6 +81,8 @@ export interface ChatInterfaceAvatar {
   openingLines: string[];
   inputPlaceholder: string;
   suggestions: { icon: string; text: string }[];
+  followUpInvite: string;
+  followUpPlaceholder: string;
 }
 
 interface ChatInterfaceProps {
@@ -85,8 +92,9 @@ interface ChatInterfaceProps {
 export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   const [step, setStep] = useState<Step>("idle");
   const [question, setQuestion] = useState("");
-  const [spreadCount, setSpreadCount] = useState<1 | 2 | 3>(3);
+  const [spreadCount, setSpreadCount] = useState<1 | 2 | 3 | 7>(3);
   const [spreadPositions, setSpreadPositions] = useState<string[]>([]);
+  const [spreadType, setSpreadType] = useState<SpreadType>("normal");
   const [drawnCards, setDrawnCards] = useState<CardRequest[]>([]);
   const [cardMeta, setCardMeta] = useState<Record<number, CardMeta>>({});
   const [metaReady, setMetaReady] = useState(false);
@@ -126,6 +134,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   // Share
   const [isCapturing, setIsCapturing] = useState(false);
   const [isCategorySpread, setIsCategorySpread] = useState(false);
+  const [isChakraSpread, setIsChakraSpread] = useState(false);
   const [categoryCards, setCategoryCards] = useState<CardRequest[]>([]);
   // Derive current phase from how many cards have been collected (no separate state needed)
   const categoryPhase = Math.min(categoryCards.length, 2) as 0 | 1 | 2;
@@ -222,7 +231,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
       const res = await fetch("/api/reading", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, cards: drawnCards, avatarId: avatar.id, spreadPositions }),
+        body: JSON.stringify({ question, cards: drawnCards, avatarId: avatar.id, spreadPositions, spreadType }),
         signal: abortRef.current.signal,
       });
 
@@ -269,7 +278,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     } finally {
       setIsStreaming(false);
     }
-  }, [question, drawnCards, avatar.id]);
+  }, [question, drawnCards, avatar.id, spreadPositions, spreadType]);
 
   // ── Follow-up ────────────────────────────────────────────────────────────────
 
@@ -298,7 +307,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
       const res = await fetch("/api/reading", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, cards: drawnCards, history, avatarId: avatar.id }),
+        body: JSON.stringify({ question, cards: drawnCards, history, avatarId: avatar.id, spreadType }),
         signal: abortRef.current.signal,
       });
 
@@ -344,7 +353,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
       setPendingFollowUpQ(null);
       setFollowUpText("");
     }
-  }, [followUpInput, isFollowUpStreaming, conversationHistory, followUpRounds, question, drawnCards, avatar.id]);
+  }, [followUpInput, isFollowUpStreaming, conversationHistory, followUpRounds, question, drawnCards, avatar.id, spreadType]);
 
   // ── Share ────────────────────────────────────────────────────────────────────
 
@@ -379,6 +388,8 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     setStep("idle");
     setQuestion("");
     setIsCategorySpread(false);
+    setIsChakraSpread(false);
+    setSpreadType("normal");
     setCategoryCards([]);
     setRefineSuggestions([]);
     setRefineIssueLabel("");
@@ -544,7 +555,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                       transition={{ delay: i * 0.08, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => { setSpreadCount(option.count); setSpreadPositions(option.positions); setIsCategorySpread(option.categoryDraw ?? false); setCategoryCards([]); setStep("deck"); }}
+                      onClick={() => { setSpreadCount(option.count); setSpreadPositions(option.positions); setIsCategorySpread(option.categoryDraw ?? false); setIsChakraSpread(option.chakraDraw ?? false); setSpreadType(option.chakraDraw ? "chakra" : "normal"); setCategoryCards([]); setStep("deck"); }}
                       className="flex flex-col items-center px-5 py-3 rounded-xl border border-morandi-lavender/25 hover:border-morandi-lavender/60 hover:bg-morandi-mauve/20 text-sm transition-colors duration-200"
                     >
                       <span className="text-cream-200/90">{option.label}</span>
@@ -611,6 +622,17 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                       allowedIds={PHASE_CONFIG[categoryPhase].allowedIds}
                     />
                   </div>
+                ) : isChakraSpread ? (
+                  <>
+                    <p className="text-cream-200/80 text-sm mb-1">深呼吸——讓每個脈輪的大牌浮現</p>
+                    <p className="text-morandi-stone/40 text-[11px] mb-4 tracking-wider">22 大阿爾克納 · 依序選出 7 張</p>
+                    <CardDeckCanvas
+                      spreadCount={7}
+                      onComplete={handleCardsDrawn}
+                      spreadPositions={CHAKRA_POSITIONS}
+                      allowedIds={new Set(MAJOR_IDS)}
+                    />
+                  </>
                 ) : (
                   <>
                     <p className="text-cream-200/80 text-sm mb-1">
@@ -701,6 +723,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
             >
               {/* Follow-up input */}
               <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
+                <p className="text-cream-200/60 text-sm mb-3 leading-relaxed">{avatar.followUpInvite}</p>
                 <div className="relative rounded-2xl border border-morandi-lavender/20 bg-mystic-purple/20 focus-within:border-morandi-lavender/40 transition-colors">
                   <textarea
                     ref={followUpRef}
@@ -712,7 +735,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                         else if (e.metaKey || e.ctrlKey) handleFollowUp();
                       }
                     }}
-                    placeholder={`還有想追問 ${avatar.displayName} 的嗎？`}
+                    placeholder={avatar.followUpPlaceholder}
                     rows={2}
                     maxLength={200}
                     className="w-full bg-transparent text-cream-100 placeholder-morandi-stone/35 text-sm p-3 pr-10 resize-none focus:outline-none leading-relaxed"
@@ -851,11 +874,8 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                       transition={{ delay: 0.05 * i, duration: 0.3 }}
                       onClick={() => { setQuestion(text); setStep("typing"); inputRef.current?.focus(); }}
                       className="flex items-center gap-2.5 text-left group transition-all duration-200"
-                    >
-                      <span className="text-base opacity-50 group-hover:opacity-90 transition-opacity">{icon}</span>
-                      <span className="text-morandi-stone/45 text-xs group-hover:text-cream-200/70 transition-colors border-b border-transparent group-hover:border-morandi-lavender/30">
-                        {text}
-                      </span>
+                    >                      <span className="text-morandi-stone/50 text-sm mr-0.5">{icon}</span>
+                      <span className="text-morandi-stone/65 text-xs leading-relaxed">{text}</span>
                     </motion.button>
                   ))}
                 </motion.div>
@@ -864,7 +884,27 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
 
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function AssistantBlock({
+  avatarImage,
+  avatarAlt,
+  children,
+}: {
+  avatarImage: string;
+  avatarAlt: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5 border border-morandi-lavender/20">
+        <Image src={avatarImage} alt={avatarAlt} fill className="object-cover object-top" sizes="32px" />
+      </div>
+      <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
 }
@@ -872,28 +912,12 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[75%] rounded-2xl rounded-tr-sm bg-morandi-lavender/20 border border-morandi-lavender/20 px-4 py-3">
-        <p className="text-cream-100 text-sm">{text}</p>
+      <div
+        className="max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-cream-100/90 leading-relaxed"
+        style={{ background: "rgba(120,90,160,0.22)", border: "1px solid rgba(184,168,200,0.15)" }}
+      >
+        {text}
       </div>
-    </div>
-  );
-}
-
-function AssistantBlock({
-  children,
-  avatarImage,
-  avatarAlt,
-}: {
-  children: React.ReactNode;
-  avatarImage: string;
-  avatarAlt: string;
-}) {
-  return (
-    <div className="flex gap-3">
-      <div className="relative w-8 h-8 rounded-full overflow-hidden border border-morandi-lavender/35 flex-shrink-0 mt-1 shadow-[0_0_10px_rgba(184,168,200,0.15)]">
-        <Image src={avatarImage} alt={avatarAlt} fill className="object-cover object-top" sizes="32px" />
-      </div>
-      <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
 }

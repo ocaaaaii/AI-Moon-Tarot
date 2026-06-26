@@ -21,6 +21,10 @@ local_image: '/assets/cards/31-wands-ten.webp'
 image_url: /wp-content/uploads/tarot/wands-ten.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-ten/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- red
+- blue
 ---
 
 # 31 權杖十 / Ten of Wands

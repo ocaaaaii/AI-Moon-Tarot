@@ -21,6 +21,10 @@ local_image: '/assets/cards/45-swords-four.webp'
 image_url: /wp-content/uploads/tarot/swords-four.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-four/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- gold
 ---
 
 # 45 寶劍四 / Four of Swords

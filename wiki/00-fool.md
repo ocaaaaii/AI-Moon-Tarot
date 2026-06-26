@@ -24,6 +24,10 @@ local_image: '/assets/cards/00-fool.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-fool.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-fool/
 scraped_at: '2026-06-18'
+dominant_colors:
+- yellow
+- white
+- gold
 ---
 
 # 00 愚者 / The Fool

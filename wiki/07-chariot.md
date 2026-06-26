@@ -25,6 +25,10 @@ local_image: '/assets/cards/07-chariot.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-chariot.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-chariot/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gold
+- white
 ---
 
 # 07 VII 戰車​ / The Chariot

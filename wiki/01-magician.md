@@ -27,6 +27,10 @@ local_image: '/assets/cards/01-magician.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-magician.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-magician/
 scraped_at: '2026-06-18'
+dominant_colors:
+- red
+- white
+- yellow
 ---
 
 # 01 I 魔術師 / The Magician

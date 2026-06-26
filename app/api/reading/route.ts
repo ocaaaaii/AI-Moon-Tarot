@@ -1,9 +1,10 @@
 /**
  * POST /api/reading
- * Next.js App Router Route Handler — Cynthia's Tarot Reading API
+ * Next.js App Router Route Handler — Tarot Reading API
  *
- * Accepts a question + 1–3 card draws, plus optional conversation history.
- * Streams Cynthia's response back as Server-Sent Events (SSE).
+ * Accepts a question + 1–7 card draws (up to 7 for chakra spread),
+ * plus optional conversation history.
+ * Streams the persona's response back as Server-Sent Events (SSE).
  *
  * Request body:
  *   { question: string, cards: CardRequest[], history?: HistoryMessage[] }
@@ -17,7 +18,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { buildUserMessage } from "@/lib/tarot/contextBuilder";
 import { getTarotAvatar } from "@/lib/tarot/avatars";
 import { loadCards } from "@/lib/tarot/wikiLoader";
-import type { ReadingRequest, ApiError, HistoryMessage } from "@/lib/tarot/types";
+import type { ReadingRequest, ApiError, HistoryMessage, SpreadType } from "@/lib/tarot/types";
 import { streamLLM, type LLMMessage } from "@/lib/llm/stream";
 
 // Vercel Hobby plan defaults serverless functions to a 5–10s timeout —
@@ -47,8 +48,10 @@ function validateRequest(body: unknown): ReadingRequest {
     throw new Error("`cards` must be a non-empty array");
   }
 
-  if (req.cards.length > 3) {
-    throw new Error("Maximum 3 cards per reading");
+  const isChakra = req.spreadType === "chakra";
+  const maxCards = isChakra ? 7 : 3;
+  if (req.cards.length > maxCards) {
+    throw new Error(`Maximum ${maxCards} cards per reading`);
   }
 
   for (const card of req.cards) {
@@ -89,6 +92,7 @@ function validateRequest(body: unknown): ReadingRequest {
   const spreadPositions = Array.isArray(req.spreadPositions)
     ? (req.spreadPositions as unknown[]).filter((p): p is string => typeof p === "string")
     : undefined;
+  const spreadType: SpreadType = req.spreadType === "chakra" ? "chakra" : "normal";
 
   return {
     question: req.question.trim(),
@@ -100,6 +104,7 @@ function validateRequest(body: unknown): ReadingRequest {
     avatarId: req.avatarId as string | undefined,
     firstImpression: firstImpression || undefined,
     spreadPositions: spreadPositions?.length ? spreadPositions : undefined,
+    spreadType,
   };
 }
 
@@ -135,8 +140,9 @@ export async function POST(req: NextRequest): Promise<Response> {
   // 2. Load wiki cards + resolve which tarot master is reading
   let userMessage: string;
   try {
-    const cards = loadCards(request.cards);
-    userMessage = buildUserMessage(request.question, cards, request.firstImpression, request.spreadPositions);
+    const isChakraSpread = request.spreadType === "chakra";
+    const cards = loadCards(request.cards, isChakraSpread);
+    userMessage = buildUserMessage(request.question, cards, request.firstImpression, request.spreadPositions, request.spreadType);
   } catch (err) {
     const error: ApiError = {
       error: "Failed to load card data",
@@ -150,13 +156,22 @@ export async function POST(req: NextRequest): Promise<Response> {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        // Build multi-turn messages: initial context + optional follow-up history
+        // Build multi-turn messages: initial context + optional follow-up history.
+        // When history exists, the last entry is the follow-up question — append a note
+        // so the persona replies conversationally instead of using the Chapter format.
+        const historyMessages = (request.history ?? []).map((h, idx, arr) => {
+          const isLastUser = idx === arr.length - 1 && h.role === "user";
+          return {
+            role: h.role as "user" | "assistant",
+            content: isLastUser
+              ? h.content + "\n\n（這是追問，請用你自己的語氣自然對話，不要使用 Chapter 1／2／3／4 格式。）"
+              : h.content,
+          };
+        });
+
         const messages: LLMMessage[] = [
           { role: "user", content: userMessage },
-          ...(request.history ?? []).map((h) => ({
-            role: h.role as "user" | "assistant",
-            content: h.content,
-          })),
+          ...historyMessages,
         ];
 
         for await (const chunk of streamLLM(avatar.systemPrompt, messages, MAX_TOKENS, TEMPERATURE)) {
@@ -177,16 +192,6 @@ export async function POST(req: NextRequest): Promise<Response> {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
-      "Access-Control-Allow-Origin": "*",
     },
-  });
-}
-
-// Handle preflight
-
-export async function OPTIONS(): Promise<Response> {
-  return new Response(null, {
-    status: 204,
-    headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" },
   });
 }

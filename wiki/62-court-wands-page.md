@@ -23,6 +23,10 @@ local_image: '/assets/cards/62-court-wands-page.webp'
 image_url: /wp-content/uploads/tarot/court-wands-page.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-wands-page/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- gold
+- red
 ---
 
 # 62 權杖侍衛​ / Page of Wands

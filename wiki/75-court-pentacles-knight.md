@@ -25,6 +25,10 @@ local_image: '/assets/cards/75-court-pentacles-knight.webp'
 image_url: /wp-content/uploads/tarot/court-pentacles-knight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-pentacles-knight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- brown
 ---
 
 # 75 錢幣騎士 / Knight of Pentacles

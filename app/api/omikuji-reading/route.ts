@@ -123,12 +123,21 @@ export async function POST(req: NextRequest): Promise<Response> {
   const stream = new ReadableStream({
     async start(controller) {
       try {
+        // When history exists, the last entry is the follow-up question — append a note
+        // so the persona replies conversationally without the formal reading structure.
+        const historyMessages = (request.history ?? []).map((h, idx, arr) => {
+          const isLastUser = idx === arr.length - 1 && h.role === "user";
+          return {
+            role: h.role as "user" | "assistant",
+            content: isLastUser
+              ? h.content + "\n\n（這是追問，請用你自己的語氣自然對話，不要使用正式的解籤段落格式。）"
+              : h.content,
+          };
+        });
+
         const messages: LLMMessage[] = [
           { role: "user", content: userMessage },
-          ...(request.history ?? []).map((h) => ({
-            role: h.role as "user" | "assistant",
-            content: h.content,
-          })),
+          ...historyMessages,
         ];
 
         for await (const chunk of streamLLM(avatar.systemPrompt, messages, MAX_TOKENS, TEMPERATURE)) {
@@ -149,19 +158,6 @@ export async function POST(req: NextRequest): Promise<Response> {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
-}
-
-// Handle preflight
-export async function OPTIONS(): Promise<Response> {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
     },
   });
 }

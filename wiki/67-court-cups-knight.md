@@ -21,6 +21,10 @@ local_image: '/assets/cards/67-court-cups-knight.webp'
 image_url: /wp-content/uploads/tarot/court-cups-knight.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-cups-knight/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- silver
+- orange
 ---
 
 # 67 聖杯騎士 / Knight of Cups

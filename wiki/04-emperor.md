@@ -29,6 +29,10 @@ local_image: '/assets/cards/04-emperor.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-emperor.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-emperor/
 scraped_at: '2026-06-18'
+dominant_colors:
+- red
+- orange
+- gold
 ---
 
 # 04 IV 國王 / The Emperor

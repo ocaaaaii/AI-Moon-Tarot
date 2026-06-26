@@ -26,6 +26,10 @@ local_image: '/assets/cards/74-court-pentacles-page.webp'
 image_url: /wp-content/uploads/tarot/court-pentacles-page.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-pentacles-page/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- brown
 ---
 
 # 74 錢幣侍衛 / Page of Pentacles

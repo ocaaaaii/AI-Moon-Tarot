@@ -24,6 +24,10 @@ local_image: '/assets/cards/14-temperance.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-temperance.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-temperance/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- white
+- gold
 ---
 
 # 14 XIV 節制 / Temperance

@@ -21,6 +21,10 @@ local_image: '/assets/cards/52-pentacles-ace.webp'
 image_url: /wp-content/uploads/tarot/pentacles-ace.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-ace/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- white
 ---
 
 # 52 錢幣王牌 / Ace of Pentacles

@@ -21,6 +21,10 @@ local_image: '/assets/cards/25-wands-four.webp'
 image_url: /wp-content/uploads/tarot/wands-four.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-four/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- green
+- blue
 ---
 
 # 25 權杖四 / Four of Wands

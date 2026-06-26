@@ -20,6 +20,10 @@ local_image: '/assets/cards/23-wands-two.webp'
 image_url: /wp-content/uploads/tarot/wands-two.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-wands-two/
 scraped_at: '2026-06-18'
+dominant_colors:
+- orange
+- blue
+- gold
 ---
 
 # 23 權杖二 / Two of Wands

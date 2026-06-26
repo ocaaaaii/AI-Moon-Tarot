@@ -21,6 +21,10 @@ local_image: '/assets/cards/47-swords-six.webp'
 image_url: /wp-content/uploads/tarot/swords-six.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-six/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- white
 ---
 
 # 47 寶劍六 / Six of Swords

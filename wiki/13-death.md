@@ -24,6 +24,10 @@ local_image: '/assets/cards/13-death.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-death.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-death/
 scraped_at: '2026-06-18'
+dominant_colors:
+- black
+- white
+- orange
 ---
 
 # 13 XIII 死亡​ / Death

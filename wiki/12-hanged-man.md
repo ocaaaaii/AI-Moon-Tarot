@@ -24,6 +24,10 @@ local_image: '/assets/cards/12-hanged-man.webp'
 image_url: /wp-content/uploads/tarot/tarot-meanings-hanged-man.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-hanged-man/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- red
+- gold
 ---
 
 # 12 XII 懸吊者 (吊人)​ / The Hanged Man

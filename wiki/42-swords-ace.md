@@ -21,6 +21,10 @@ local_image: '/assets/cards/42-swords-ace.webp'
 image_url: /wp-content/uploads/tarot/swords-ace.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-ace/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- white
+- gray
 ---
 
 # 42 寶劍王牌 / Ace of Swords

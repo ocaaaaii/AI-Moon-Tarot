@@ -20,6 +20,10 @@ local_image: '/assets/cards/37-cups-six.webp'
 image_url: /wp-content/uploads/tarot/cups-six.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-cups-six/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- orange
+- gold
 ---
 
 # 37 聖杯六 / Six of Cups

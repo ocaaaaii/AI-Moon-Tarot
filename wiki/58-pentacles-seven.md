@@ -24,6 +24,10 @@ local_image: '/assets/cards/58-pentacles-seven.webp'
 image_url: /wp-content/uploads/tarot/pentacles-seven.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-pentacles-seven/
 scraped_at: '2026-06-18'
+dominant_colors:
+- green
+- gold
+- brown
 ---
 
 # 58 錢幣七 / Seven of Pentacles

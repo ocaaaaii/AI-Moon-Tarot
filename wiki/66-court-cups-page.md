@@ -24,6 +24,10 @@ local_image: '/assets/cards/66-court-cups-page.webp'
 image_url: /wp-content/uploads/tarot/court-cups-page.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-court-cups-page/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- silver
+- gold
 ---
 
 # 66 聖杯侍衛 / Page of Cups

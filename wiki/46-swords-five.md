@@ -23,6 +23,10 @@ local_image: '/assets/cards/46-swords-five.webp'
 image_url: /wp-content/uploads/tarot/swords-five.jpeg
 source_url: https://nes-tarot.com/tarot-meanings-swords-five/
 scraped_at: '2026-06-18'
+dominant_colors:
+- blue
+- gray
+- white
 ---
 
 # 46 寶劍五 / Five of Swords
