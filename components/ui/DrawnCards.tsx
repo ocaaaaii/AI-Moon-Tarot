@@ -54,7 +54,7 @@ export default function DrawnCards({ cards, cardMeta = {}, positions }: DrawnCar
             )}
 
             {/* 3D flip container */}
-            <div style={{ width: 88, height: 154, perspective: "900px" }}>
+            <div style={{ width: 110, height: 192, perspective: "900px" }}>
               <div style={{
                 width: "100%",
                 height: "100%",

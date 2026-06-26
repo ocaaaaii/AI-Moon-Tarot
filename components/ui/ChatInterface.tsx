@@ -503,7 +503,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
         {/* User question bubble — shown outside screenshot during spread/deck/reveal/prereading only */}
         <AnimatePresence>
-          {(step === "refine" || step === "spread" || step === "deck" || step === "reveal") && (
+          {(step === "refine" || step === "spread" || step === "deck") && (
             <motion.div key="question" {...slideUp}>
               <UserBubble text={question} />
             </motion.div>
