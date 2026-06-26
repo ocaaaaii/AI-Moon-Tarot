@@ -64,7 +64,7 @@ function Reason({ value, onChange, placeholder }: { value:string; onChange:(v:st
   );
 }
 
-export default function DeveloperBubble() {
+export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
   const [open,    setOpen]    = useState(false);
   const [answers, setAnswers] = useState<Answers>(EMPTY);
   const [status,  setStatus]  = useState<Status>("idle");
@@ -115,7 +115,7 @@ export default function DeveloperBubble() {
   const isDone = status === "sent";
 
   return (
-    <div ref={panelRef} className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2">
+    <div ref={panelRef} className={`fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2 transition-opacity duration-200 ${hidden ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
 
       {/* Survey panel */}
       <AnimatePresence>

@@ -127,23 +127,20 @@ export default function DrawnCards({ cards, cardMeta = {}, positions }: DrawnCar
                   )}
                 </div>
               </div>
+            </div>
 
-              {/* Card label */}
-              <div className="mt-2 text-center">
-                <p className="text-morandi-stone/55 text-[10px] tracking-widest">
-                  {label}
-                </p>
-                {flipped[i] && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-cream-200/70 text-xs mt-0.5"
-                  >
-                    {nameZh}
-                  </motion.p>
-                )}
-              </div>
+            {/* Card label — outside the fixed-height container so it doesn't overflow */}
+            <div className="mt-2 text-center" style={{ width: cardW }}>
+              {flipped[i] && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-cream-200/70 text-xs"
+                >
+                  {nameZh}
+                </motion.p>
+              )}
             </div>
           </motion.div>
         );
