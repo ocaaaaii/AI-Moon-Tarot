@@ -136,7 +136,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-cream-100 text-xs font-medium leading-snug">開發者 CA</p>
-                <p className="text-morandi-stone/40 text-[10px]">AI Tarot v5.0 正式版 · 2026/6/26 上線</p>
+                <p className="text-morandi-stone/40 text-[10px]">AI Tarot v6.0 正式版 · 2026/8/20 上線</p>
               </div>
               <button onClick={()=>setOpen(false)}
                 className="text-morandi-stone/35 hover:text-cream-200/60 transition-colors text-sm leading-none flex-shrink-0">✕</button>
@@ -148,19 +148,19 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               {/* Intro message */}
               <div className="px-4 py-4" style={{ borderBottom:"1px solid rgba(184,168,200,0.07)" }}>
                 <p className="text-cream-200/82 text-[12.5px] leading-relaxed">
-                  Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v5.0 🌙
+                  Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v6.0 🌙
                 </p>
                 <p className="text-cream-200/70 text-[12px] leading-relaxed mt-2">
-                  這兩個版本加起來帶來了：<span className="text-morandi-gold/85 font-medium">神社追問</span>、<span className="text-morandi-gold/85 font-medium">七脈輪牌陣</span>、<span className="text-morandi-gold/85 font-medium">六大聖域儀式</span>、<span className="text-morandi-gold/85 font-medium">月神天啟劇場</span>、以及全新的<span className="text-morandi-gold/85 font-medium">眾神之庭</span>與<span className="text-morandi-gold/85 font-medium">週神諭 Pick-a-Card</span>。
+                  這個版本帶來了：全新的<span className="text-morandi-gold/85 font-medium">眾神之語</span>（跟七位角色純聊天陪伴，養成專屬好感度）、以及補完的<span className="text-morandi-gold/85 font-medium">星座週運勢</span>（12 星座每週運勢占卜）。
                 </p>
                 <p className="text-cream-200/60 text-[12px] leading-relaxed mt-2">
-                  封測將於 <span className="text-morandi-rose/80 font-medium">2026 年 7 月 3 日</span> 結束。有四扇門等著你，希望你都能進去看看：
+                  持續開發測試中，有四扇門等著你，希望你都能進去看看：
                 </p>
                 <ul className="mt-2 flex flex-col gap-1">
                   {[
                     "🔮 塔羅店鋪：占卜 + 追問聊天 + 七脈輪牌陣",
                     "⛩️ 月神神社：抽籤 + 解籤 + 聖域儀式",
-                    "🌌 眾神之庭：週神諭 Pick-a-Card 神諭占卜",
+                    "🌌 眾神之庭：週神諭 Pick-a-Card、星座週運勢、眾神之語陪伴聊天",
                     "📖 月神天啟：七位角色的日常故事劇場",
                   ].map((item) => (
                     <li key={item} className="text-cream-200/55 text-[11px] flex items-start gap-1.5">
@@ -265,7 +265,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               transition={{ duration:0.2 }} onClick={()=>setOpen(true)}
               className="relative px-3 py-2 rounded-2xl rounded-br-sm text-[11.5px] font-medium tracking-wide cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.45)]"
               style={{ background:"rgba(22,16,36,0.95)", border:"1px solid rgba(184,168,200,0.22)", color:"rgba(220,210,238,0.92)", backdropFilter:"blur(12px)" }}>
-              作者有話要說！v5.0 ✨
+              作者有話要說！v6.0 ✨
               <span className="absolute -bottom-[7px] right-3 w-3 h-3 rotate-45"
                 style={{ background:"rgba(22,16,36,0.95)", borderRight:"1px solid rgba(184,168,200,0.22)", borderBottom:"1px solid rgba(184,168,200,0.22)" }} />
             </motion.button>
