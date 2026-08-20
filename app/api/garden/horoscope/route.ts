@@ -117,26 +117,33 @@ async function fetchAndCacheSign(
     sections,
   };
 
-  // Write to wiki-horoscope/ cache
-  const lines = [
-    "---",
-    `sign: ${signSlug}`,
-    `sign_zh: ${meta.zh}`,
-    `week: ${week}`,
-    `scraped_at: ${new Date().toISOString()}`,
-    "source: astro.click108.com.tw",
-    "---",
-    "",
-  ];
-  const ORDER = ["整體運勢", "愛情運勢", "事業運勢", "財運運勢"] as const;
-  for (const sec of ORDER) {
-    const data = sections[sec];
-    if (!data) continue;
-    lines.push(`## ${sec} ${data.stars}`, "", data.content, "");
-  }
+  // Write to wiki-horoscope/ cache — best-effort only. Serverless hosts
+  // (e.g. Vercel) ship a read-only filesystem outside /tmp, so this write
+  // can throw there; that must never take down a request that already has
+  // a good, freshly-fetched-and-parsed `raw` to return.
+  try {
+    const lines = [
+      "---",
+      `sign: ${signSlug}`,
+      `sign_zh: ${meta.zh}`,
+      `week: ${week}`,
+      `scraped_at: ${new Date().toISOString()}`,
+      "source: astro.click108.com.tw",
+      "---",
+      "",
+    ];
+    const ORDER = ["整體運勢", "愛情運勢", "事業運勢", "財運運勢"] as const;
+    for (const sec of ORDER) {
+      const data = sections[sec];
+      if (!data) continue;
+      lines.push(`## ${sec} ${data.stars}`, "", data.content, "");
+    }
 
-  const filePath = path.join(wikiDir, `${week}-${signSlug}.md`);
-  await fs.writeFile(filePath, lines.join("\n"), "utf-8");
+    const filePath = path.join(wikiDir, `${week}-${signSlug}.md`);
+    await fs.writeFile(filePath, lines.join("\n"), "utf-8");
+  } catch (err) {
+    console.error(`[horoscope] cache write failed for ${signSlug} (non-fatal, e.g. read-only fs on serverless)`, err);
+  }
 
   return raw;
 }
@@ -192,7 +199,16 @@ export async function GET(req: NextRequest): Promise<NextResponse | Response> {
   }
 
   const wikiDir = path.join(process.cwd(), "wiki-horoscope");
-  if (!existsSync(wikiDir)) mkdirSync(wikiDir, { recursive: true });
+  if (!existsSync(wikiDir)) {
+    try {
+      mkdirSync(wikiDir, { recursive: true });
+    } catch (err) {
+      // Read-only fs (e.g. Vercel outside /tmp) — fall through, cache reads
+      // will just miss and fetchAndCacheSign's own write is already
+      // best-effort, so this must not take the whole request down.
+      console.error("[horoscope] could not create wiki-horoscope dir (non-fatal)", err);
+    }
+  }
 
   const filePath = path.join(wikiDir, `${week}-${sign}.md`);
 
