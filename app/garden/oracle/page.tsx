@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import PickACardView from "@/components/ui/PickACardView";
+import HoroscopeGrid from "@/components/ui/HoroscopeGrid";
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
@@ -40,21 +41,22 @@ export default function OraclePage() {
       {/* Pick-a-Card — full viewport width, self-contained */}
       <PickACardView />
 
-      {/* 星座功能 — 施工中 */}
-      <div className="max-w-3xl mx-auto px-4 md:px-8 pb-16">
+      {/* 星座週運勢 */}
+      <div className="max-w-3xl mx-auto px-4 md:px-8 pb-16 pt-8">
         <motion.div
-          className="w-full rounded-2xl flex flex-col items-center justify-center py-10 px-6 text-center"
-          style={{ border: "1px dashed rgba(184,168,200,0.15)", background: "rgba(184,168,200,0.03)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
+          className="mb-6 text-center"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <p className="text-morandi-stone/40 text-xs tracking-[0.25em] mb-3">✦ COMING SOON ✦</p>
-          <p className="text-cream-200/50 text-sm tracking-wide">星座週運勢</p>
-          <p className="text-morandi-stone/35 text-xs mt-2 leading-relaxed max-w-xs">
-            Cynthia 正在觀測星象，<br />這個功能即將在下一個版本與你見面。
+          <h2 className="font-serif text-2xl md:text-3xl text-cream-100 tracking-wide mb-2">
+            星座週運勢
+          </h2>
+          <p className="text-morandi-stone/50 text-sm">
+            Cynthia 的星座週報 · 月亮說給你聽
           </p>
         </motion.div>
+        <HoroscopeGrid />
       </div>
 
     </main>

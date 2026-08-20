@@ -34,7 +34,7 @@ const FEATURES: Feature[] = [
     icon: "♡",
     title: "眾神之語",
     tagline: "走入各個神明的領地 · 發展獨一無二的故事",
-    available: false,
+    available: true,
     glow: "rgba(168,120,230,0.4)",
   },
 ];
