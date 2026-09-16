@@ -118,7 +118,17 @@ export default function SiteNav({ onOpenGuide }: Props) {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -4, scale: 0.97 }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute right-0 top-full mt-2 w-[min(19rem,calc(100vw-2rem))] rounded-2xl px-5 py-4 text-center"
+                    /* Two things here.
+                       19rem left the two longest lines about three pixels short
+                       of fitting, so each spilled a single character onto a line
+                       of its own; 21rem clears them at this size and tracking.
+                       And on a phone this cannot hang off the button: the audio
+                       toggle and the hamburger sit to its right, so `right-0`
+                       anchors to the button's edge, not the screen's, and the
+                       panel ran 43px off the left — invisible, because the page
+                       clips horizontal overflow. Below md it is pinned to the
+                       viewport instead. */
+                    className="fixed left-3 right-3 top-[66px] z-50 rounded-2xl px-5 py-4 text-center md:absolute md:left-auto md:right-0 md:top-full md:mt-2 md:w-[min(21rem,calc(100vw-1.5rem))]"
                     style={{
                       background: "rgba(22,14,8,0.94)",
                       border: "1px solid rgba(212,168,89,0.18)",
@@ -126,15 +136,20 @@ export default function SiteNav({ onOpenGuide }: Props) {
                     }}
                   >
                     <p className="text-amber-300/95 text-sm tracking-widest mb-3">✶ 曜刻 ✶</p>
-                    <p className="text-cream-100/90 text-sm leading-relaxed" style={{ letterSpacing: "0.06em" }}>
-                      星體交會、命運閃耀的瞬間。
-                      <br />
-                      在月之神社的世界裡，時間不是流逝的，
-                      <br />
-                      而是凝聚成一枚枚散發微光的金色星芒，
-                      <br />
-                      用來與神明、命運交換指引。
-                    </p>
+                    {/* Each line is its own block rather than <br />-separated
+                        text. The breaks are the copy's own rhythm and should be
+                        kept, but on a narrow phone a line still has to wrap —
+                        and `text-wrap: pretty` makes that wrap land somewhere
+                        sensible instead of stranding one character. */}
+                    <div
+                      className="text-cream-100/90 text-sm leading-relaxed"
+                      style={{ letterSpacing: "0.06em", textWrap: "pretty" }}
+                    >
+                      <p>星體交會、命運閃耀的瞬間。</p>
+                      <p>在月之神社的世界裡，時間不是流逝的，</p>
+                      <p>而是凝聚成一枚枚散發微光的金色星芒，</p>
+                      <p>用來與神明、命運交換指引。</p>
+                    </div>
                     <div className="mt-3 pt-3 flex flex-col gap-1" style={{ borderTop: "1px solid rgba(212,168,89,0.12)" }}>
                       <p className="text-amber-300/90 text-sm tracking-wide">每日 00:00 補充 +24 曜刻</p>
                       <p className="text-cream-200/65 text-xs">塔羅占卜 / 神社抽籤 各 −1 曜刻</p>
