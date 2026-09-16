@@ -40,8 +40,12 @@ import Wordmark from "./Wordmark";
 /** tune these two together when the art changes — see P0-1 contrast rule */
 const DESKTOP_SCRIM =
   "linear-gradient(to left, rgba(10,7,18,0.88) 0%, rgba(10,7,18,0.62) 26%, rgba(10,7,18,0.12) 52%, transparent 70%)";
+/* The bottom eighth is fully solid, not merely dark. On mobile the copy is
+   pulled up over this edge, and `svh` resolves differently in in-app browsers
+   (Instagram, LINE) than the numbers suggest — a guaranteed black bed is what
+   keeps the kicker legible there instead of sitting on lit blossoms. */
 const BOTTOM_FADE =
-  "linear-gradient(to top, #0a0712 0%, rgba(10,7,18,0.75) 18%, rgba(10,7,18,0.15) 42%, transparent 60%)";
+  "linear-gradient(to top, #0a0712 0%, #0a0712 12%, rgba(10,7,18,0.72) 26%, rgba(10,7,18,0.2) 46%, transparent 64%)";
 
 export default function HeroKV() {
   const scope = useRef<HTMLElement | null>(null);
@@ -110,7 +114,13 @@ export default function HeroKV() {
       style={{ background: "#0a0712" }}
     >
       {/* ── art layer: flow panel on mobile, full bleed on desktop ── */}
-      <div data-hero-art className="relative w-full h-[62svh] md:absolute md:inset-0 md:h-full">
+      {/* overflow-hidden is load-bearing: the plate below is inset -10px so
+          pointer parallax never exposes an edge, and without clipping that
+          10px band of undimmed art hangs below the scrims. On desktop the
+          section hides it; on mobile this panel is only 62svh and in normal
+          flow, so the overhang landed on the copy as a hard bright seam
+          straight through the wordmark. */}
+      <div data-hero-art className="relative w-full h-[62svh] overflow-hidden md:absolute md:inset-0 md:h-full">
         {/* inner plate exists purely so pointer parallax has its own element */}
         <div data-hero-plate className="absolute inset-[-10px]">
           <picture>
