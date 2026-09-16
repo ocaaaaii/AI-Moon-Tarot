@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 const TO_EMAIL = "joannewu0314@gmail.com";
 
+/**
+ * Sender address.
+ *
+ * The default is Resend's shared sandbox domain, which every Resend account
+ * can use without setup — and which, being shared by thousands of senders
+ * with no SPF/DKIM of your own, Gmail files straight into spam. That is
+ * exactly what happened here: the surveys were always being delivered, just
+ * never seen.
+ *
+ * The real fix is a verified domain. Once one is verified in Resend, set
+ * RESEND_FROM (e.g. `AI Tarot <survey@your-domain>`) in the Vercel project
+ * and this switches over with no code change and no redeploy.
+ */
+const FROM = process.env.RESEND_FROM || "AI Tarot Survey <onboarding@resend.dev>";
+
 interface SurveyAnswers {
   q1: string; q1r: string;
   q2: string; q2r: string;
@@ -32,14 +47,31 @@ function row(label: string, value: string, reason?: string) {
     </tr>`;
 }
 
+/** one question as plain text; empty answers are dropped by the caller */
+function line(label: string, value: string, reason?: string): string {
+  if (!value && !reason) return "";
+  const body = value || "（未回答）";
+  return reason ? `${label}\n  ${body}\n  ↳ ${reason}\n` : `${label}\n  ${body}\n`;
+}
+
 export async function POST(req: NextRequest) {
   const { name, answers } = await req.json() as { name: string; answers: SurveyAnswers };
   const displayName = name?.trim() || "匿名測試員";
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.log("[contact] Survey from:", displayName, JSON.stringify(answers, null, 2));
-    return NextResponse.json({ ok: true });
+    // This used to log and return ok:true. That is how weeks of closed-beta
+    // feedback went missing without anyone noticing: the form said "sent ✨",
+    // nothing was sent, and the only record was a Vercel log line that ages
+    // out. A survey that cannot be delivered must fail loudly.
+    // `.env.local` is gitignored, so setting the key locally does nothing for
+    // production — it has to exist in the Vercel project settings too.
+    console.error(
+      "[contact] RESEND_API_KEY is not set — survey NOT sent. Raw answers:",
+      displayName,
+      JSON.stringify(answers)
+    );
+    return NextResponse.json({ error: "email not configured" }, { status: 500 });
   }
 
   const html = `
@@ -64,6 +96,24 @@ export async function POST(req: NextRequest) {
     </div>
   `;
 
+  const text = [
+    `AI Tarot v7.0 — 測試問卷回饋`,
+    `來自：${displayName}`,
+    ``,
+    line("Q1. 你覺得好玩嗎？", answers.q1, answers.q1r),
+    line("Q2. 角色個性差異明顯嗎？", answers.q2, answers.q2r),
+    line("Q3. 像在和真人對話嗎？", answers.q3, answers.q3r),
+    line("Q4. 最喜歡的角色", answers.q4chars, answers.q4r),
+    line("Q5. 神社 vs 塔羅店", answers.q5, answers.q5r),
+    line("Q6. 喜歡月神天啟故事嗎？", answers.q6, answers.q6r),
+    line("Q7. 新首頁的感覺", answers.q7, answers.q7r),
+    line("使用體驗卡卡的地方", answers.ux),
+    line("想看到的新功能", answers.idea),
+    line("還有話要說", answers.extra),
+  ]
+    .filter(Boolean)
+    .join("\n");
+
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -71,10 +121,16 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "AI Tarot Survey <onboarding@resend.dev>",
+      from: FROM,
       to: [TO_EMAIL],
-      subject: `[AI Tarot 問卷] ${displayName}`,
+      reply_to: TO_EMAIL,
+      subject: `AI Tarot 問卷回饋 — ${displayName}`,
       html,
+      // A plain-text alternative matters more than it looks: HTML-only mail
+      // scores worse with spam filters, and this survey was landing in Gmail's
+      // spam folder. It also makes the mail readable on a watch or in a
+      // text-only client.
+      text,
     }),
   });
 
