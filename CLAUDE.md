@@ -6,7 +6,7 @@
 
 ## 🛠 Tech Stack
 - **Frontend Framework:** Next.js 14+ (App Router), TypeScript (Strict Mode)
-- **Animation & 3D:** motion.dev (Micro-interactions, page transitions), Three.js / @react-three/fiber (3D card deck, shuffling, flipping)
+- **Animation & 3D:** motion.dev (Micro-interactions, page transitions), Three.js / @react-three/fiber (3D card deck, shuffling, flipping), GSAP + ScrollTrigger (**landing page `/` only** — see 🎬 Animation libraries below)
 - **Styling:** TailwindCSS (Theme color: Morandi & Cream palette)
 - **Agent Framework:** FastAPI / Next.js Route Handlers + LangChain (Multi-Agent RAG flow)
 - **Screenshot:** modern-screenshot / html2canvas
@@ -88,6 +88,74 @@ A cinematic slideshow of each soul's daily-life story (CG stills + narration), e
 
 - **Data:** `/lib/stories/types.ts` (`Story`/`StorySlide` shape), `/lib/stories/storyN.ts` (one file per story, transcribed from that story's own `.md` source in `/public/assets/Storys/StoryN/`), `/lib/stories/stories.ts` (registry — `STORIES` array + `getStory(id)`). Same single-source-of-truth pattern as the avatar registries: adding story2 means adding `story2.ts` + one line in `stories.ts`, not touching the selector page or the viewer.
 - **Routes:** `/app/stories` (selector grid, reads `STORIES`), `/app/stories/[id]` (renders `StoryViewer` for that story, 404s via `notFound()` if the id isn't in the registry).
-- **Viewer:** `components/stories/StoryViewer.tsx` — manual-paced (not auto-advancing like `PortalTour`, since this is narrative content the reader should move through at their own speed: tap the left/right thirds of the image, the prev/next buttons, or arrow keys). Three motion effects, **all built on `motion/react` alone, no GSAP** (explicitly decided — the project has one animation library, and motion/react already covers everything asked for): (1) zoom & fade crossfade between slides, (2) the dialogue-box text parallaxes in ~0.2s after the image with a blur-to-clear ease, (3) a radial ambient glow behind the whole stage retunes color per-slide via each slide's `glowRGB` (warm gold for cozy beats, starry purple for divine ones).
+- **Viewer:** `components/stories/StoryViewer.tsx` — manual-paced (not auto-advancing like `PortalTour`, since this is narrative content the reader should move through at their own speed: tap the left/right thirds of the image, the prev/next buttons, or arrow keys). Three motion effects, **all built on `motion/react` alone, no GSAP** (still true for this viewer; GSAP's 2026-09-16 arrival is scoped to `/` only — see 🎬 below): (1) zoom & fade crossfade between slides, (2) the dialogue-box text parallaxes in ~0.2s after the image with a blur-to-clear ease, (3) a radial ambient glow behind the whole stage retunes color per-slide via each slide's `glowRGB` (warm gold for cozy beats, starry purple for divine ones).
 - **Assets:** images live in `/public/assets/Storys/封面.jpg` (cover, shown on the portal door + selector card) and `/public/assets/Storys/StoryN/NN.jpg`. Source files arrive as multi-MB unoptimized PNGs — always re-encode to JPEG (quality ~82-84) before wiring up a new story; this cut story1's images by ~85% with no visible quality loss (same lesson as the Sacred Realms region backgrounds and the portal tour photos).
 - **Monetization (月幣 → 御守 → unlock) is NOT built.** There's no currency/wallet/payment system anywhere in this project. `Story.locked` exists as a field for future use but nothing reads it yet — every story is freely viewable today. Do not invent a fake unlock mechanism; when a real account/payment system exists, gate `/app/stories/[id]/page.tsx` on it then.
+## 🎬 Animation libraries — two of them, with a hard boundary (since 2026-09-16)
+
+The project ran on `motion/react` alone until the v7.0 landing-page rebuild, when the PO asked for GSAP-driven hover and light work. **Do not "clean this up" by removing GSAP** — it is a deliberate, scoped decision, not drift.
+
+| | Owns | Where |
+|---|---|---|
+| `motion/react` | mount/unmount, `AnimatePresence` overlays, `whileInView` section reveals, menus | everywhere, including `/` |
+| GSAP + ScrollTrigger | scroll-linked motion (`scrub`), infinite light/glow loops, hover (`quickTo`) | **`/` only** |
+
+Rules that are not negotiable:
+
+- **One property, one owner.** GSAP and `motion/react` must never animate the same property on the same element. The pattern is an outer `<motion.div>` for entrance and an inner `<div ref>` for GSAP.
+- **All GSAP goes through `lib/landing/useGsapContext.ts`**, which wraps `gsap.context()` and calls `ctx.revert()` on unmount. Skipping it leaks ScrollTriggers every time a user goes into a world and comes back.
+- **`lib/landing/gsap.ts` is the only import site**, and it loads via `await import()` so GSAP stays out of the first-paint path and out of the other four worlds' bundles.
+- **`gsap.matchMedia()` needs a condition that matches at every width.** A gotcha that cost real debugging time: `mm.add({ isDesktop, reduced }, cb)` only runs the callback while at least one condition is true, so below 768px with no reduced-motion preference *nothing ran at all*. Always include an `isMobile` condition.
+- **Never put `scroll-behavior: smooth` on `html`/`body`.** ScrollTrigger mis-measures while a CSS smooth scroll is in flight. Anchor navigation scrolls from JS instead (`scrollToSection` in `components/landing/SiteNav.tsx`), which still honours each section's `scroll-margin-top`.
+- `lib/landing/fxProfile.ts` holds the settled motion constants (`FX`). The earlier `subtle`/`vivid` pair and its `?fx=` switch are gone — the PO chose one on 2026-09-16.
+- `components/landing/Wordmark.tsx` is settled: **Cinzel**, weight 400, moonlight-metal gradient (`background-clip: text`), and the two `O`s drawn as a waxing/waning moon pair in inline SVG. The five-face `?wm=` comparison switch has been removed. Cinzel is an all-caps Roman face — `Tarot` rendering as large-T + small caps is intentional. The English pull quote uses `font-quote` (Cormorant Garamond italic) because Cinzel has no italic and a synthesised slant looks cheap.
+
+## ✨ Ambient light — the "living illustration" layer
+
+`components/landing/AmbientScene.tsx` + `lib/landing/ambient.ts` make the painted scenes feel alive: candles flicker, the moon breathes, crystal balls turn and blossom petals drift. Mounted on the hero, the WORLD plate and the footer band.
+
+**It adds light; it does not move the picture.** The art is a flat JPEG, so every effect is an additive glow positioned over a feature in the painting. Making the orrery actually rotate, or a real flame actually waver, would need the scene itself de-composited into layers — deliberately **not built**.
+
+**Two layers, two blend modes.** The light layer is `mix-blend-mode: screen`, so it only ever brightens *and* a sprite's dark background contributes nothing — cut-outs need no perfect keying. Petals are physical objects in a normally-blended sibling layer; screening them turns them into ghosts.
+
+**Sprites.** `public/assets/landing/fx/` holds 20 cut-outs (star flares, galaxies, orbit rings, blossom petals) extracted from the PO's sprite sheets — the originals are the `*素材*.png` files in `/public/assets`. A `LightPoint` with a `sprite` renders that PNG; one without renders a soft radial bloom. Use a bloom where the shape is already painted (candle halos, moonlight over the painted crescent) and a sprite where you want a shape that reads clearly. **A gradient-only pass looked like nothing was moving** — that was the lesson that prompted the sprites.
+
+**No video backgrounds.** Beyond the cheap-AI-video look, `images.unoptimized: true` means a 1080p loop would ship at full size and blow the page budget on its own.
+
+Rules:
+
+- Light positions are **fractions of their own image**, so each crop needs its own set. The hero ships two (`kv-desktop.jpg` at 1.78, `kv-mobile.jpg` at 0.89) and therefore has `KV_DESKTOP_SCENE` and `KV_MOBILE_SCENE`. Reusing one set across both puts candle glows in mid-air.
+- Lights are centred with **negative percentage margins**, not a transform — percentage margins resolve against width, and the box is square, so one value centres both axes. This leaves `transform` entirely to GSAP. Anywhere GSAP animates an element, its tilt/offset must be set through GSAP too, because a CSS `transform` will just be overwritten.
+- Candle `flicker` uses `repeatRefresh: true` with function-valued durations and opacities, re-rolled every cycle. Fixed keyframes read as a mechanical loop within seconds.
+- **Put the ambient layer ABOVE the section's darkening scrims.** Underneath them a 0.8-alpha shadow pool simply swallows the light, and the whole effect reads as "nothing is happening" — this cost a round of confused debugging.
+- **Everything pauses off-screen**, via ScrollTrigger `onToggle` *and* `onRefresh`. Reading `trigger.isActive` straight after `create()` is too early — ScrollTrigger has not measured yet and reports false for a section that is on screen, which silently pauses every light on first paint.
+- Only `opacity` and `transform` are animated. Never animate `filter: blur`.
+- Phones drop every point not marked `onMobile` and halve the petals.
+- There is no shooting star. It was built, and removed on the PO's call: a streak crossing a candlelit table read as an intruder, not as atmosphere. Do not add it back without being asked.
+- `prefers-reduced-motion` renders the lights at rest and builds no timelines at all.
+- The hero has three animations on three separate elements, on purpose: `[data-hero-art]` `yPercent` (scroll scrub), `[data-hero-plate]` `x`/`y` (pointer parallax), and the ambient layer's own offset. Never merge two onto one element.
+
+**Verifying animation in the in-app Browser pane:** when the pane is hidden the browser throttles `requestAnimationFrame`, GSAP's ticker stops, and every animated value reads as frozen. That is the harness, not a bug — check `document.visibilityState` before concluding anything is broken.
+
+## 🖼 Image weight is a hard requirement, not an optimisation
+
+`next.config.mjs` sets `images.unoptimized: true`, so **`next/image` does no compression and the file in `/public` is exactly what ships to the user**. Every image must be compressed *before* it is committed (JPEG q82–84; Python + Pillow is available locally).
+
+Two traps already found by measurement, both worth re-checking whenever a new asset lands:
+
+- A 1.9 MB `logo-circle.png` and a 2.2 MB `CA.jpg` were being shipped to render at **36px and 32px**. Downscaled copies live in `/public/assets/landing/` (`logo-mark.png` 35KB, `ca-avatar.jpg` 8KB) and cut the portal's first viewport from 4.4 MB to 475 KB. If you add an avatar or icon, ship a thumbnail, not the source art.
+- For art-directed hero images, use a native `<picture>` with `<source media>` rather than two `next/image`s toggled by `hidden`/`md:block` — a hidden `<img>` is still downloaded, so the breakpoint trick silently doubles the transfer.
+
+## 🃏 THE SEVEN — fan + moon carousel
+
+`CharacterRoster.tsx` (state only) composes `CharacterFan.tsx` (the picker) and `CharacterDetail.tsx` (the moon + carousel). Both children are controlled — the roster owns the single `selected` id, so the two can never disagree.
+
+- **`motion/react` owns every transform here.** These are React-state-driven, which is motion's domain; adding GSAP would put two libraries on the same `transform`.
+- **Desktop fans the cards about their BOTTOM edge** (`transform-origin: bottom center`) with a negative margin overlap. Rotating about the centre reads as a pinwheel; without the overlap it is a row of thumbnails again.
+- **Below `lg` the fan is abandoned** for a snap-scroll track. Seven rotated cards cannot be laid out at 375px, and trying produces horizontal overflow — check `document.documentElement.scrollWidth` against `innerWidth` after any change here.
+- **It opens on Cynthia, never on nothing.** The section used to render as an empty band until clicked, which read as dead space, and Cynthia is the free persona.
+- **Do not reintroduce `AnimatePresence mode="wait"` for the panel swap.** It holds the new content back until the old one's exit animation finishes, so the panel stalls whenever animation cannot progress — a background tab, a throttled rAF, or just rapid clicking through the dots. A keyed re-mount with a fade-in has none of that.
+- The seven dots use each soul's own accent, which is also how the roster says "seven personalities" rather than "seven thumbnails".
+- The moon portrait is masked with `radial-gradient(circle, #000 0%, #000 70%, transparent 100%)` so its edge dissolves; a hard circle reads as a cropped avatar, not a moon.
+
+Landing-page copy and section data live in `lib/landing/sections.ts` (same single-source-of-truth pattern as the avatar and story registries). Character cards read `TAROT_AVATARS` directly and only look up a thumbnail path — do not fork a second copy of the roster, and never render `realName` on the portal page.

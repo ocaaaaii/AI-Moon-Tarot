@@ -18,7 +18,10 @@ const FEATURES: Feature[] = [
     icon: "✦",
     title: "週神諭",
     tagline: "本週星座運勢 · Pick a Card 神諭",
-    available: true,
+    // shelved in v7: the weekly horoscope output was not good enough to ship.
+    // The route still exists and works — only the entry point is closed, so
+    // turning it back on is one boolean.
+    available: false,
     glow: "rgba(184,168,200,0.4)",
   },
   {

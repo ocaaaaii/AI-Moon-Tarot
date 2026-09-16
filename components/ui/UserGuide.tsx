@@ -32,10 +32,10 @@ const STEPS: SpotlightStep[] = [
     title: "歡迎來到 AI MOON TAROT",
     description:
       "這裡有四扇門：塔羅店鋪、月神神社、眾神之庭、月神天啟。每扇門都有七位個性截然不同的靈魂在等你。\n\n封測期間，所有功能完全免費開放，歡迎深入體驗！",
-    tip: "封測截止：2026 年 7 月 3 日 · 填完問卷送 CA 一份小鼓勵 🙏",
+    tip: "封測截止：2026 年 9 月 30 日 · 填完問卷送 CA 一份小鼓勵 🙏",
   },
   {
-    selector: 'a[href="/tarot"]',
+    selector: '[data-guide="gate-tarot"]',
     padding: 14,
     tooltipSide: "bottom",
     icon: "🔮",
@@ -46,7 +46,7 @@ const STEPS: SpotlightStep[] = [
     tip: "解讀後有追問框，可以繼續聊——不消耗曜刻",
   },
   {
-    selector: 'a[href="/shrine"]',
+    selector: '[data-guide="gate-shrine"]',
     padding: 14,
     tooltipSide: "bottom",
     icon: "⛩️",
@@ -57,18 +57,18 @@ const STEPS: SpotlightStep[] = [
     tip: "抽到凶籤？解籤師會邀你把它掛上結籤架，讓月神保管。解讀後有追問框，可以繼續聊——不消耗曜刻",
   },
   {
-    selector: 'a[href="/garden"]',
+    selector: '[data-guide="gate-garden"]',
     padding: 14,
     tooltipSide: "bottom",
     icon: "🌌",
     glowColor: "rgba(120,80,220,0.85)",
-    title: "眾神之庭 · 週神諭",
+    title: "眾神之庭 · 眾神之語",
     description:
-      "每週三位神明輪流主持 Pick-a-Card 神諭占卜。選一個主題，翻開一疊牌，聽聽宇宙這週想對你說什麼。\n\n同一週選同一個主題的人，翻到的牌完全相同——這就是集體潛意識的共鳴。",
-    tip: "進入主題消耗 1 曜刻 · 星座週運勢即將上線",
+      "走進各位神明的領地，純聊天陪伴，養成你和祂之間獨一無二的故事。\n\n週神諭 Pick-a-Card 與星座週運勢正在整修，之後會以更好的樣子回來。",
+    tip: "聊天不消耗曜刻 · 顯化願力開發中",
   },
   {
-    selector: 'a[href="/stories"]',
+    selector: '[data-guide="gate-stories"]',
     padding: 14,
     tooltipSide: "top",
     icon: "📖",
@@ -86,7 +86,7 @@ const STEPS: SpotlightStep[] = [
     glowColor: "rgba(212,168,89,0.9)",
     title: "曜刻 · 時間貨幣",
     description:
-      "每天 00:00 自動補充 +24 曜刻。塔羅占卜 / 神社抽籤 / 週神諭 Pick-a-Card 各 −1 曜刻。追問聊天、聖域儀式、觀看故事全部免費。",
+      "每天 00:00 自動補充 +24 曜刻。塔羅占卜 / 神社抽籤 各 −1 曜刻。追問聊天、眾神之語、聖域儀式、觀看故事全部免費。",
     tip: "未用完自動累積 · 封測期間額度充足",
   },
   {
@@ -94,7 +94,7 @@ const STEPS: SpotlightStep[] = [
     glowColor: "rgba(200,155,160,0.7)",
     title: "你的封測任務",
     description:
-      "✦ 在塔羅店鋪占卜，試試追問功能\n✦ 在神社抽一支籤，探索一個聖域\n✦ 在眾神之庭翻開本週的 Pick-a-Card\n✦ 翻看月神天啟的任意一個故事\n✦ 完成後點右下角 CA 的頭像填問卷",
+      "✦ 在塔羅店鋪占卜，試試追問功能\n✦ 在神社抽一支籤，探索一個聖域\n✦ 到眾神之庭跟一位神明聊聊天\n✦ 翻看月神天啟的任意一個故事\n✦ 完成後點右下角 CA 的頭像填問卷",
     tip: "每份回饋，CA 都認真讀 ✨",
   },
 ];
@@ -283,7 +283,10 @@ export default function UserGuide({ onClose }: UserGuideProps) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Compute highlight box from DOM element
+  // Compute highlight box from DOM element.
+  // The portal page is a long scrolling page now, so a step's target is often
+  // below the fold — bring it into view first, and keep re-measuring while
+  // that scroll is in flight, or the spotlight lands on empty space.
   useEffect(() => {
     if (!step.selector) { setBox(null); return; }
     const measure = () => {
@@ -293,9 +296,24 @@ export default function UserGuide({ onClose }: UserGuideProps) {
       const r = el.getBoundingClientRect();
       setBox({ top: r.top - pad, left: r.left - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
     };
+
+    const target = document.querySelector(step.selector);
+    if (target) {
+      const r = target.getBoundingClientRect();
+      const offscreen = r.top < 72 || r.bottom > window.innerHeight - 24;
+      if (offscreen) {
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+      }
+    }
+
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure);
+    };
   }, [index, step.selector, step.padding]);
 
   const useDOMSpotlight = !!box && !isMobile;

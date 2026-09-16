@@ -33,8 +33,11 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ["var(--font-serif)", "Georgia", "serif"],
-        sans:  ["var(--font-sans)", "system-ui", "sans-serif"],
+        serif:   ["var(--font-serif)", "Georgia", "serif"],
+        sans:    ["var(--font-sans)", "system-ui", "sans-serif"],
+        // latin-only — see globals.css for why these are two separate faces
+        display: ["var(--font-display)", "Georgia", "serif"],
+        quote:   ["var(--font-quote)", "Georgia", "serif"],
       },
       animation: {
         "float":      "float 6s ease-in-out infinite",

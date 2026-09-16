@@ -5,6 +5,14 @@
 :root {
   --font-sans: "Noto Sans TC", system-ui, sans-serif;
   --font-serif: "Noto Serif TC", Georgia, serif;
+  /* Latin-only display faces. Neither has CJK coverage — never use them for
+   * Chinese text, which stays on Noto Serif/Sans TC.
+   *   display — Cinzel, Roman inscriptional caps, for the wordmark and every
+   *             all-caps label (chosen by the PO 2026-09-16)
+   *   quote   — Cormorant Garamond italic, for the English pull quote; Cinzel
+   *             has no italic and a synthesised slant looks cheap at size */
+  --font-display: "Cinzel", Georgia, serif;
+  --font-quote: "Cormorant Garamond", Georgia, serif;
 }
 
 * {
@@ -20,6 +28,10 @@ body {
   background-color: #1a1228;
   color: #f9f3e3;
 }
+
+/* Portal-page anchor navigation is scrolled from JS (SiteNav), NOT with
+ * `scroll-behavior: smooth` — GSAP ScrollTrigger mis-measures while a CSS
+ * smooth scroll is in flight, which makes the hero's scrub stutter. */
 
 /* Scrollbar */
 ::-webkit-scrollbar {
