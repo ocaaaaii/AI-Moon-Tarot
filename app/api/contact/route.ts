@@ -30,18 +30,34 @@ interface SurveyAnswers {
   extra: string;
 }
 
+/**
+ * Everything a respondent types is attacker-controlled and ends up in an
+ * email the owner opens and trusts. Mail clients strip <script>, but they do
+ * render links and remote images — so unescaped answers are a free phishing
+ * link, or a tracking pixel, inside a message that looks like it came from
+ * your own app. Escape before interpolation, always.
+ */
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function row(label: string, value: string, reason?: string) {
   if (!value && !reason) return "";
   const reasonHtml = reason
-    ? `<div style="margin-top:4px;color:#999;font-size:12px;padding-left:8px;border-left:2px solid #e0d8f0;white-space:pre-wrap">${reason}</div>`
+    ? `<div style="margin-top:4px;color:#999;font-size:12px;padding-left:8px;border-left:2px solid #e0d8f0;white-space:pre-wrap">${esc(reason)}</div>`
     : "";
   return `
     <tr>
-      <td style="padding:10px 0 2px;color:#6b4fa8;font-size:12px;font-weight:600;letter-spacing:.04em">${label}</td>
+      <td style="padding:10px 0 2px;color:#6b4fa8;font-size:12px;font-weight:600;letter-spacing:.04em">${esc(label)}</td>
     </tr>
     <tr>
-      <td style="padding:0 0 14px;font-size:13px;color:#333">
-        ${value || '<span style="color:#bbb">（未回答）</span>'}
+      <td style="padding:0 0 14px;font-size:13px;color:#333;white-space:pre-wrap">
+        ${value ? esc(value) : '<span style="color:#bbb">（未回答）</span>'}
         ${reasonHtml}
       </td>
     </tr>`;
@@ -54,9 +70,61 @@ function line(label: string, value: string, reason?: string): string {
   return reason ? `${label}\n  ${body}\n  ↳ ${reason}\n` : `${label}\n  ${body}\n`;
 }
 
+/** longest any single free-text answer may be before it is truncated */
+const MAX_ANSWER = 2000;
+/** the name goes into a mail header, so it gets a much tighter budget */
+const MAX_NAME = 60;
+
+/**
+ * Coerce whatever arrived into a bounded, control-character-free string.
+ *
+ * Every field here is anonymous public input. Non-strings would crash `esc`,
+ * control characters in the name are the classic mail-header-injection
+ * primitive, and nothing else caps the body, so an unbounded answer is an
+ * unbounded email.
+ */
+function clean(value: unknown, max: number): string {
+  if (typeof value !== "string") return "";
+  let out = "";
+  for (const ch of value) {
+    if (out.length >= max) break;
+    const code = ch.codePointAt(0) ?? 0;
+    // keep tab, newline and carriage return; drop the other C0 controls
+    // and DEL. Written as a loop rather than a regex because a character
+    // class of literal control bytes is invisible in source and does not
+    // survive every editor or encoding intact.
+    const printable = code === 9 || code === 10 || code === 13 || (code >= 32 && code !== 127);
+    if (printable) out += ch;
+  }
+  return out.slice(0, max);
+}
+
 export async function POST(req: NextRequest) {
-  const { name, answers } = await req.json() as { name: string; answers: SurveyAnswers };
-  const displayName = name?.trim() || "匿名測試員";
+  let raw: { name?: unknown; answers?: unknown };
+  try {
+    raw = (await req.json()) as { name?: unknown; answers?: unknown };
+  } catch {
+    return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
+  }
+
+  const input = (raw.answers && typeof raw.answers === "object" ? raw.answers : {}) as Record<string, unknown>;
+  const field = (key: string) => clean(input[key], MAX_ANSWER);
+
+  const answers: SurveyAnswers = {
+    q1: field("q1"), q1r: field("q1r"),
+    q2: field("q2"), q2r: field("q2r"),
+    q3: field("q3"), q3r: field("q3r"),
+    q4chars: field("q4chars"), q4r: field("q4r"),
+    q5: field("q5"), q5r: field("q5r"),
+    q6: field("q6"), q6r: field("q6r"),
+    q7: field("q7"), q7r: field("q7r"),
+    ux: field("ux"),
+    idea: field("idea"),
+    extra: field("extra"),
+  };
+
+  // newlines are legal in a body but not in a Subject header
+  const displayName = clean(raw.name, MAX_NAME).replace(/[\r\n]/g, " ").trim() || "匿名測試員";
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -77,7 +145,7 @@ export async function POST(req: NextRequest) {
   const html = `
     <div style="font-family:sans-serif;max-width:520px;padding:28px;color:#333;line-height:1.6">
       <h2 style="margin:0 0 4px;color:#6b4fa8;font-size:18px">AI Tarot v7.0 — 測試問卷回饋</h2>
-      <p style="margin:0 0 24px;color:#999;font-size:12px">來自：<strong style="color:#555">${displayName}</strong></p>
+      <p style="margin:0 0 24px;color:#999;font-size:12px">來自：<strong style="color:#555">${esc(displayName)}</strong></p>
       <table style="width:100%;border-collapse:collapse">
         ${row("Q1. 你覺得好玩嗎？", answers.q1, answers.q1r)}
         ${row("Q2. 角色個性差異明顯嗎？", answers.q2, answers.q2r)}

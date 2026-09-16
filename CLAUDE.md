@@ -137,6 +137,38 @@ Rules:
 
 **Verifying animation in the in-app Browser pane:** when the pane is hidden the browser throttles `requestAnimationFrame`, GSAP's ticker stops, and every animated value reads as frozen. That is the harness, not a bug — check `document.visibilityState` before concluding anything is broken.
 
+## 🔒 API surface — everything under /app/api is public
+
+There is no auth, no rate limiting and no origin check on any route, and
+twelve of the fifteen spend real money at Anthropic or DeepSeek. Treat every
+request body as hostile, anonymous input.
+
+- **Bound every text field that reaches a model.** `lib/api/limits.ts` holds
+  the ceilings (`LIMITS`) and two helpers: `capText` truncates free text,
+  `capTail` keeps the most recent N of an array. Without a ceiling the caller
+  decides how large a prompt is, and therefore how much one anonymous request
+  costs. Capping a history's turn *count* is not enough on its own — cap the
+  length of each turn too.
+- **The Sacred Realms rituals reject at 150 characters in their own routes.**
+  That is a design choice (one short confession), not a safety cap; leave it.
+- **`history[].role` must stay restricted to `user` / `assistant`.** Accepting
+  a client-supplied `system` turn would let anyone rewrite the persona.
+- **The 曜刻 quota is `localStorage` only** (`lib/tokens/useTokens.ts`). It is
+  a display, not an limit — two lines in a console change it, and calling the
+  API directly skips it entirely. Do not describe it as enforcement until the
+  Phase 2 account system puts it server-side.
+- **Escape anything user-typed before it enters the survey email**
+  (`app/api/contact/route.ts`). Mail clients strip `<script>` but happily
+  render links and remote images, so an unescaped answer is a phishing link
+  inside a message the owner trusts. The name is additionally stripped of
+  control characters — CR/LF in a Subject is header injection.
+- Secrets are server-side only: no `NEXT_PUBLIC_` keys, no `process.env` in
+  any client component, `.env.local` gitignored. Keep it that way.
+
+**Still open:** rate limiting. It is the single highest-value fix and needs a
+decision on Vercel Firewall vs Upstash. Until it exists, anyone with curl can
+run the LLM routes in a loop on your bill.
+
 ## 🖼 Image weight is a hard requirement, not an optimisation
 
 `next.config.mjs` sets `images.unoptimized: true`, so **`next/image` does no compression and the file in `/public` is exactly what ships to the user**. Every image must be compressed *before* it is committed (JPEG q82–84; Python + Pillow is available locally).

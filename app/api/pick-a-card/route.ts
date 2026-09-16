@@ -19,6 +19,7 @@ import { NextRequest } from "next/server";
 import { loadCards } from "@/lib/tarot/wikiLoader";
 import { buildOraclePrompt } from "@/lib/tarot/pickACardOraclePrompts";
 import { streamLLM } from "@/lib/llm/stream";
+import { LIMITS, capText } from "@/lib/api/limits";
 
 export const maxDuration = 60;
 
@@ -42,7 +43,10 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const { themeId, pileLabel, cardIds } = body;
+  const { cardIds } = body;
+  // truthy-checked before, so a 1 MB string or an object both got through
+  const themeId = capText(body.themeId, LIMITS.id);
+  const pileLabel = capText(body.pileLabel, LIMITS.id);
 
   if (!themeId || !pileLabel || !Array.isArray(cardIds) || cardIds.length !== 4) {
     return new Response("Missing or invalid fields: themeId, pileLabel, cardIds (array of 4)", {

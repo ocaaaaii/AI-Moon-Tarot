@@ -12,6 +12,7 @@ import { OMIKUJI_AVATARS } from "@/lib/omikuji/avatars";
 import { buildCompanionPrompt } from "@/lib/garden/companionPrompt";
 import { getCompanionMeta } from "@/lib/garden/companionPersonas";
 import type { SoftMemoryEntry } from "@/lib/garden/affection";
+import { LIMITS, capTail } from "@/lib/api/limits";
 
 const LEVEL_LABELS = [
   { label: "陌生人", description: "初次相遇，還在認識彼此" },
@@ -52,10 +53,18 @@ export async function POST(req: NextRequest): Promise<NextResponse | Response> {
   }
 
   const level = { index: levelIndex, ...LEVEL_LABELS[levelIndex] };
-  const systemPrompt = buildCompanionPrompt(meta, level, softMemory ?? []);
+  // softMemory is client-supplied and lands straight in the system prompt,
+  // so it needs a ceiling of its own
+  const memory = capTail(softMemory, LIMITS.softMemory) ?? [];
+  const systemPrompt = buildCompanionPrompt(meta, level, memory);
 
-  // Cap history sent to the model — companion chat can run long over many visits.
-  const recentMessages = messages.slice(-24);
+  // Cap BOTH the number of turns and the size of each. Capping the count
+  // alone still lets 24 messages of arbitrary length through, which makes
+  // the cost of one anonymous request unbounded.
+  const recentMessages = (capTail(messages, LIMITS.historyTurns) ?? []).map((m) => ({
+    ...m,
+    content: typeof m.content === "string" ? m.content.slice(0, LIMITS.message) : "",
+  }));
 
   const stream = new ReadableStream({
     async start(controller) {

@@ -24,6 +24,7 @@ import { getOmikujiAvatar } from "@/lib/omikuji/avatars";
 import { loadOmikujiById } from "@/lib/omikuji/wikiLoader";
 import type { ApiError, HistoryMessage, OmikujiReadingRequest } from "@/lib/omikuji/types";
 import { streamLLM, type LLMMessage } from "@/lib/llm/stream";
+import { LIMITS, capTail } from "@/lib/api/limits";
 
 // See app/api/reading/route.ts for why this is needed on Vercel.
 export const maxDuration = 60;
@@ -58,14 +59,17 @@ function validateRequest(body: unknown): OmikujiReadingRequest {
     if (!Array.isArray(req.history)) {
       throw new Error("`history` must be an array if provided");
     }
-    history = (req.history as Array<{ role: unknown; content: unknown }>).map((h, i) => {
+    // same bounding as /api/reading — shape checks alone leave the size of
+    // the prompt in the caller's hands
+    const turns = capTail(req.history as Array<{ role: unknown; content: unknown }>, LIMITS.historyTurns) ?? [];
+    history = turns.map((h, i) => {
       if (h.role !== "user" && h.role !== "assistant") {
         throw new Error(`history[${i}].role must be "user" or "assistant"`);
       }
       if (typeof h.content !== "string") {
         throw new Error(`history[${i}].content must be a string`);
       }
-      return { role: h.role, content: h.content };
+      return { role: h.role, content: h.content.slice(0, LIMITS.message) };
     });
   }
 
@@ -74,7 +78,7 @@ function validateRequest(body: unknown): OmikujiReadingRequest {
   }
 
   return {
-    question: req.question.trim(),
+    question: req.question.trim().slice(0, LIMITS.question),
     omikujiId: req.omikujiId,
     history,
     avatarId: req.avatarId as string | undefined,

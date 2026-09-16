@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { completeLLM } from "@/lib/llm/complete";
+import { LIMITS } from "@/lib/api/limits";
 
 export const maxDuration = 30;
 
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (!body?.question || typeof body.question !== "string") {
       return NextResponse.json({ shouldRefine: false });
     }
-    question = body.question.trim();
+    question = body.question.trim().slice(0, LIMITS.question);
     if (question.length < 2) return NextResponse.json({ shouldRefine: false });
   } catch {
     return NextResponse.json({ shouldRefine: false });

@@ -20,6 +20,7 @@ import { getTarotAvatar } from "@/lib/tarot/avatars";
 import { loadCards } from "@/lib/tarot/wikiLoader";
 import type { ReadingRequest, ApiError, HistoryMessage, SpreadType } from "@/lib/tarot/types";
 import { streamLLM, type LLMMessage } from "@/lib/llm/stream";
+import { LIMITS, capText, capTail } from "@/lib/api/limits";
 
 // Vercel Hobby plan defaults serverless functions to a 5–10s timeout —
 // far too short for a streamed reading. Raise it to the Hobby plan's max
@@ -73,14 +74,19 @@ function validateRequest(body: unknown): ReadingRequest {
     if (!Array.isArray(req.history)) {
       throw new Error("`history` must be an array if provided");
     }
-    history = (req.history as Array<{ role: unknown; content: unknown }>).map((h, i) => {
+    // Bound the tail as well as the shape: the role check below stops a
+    // forged system turn, but without a count and a per-turn length an
+    // anonymous caller still decides how large — and so how expensive —
+    // one request is.
+    const turns = capTail(req.history as Array<{ role: unknown; content: unknown }>, LIMITS.historyTurns) ?? [];
+    history = turns.map((h, i) => {
       if (h.role !== "user" && h.role !== "assistant") {
         throw new Error(`history[${i}].role must be "user" or "assistant"`);
       }
       if (typeof h.content !== "string") {
         throw new Error(`history[${i}].content must be a string`);
       }
-      return { role: h.role, content: h.content };
+      return { role: h.role, content: h.content.slice(0, LIMITS.message) };
     });
   }
 
@@ -88,14 +94,19 @@ function validateRequest(body: unknown): ReadingRequest {
     throw new Error("`avatarId` must be a string if provided");
   }
 
-  const firstImpression = typeof req.firstImpression === "string" ? req.firstImpression.trim() : undefined;
-  const spreadPositions = Array.isArray(req.spreadPositions)
-    ? (req.spreadPositions as unknown[]).filter((p): p is string => typeof p === "string")
-    : undefined;
+  const firstImpression = capText(req.firstImpression, LIMITS.impression);
+  const spreadPositions = capTail(
+    Array.isArray(req.spreadPositions)
+      ? (req.spreadPositions as unknown[])
+          .filter((p): p is string => typeof p === "string")
+          .map((p) => p.slice(0, LIMITS.id))
+      : undefined,
+    LIMITS.positions
+  );
   const spreadType: SpreadType = req.spreadType === "chakra" ? "chakra" : "normal";
 
   return {
-    question: req.question.trim(),
+    question: req.question.trim().slice(0, LIMITS.question),
     cards: (req.cards as Array<{ id: number; reversed?: boolean }>).map((c) => ({
       id: c.id,
       reversed: c.reversed ?? false,
