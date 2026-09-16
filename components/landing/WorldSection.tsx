@@ -25,6 +25,10 @@ export default function WorldSection({ onOpenTour }: Props) {
           loading="lazy"
           decoding="async"
           className="w-full h-full object-cover"
+          // portrait source (0.56) in a wide band: centring the cover crop
+          // lands on the desk, and the window and moon — the reason to use
+          // this plate at all — end up off-frame above it
+          style={{ objectPosition: "center 26%" }}
         />
         {/* dissolve both edges so the plate reads as part of the page, not a banner */}
         <div

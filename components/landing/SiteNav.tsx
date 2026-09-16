@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 import TokenDisplay from "@/components/ui/TokenDisplay";
 import { NAV_ITEMS, HERO_COPY, type SectionId } from "@/lib/landing/sections";
+import AmbientAudio from "./AmbientAudio";
 import { useScrollSpy } from "./useScrollSpy";
 
 const SECTION_IDS: readonly SectionId[] = NAV_ITEMS.map(item => item.id);
@@ -143,6 +144,8 @@ export default function SiteNav({ onOpenGuide }: Props) {
                 )}
               </AnimatePresence>
             </div>
+
+            <AmbientAudio />
 
             <button
               onClick={onOpenGuide}

@@ -25,24 +25,36 @@ export default function CharacterRoster() {
 
   return (
     <div className="relative">
-      {/* Faint plate behind the roster. Kept at ~10% and blurred: this section
-          was a flat black band between two rich scenes, and the gap read as
-          "the page stopped". It is atmosphere, not a picture to look at — the
-          cards must stay the brightest thing here. */}
+      {/* Plate behind the roster: this section was a flat black band between
+          two rich scenes and read as "the page stopped".
+
+          One lesson worth keeping from the first pass: 10% opacity under a
+          0.55–0.8 shadow pool is simply invisible. "Faint" is not the same as
+          "not there", and stacking two subtractions is how you get neither.
+
+          It is atmosphere, not a picture to look at — the cards stay the
+          brightest thing here. */}
       <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
         <img
           src={CHARACTERS_COPY.backdrop}
           alt=""
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover object-center"
-          style={{ opacity: 0.1, filter: "blur(2px)" }}
+          className="w-full h-full object-cover"
+          // world.jpg is landscape, so a centred cover crop fits this band
+          // cleanly — none of the zooming the portrait plate needed to push
+          // its chopped-up edge cards out of frame
+          style={{ objectPosition: "center 42%", opacity: 0.22, filter: "blur(2.5px)" }}
         />
+        {/* Edges only. A radial pool on top of an already-transparent image is
+            subtractive twice over — 0.38 opacity under a 0.6–0.9 shadow left
+            nothing at all. This just dissolves the top and bottom seams into
+            the neighbouring sections and lets the middle show. */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 70% 58% at 50% 45%, rgba(10,7,18,0.55) 0%, rgba(10,7,18,0.8) 55%, #0a0712 100%)",
+              "linear-gradient(to bottom, #0a0712 0%, rgba(10,7,18,0.34) 16%, rgba(10,7,18,0.34) 84%, #0a0712 100%)",
           }}
         />
       </div>

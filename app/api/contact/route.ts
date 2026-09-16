@@ -9,6 +9,9 @@ interface SurveyAnswers {
   q4chars: string; q4r: string;
   q5: string; q5r: string;
   q6: string; q6r: string;
+  q7: string; q7r: string;
+  ux: string;
+  idea: string;
   extra: string;
 }
 
@@ -41,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   const html = `
     <div style="font-family:sans-serif;max-width:520px;padding:28px;color:#333;line-height:1.6">
-      <h2 style="margin:0 0 4px;color:#6b4fa8;font-size:18px">AI Tarot v3.0 — 測試問卷回饋</h2>
+      <h2 style="margin:0 0 4px;color:#6b4fa8;font-size:18px">AI Tarot v7.0 — 測試問卷回饋</h2>
       <p style="margin:0 0 24px;color:#999;font-size:12px">來自：<strong style="color:#555">${displayName}</strong></p>
       <table style="width:100%;border-collapse:collapse">
         ${row("Q1. 你覺得好玩嗎？", answers.q1, answers.q1r)}
@@ -50,6 +53,9 @@ export async function POST(req: NextRequest) {
         ${row("Q4. 最喜歡的角色", answers.q4chars || "", answers.q4r)}
         ${row("Q5. 神社 vs 塔羅店", answers.q5, answers.q5r)}
         ${row("Q6. 喜歡月神天啟故事嗎？", answers.q6, answers.q6r)}
+        ${row("Q7. 新首頁的感覺", answers.q7, answers.q7r)}
+        ${answers.ux ? row("使用體驗卡卡的地方", answers.ux) : ""}
+        ${answers.idea ? row("想看到的新功能", answers.idea) : ""}
         ${answers.extra ? row("還有話要說", answers.extra) : ""}
       </table>
       <p style="margin:20px 0 0;font-size:11px;color:#ccc;border-top:1px solid #eee;padding-top:12px">

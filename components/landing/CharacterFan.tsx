@@ -35,16 +35,22 @@ export default function CharacterFan({ value, onChange }: Props) {
 
   return (
     <>
-      {/* ── fan (lg and up) ── */}
-      <div className="hidden lg:block relative mt-12 h-[330px] overflow-hidden">
-        <div className="absolute inset-x-0 bottom-6 flex justify-center items-end">
+      {/* ── fan (lg and up) ──
+          The baseline sits well clear of the container floor. Rotating a card
+          about its bottom edge drops the outer corner by halfWidth·sin(angle)
+          — about 28px at 19.5° — and the arc sinks the outermost cards
+          another 45px on top of that. With the old 24px of clearance,
+          `overflow-hidden` sliced the bottom off the first and last cards,
+          taking half of their tilted names with it. */}
+      <div className="hidden lg:block relative mt-12 h-[372px] overflow-hidden">
+        <div className="absolute inset-x-0 bottom-[92px] flex justify-center items-end">
           {TAROT_AVATARS.map((avatar, i) => {
             const rgb = ACCENT_RGB[avatar.accent];
             const active = value === avatar.id;
             const offset = i - MID;
             const rest = {
               rotate: reduced ? 0 : offset * 6.5,
-              y: reduced ? 0 : offset * offset * 6,
+              y: reduced ? 0 : offset * offset * 5,
               scale: 1,
             };
 
@@ -56,7 +62,7 @@ export default function CharacterFan({ value, onChange }: Props) {
                 aria-current={active ? "true" : undefined}
                 aria-controls="character-detail"
                 aria-label={`${avatar.displayName} — ${avatar.bestFor}`}
-                className="group relative shrink-0 w-[168px] focus:outline-none"
+                className="group relative shrink-0 w-[148px] xl:w-[168px] focus:outline-none"
                 style={{
                   transformOrigin: "bottom center",
                   // the overlap is what makes this read as a spread

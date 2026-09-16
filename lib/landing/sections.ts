@@ -57,7 +57,7 @@ export const WORLD_COPY = {
   heading: "夜色之下",
   /** C2-C, chosen 2026-09-16 */
   body: "月亮升起的時候，這座城就醒了。燭火、紙牌、籤筒、星圖，全都只為了同一件事：讓你安靜下來，聽見自己。我們不告訴你該往哪走，只把整個夜晚留給你——待久一點，直到你自己想起答案。",
-  image: "/assets/landing/world.jpg",
+  image: "/assets/landing/world-library.jpg",
   ctaLabel: "✦ 與月神相約",
 } as const;
 
@@ -103,7 +103,7 @@ export const CHARACTERS_COPY = {
   /** the cards expand — without this line most visitors never find out */
   hint: "點一下，聽聽他們怎麼說",
   /** faint plate behind the roster — atmosphere, not a picture to look at */
-  backdrop: "/assets/landing/seven-backdrop.jpg",
+  backdrop: "/assets/landing/world.jpg",
 } as const;
 
 export const STORY_COPY = {

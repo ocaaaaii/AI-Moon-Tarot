@@ -22,12 +22,16 @@ const QUESTIONS: Question[] = [
   { id:"q3", label:"3. 和角色聊天，感覺像…",       options:["在和真人對話 💫","介於之間","明顯是 AI 🤖"],  reasonPlaceholder:"想說說原因嗎？（可不填）" },
   { id:"q5", label:"5. 你更喜歡哪個？",            options:["月神神社 ⛩️","塔羅店鋪 🔮","都喜歡 💜"],      reasonPlaceholder:"想說說原因嗎？（可不填）" },
   { id:"q6", label:"6. 你喜歡看月神天啟故事嗎？",  options:["喜歡 📖","還沒看","不喜歡"],                 reasonPlaceholder:"想說說原因嗎？（可不填）" },
+  { id:"q7", label:"7. 這次的新首頁，你的感覺？",  options:["很有氛圍 🌙","還好","有點太多了"],            reasonPlaceholder:"哪個部分讓你這樣覺得？（可不填）" },
 ];
 
 interface Answers {
   [key: string]: string;
   q1:string; q1r:string; q2:string; q2r:string; q3:string; q3r:string;
   q4chars:string; q4r:string; q5:string; q5r:string; q6:string; q6r:string;
+  q7:string; q7r:string;
+  /** open-ended: friction to fix, and features to build next */
+  ux:string; idea:string;
   name:string; extra:string;
 }
 
@@ -35,7 +39,8 @@ type Status = "idle" | "sending" | "sent" | "error";
 
 const EMPTY: Answers = {
   q1:"",q1r:"",q2:"",q2r:"",q3:"",q3r:"",
-  q4chars:"",q4r:"",q5:"",q5r:"",q6:"",q6r:"",
+  q4chars:"",q4r:"",q5:"",q5r:"",q6:"",q6r:"",q7:"",q7r:"",
+  ux:"",idea:"",
   name:"",extra:"",
 };
 
@@ -151,7 +156,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
                   Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v7.0 🌙
                 </p>
                 <p className="text-cream-200/70 text-[12px] leading-relaxed mt-2">
-                  這一版的大改動是<span className="text-morandi-gold/85 font-medium">全新首頁</span>——把原本四張縮圖的入口頁，重做成有主視覺、世界觀、七魂群像與故事導引的完整世界。<span className="text-morandi-gold/85 font-medium">對話體驗</span>也做了一輪提升。
+                  這一版的大改動是<span className="text-morandi-gold/85 font-medium">全新首頁</span>——把原本四張縮圖的入口頁，重做成有主視覺、世界觀、七魂群像與故事導引的完整世界。燭火會搖、月亮會呼吸，七位神明攤開成一副牌陣讓你一位位翻看。右上角有顆小喇叭，想要的話可以<span className="text-morandi-gold/85 font-medium">配上音樂</span>再逛一次 🎵。<span className="text-morandi-gold/85 font-medium">對話體驗</span>也做了一輪提升。
                 </p>
                 <p className="text-cream-200/60 text-[12px] leading-relaxed mt-2">
                   接下來預計實作：<span className="text-morandi-lavender/85">推薦牌組</span>、<span className="text-morandi-lavender/85">自動抽牌</span>、以及眾神之庭的<span className="text-morandi-lavender/85">顯化願力</span>。
@@ -218,6 +223,33 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
                     ))}
                   </div>
                   <Reason value={answers.q4r} onChange={(v)=>set("q4r",v)} placeholder="喜歡的原因？（外表、個性、說話方式…）" />
+                </div>
+
+                <div style={{ borderTop:"1px solid rgba(184,168,200,0.07)" }} />
+
+                {/* The two that actually drive the roadmap — kept open-ended
+                    on purpose: multiple-choice can only confirm what CA
+                    already suspects, and these are the ones meant to surprise. */}
+                <div>
+                  <label className="text-morandi-stone/45 text-[10px] tracking-widest uppercase block mb-1.5">使用體驗有哪裡卡卡的？</label>
+                  <textarea value={answers.ux} onChange={(e)=>set("ux",e.target.value)}
+                    placeholder="哪一步讓你猶豫、找不到、或覺得等太久？再小的都值得說 🙏" rows={3} disabled={isDone}
+                    className="w-full rounded-lg px-2.5 py-2 text-[11px] text-cream-100/80 placeholder-morandi-stone/30 outline-none resize-none"
+                    style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(184,168,200,0.12)" }}
+                    onFocus={(e)=>{ e.currentTarget.style.borderColor="rgba(184,168,200,0.38)"; }}
+                    onBlur={(e) =>{ e.currentTarget.style.borderColor="rgba(184,168,200,0.12)"; }}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-morandi-stone/45 text-[10px] tracking-widest uppercase block mb-1.5">想看到什麼新功能？</label>
+                  <textarea value={answers.idea} onChange={(e)=>set("idea",e.target.value)}
+                    placeholder="想要什麼玩法、什麼角色、什麼調整方向？天馬行空也沒關係 ✨" rows={3} disabled={isDone}
+                    className="w-full rounded-lg px-2.5 py-2 text-[11px] text-cream-100/80 placeholder-morandi-stone/30 outline-none resize-none"
+                    style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(184,168,200,0.12)" }}
+                    onFocus={(e)=>{ e.currentTarget.style.borderColor="rgba(184,168,200,0.38)"; }}
+                    onBlur={(e) =>{ e.currentTarget.style.borderColor="rgba(184,168,200,0.12)"; }}
+                  />
                 </div>
 
                 <div style={{ borderTop:"1px solid rgba(184,168,200,0.07)" }} />

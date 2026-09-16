@@ -130,21 +130,39 @@ export const KV_MOBILE_SCENE: AmbientScene = {
   petals: { desktop: 4, mobile: 4 },
 };
 
-/** World.png — the balcony looking out over the celestial city */
+/**
+ * world-library.jpg — the moonlit library: a gothic window with a full moon
+ * over a spired city, a desk of candles, a crystal ball and an orrery.
+ *
+ * ⚠ These coordinates were rebuilt from scratch when the plate changed. The
+ * previous set belonged to the celestial-city balcony and, reused here,
+ * would have hung candle glows in mid-air — light positions are fractions of
+ * THEIR OWN image (CLAUDE.md).
+ *
+ * The source is portrait (0.56) in a wide band, so `object-cover` keeps only
+ * a horizontal strip. `WorldSection` pulls that strip to the top of the art,
+ * which means the lights below live in the window half of the picture — the
+ * desk candles further down are cropped away and are deliberately absent.
+ */
 export const WORLD_SCENE: AmbientScene = {
   points: [
-    { x: 0.3, y: 0.13, size: 0.16, rgb: MOON, behaviour: "breathe", peak: 0.42, onMobile: true },
-    { x: 0.79, y: 0.13, size: 0.06, rgb: MOON, behaviour: "breathe", peak: 0.45 },
-    { x: 0.53, y: 0.08, size: 0.05, rgb: MOON, behaviour: "twinkle", peak: 0.9, sprite: STAR[2], onMobile: true },
-    { x: 0.2, y: 0.3, size: 0.045, rgb: MOON, behaviour: "twinkle", peak: 0.8, sprite: STAR[3] },
-    { x: 0.7, y: 0.3, size: 0.12, rgb: CITY, behaviour: "breathe", peak: 0.36, onMobile: true },
-    { x: 0.62, y: 0.42, size: 0.2, rgb: CITY, behaviour: "twinkle", peak: 0.28 },
-    { x: 0.55, y: 0.6, size: 0.12, rgb: CITY, behaviour: "shimmer", peak: 0.22 },
-    { x: 0.09, y: 0.37, size: 0.07, rgb: MOON, behaviour: "shimmer", peak: 0.45, sprite: DOTTED, spin: true },
-    { x: 0.145, y: 0.7, size: 0.07, rgb: FLAME, behaviour: "flicker", peak: 0.75, onMobile: true },
-    { x: 0.885, y: 0.13, size: 0.05, rgb: FLAME, behaviour: "flicker", peak: 0.7 },
-    { x: 0.955, y: 0.92, size: 0.06, rgb: FLAME, behaviour: "flicker", peak: 0.7 },
+    // the full moon in the window — the anchor of this composition
+    { x: 0.565, y: 0.3, size: 0.17, rgb: MOON, behaviour: "breathe", peak: 0.44, onMobile: true },
+    // the spired city glowing under it
+    { x: 0.52, y: 0.62, size: 0.16, rgb: CITY, behaviour: "twinkle", peak: 0.26, onMobile: true },
+    { x: 0.62, y: 0.55, size: 0.1, rgb: CITY, behaviour: "breathe", peak: 0.2 },
+    // stars in the window's upper panes
+    { x: 0.61, y: 0.1, size: 0.05, rgb: MOON, behaviour: "twinkle", peak: 0.85, sprite: STAR[2], onMobile: true },
+    { x: 0.44, y: 0.16, size: 0.035, rgb: MOON, behaviour: "twinkle", peak: 0.7, sprite: STAR[3] },
+    { x: 0.79, y: 0.12, size: 0.032, rgb: CITY, behaviour: "twinkle", peak: 0.6, sprite: STAR_COOL },
+    // the tall lit candle to the right of the window
+    { x: 0.845, y: 0.36, size: 0.055, rgb: FLAME, behaviour: "flicker", peak: 0.8, onMobile: true },
+    // the gold orrery on the right shelf
+    { x: 0.9, y: 0.62, size: 0.075, rgb: MOON, behaviour: "shimmer", peak: 0.42, sprite: DOTTED, spin: true },
+    // the small hanging lantern top-right
+    { x: 0.77, y: 0.05, size: 0.04, rgb: FLAME, behaviour: "flicker", peak: 0.6 },
   ],
+  petals: { desktop: 3, mobile: 2, opacity: 0.5, scale: 0.8 },
 };
 
 /**
