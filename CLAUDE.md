@@ -174,6 +174,35 @@ plain translated `<group>` in `CardFanScene`.
 - The deck height is `min(46svh, 400px)`. The page itself does not scroll here;
   the chat panel does.
 
+## 🎯 Spreads live in one table
+
+`lib/tarot/spreads.ts` is the single source of truth for every spread — the
+same pattern as `avatars.ts` and `lib/stories/stories.ts`. Adding a spread is
+one entry there; nothing in the route or the UI needs touching.
+
+Three facts used to be kept in step by hand, and the client owned two of them:
+
+- **Card count.** It was a `1 | 2 | 3 | 7` union in `ChatInterface` and a
+  `maxCards = isChakra ? 7 : 3` in the reading route. It is `positions.length`
+  now, so a 4- or 5-card spread needs no code change.
+- **Position labels.** The browser sent a `spreadPositions: string[]` that went
+  straight into the model's prompt via `contextBuilder` — anyone with curl
+  wrote part of the prompt. The client sends a `spreadId`; the server looks the
+  labels up. **Do not add a request field that reaches the prompt as free
+  text.**
+- **Whether it is the chakra spread.** Inferred from `cards.length === 7`,
+  which would misfire the moment a second 7-card spread existed. It is
+  `drawMode` now.
+
+`ChatInterface` keeps one `spread: TarotSpread | null` where it used to hold
+five pieces of state (`spreadCount`, `spreadPositions`, `spreadType`,
+`isCategorySpread`, `isChakraSpread`). They were all facts about the spread, so
+they are all read off it.
+
+`spreadId` is optional on the wire purely so a tab left open across a deploy
+still works — `fallbackSpreadForCount` resolves the generic spread of that
+size. Unknown ids and mismatched card counts are rejected with a 400.
+
 ## 🔒 API surface — everything under /app/api is public
 
 There is no auth, no rate limiting and no origin check on any route, and

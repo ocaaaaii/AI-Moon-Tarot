@@ -26,7 +26,9 @@ import type { CardRequest } from "@/lib/tarot/types";
 import CardFanScene, { SPREAD_COUNT, SPACING } from "./CardFanScene";
 
 interface CardDeckCanvasProps {
-  spreadCount: 1 | 2 | 3 | 7;
+  /** how many cards to draw — comes from the spread's `positions.length`,
+   *  so it is no longer a fixed set of sizes */
+  spreadCount: number;
   onComplete: (cards: CardRequest[]) => void;
   /** Position labels for the spread (e.g. ["過去","現在","未來"]) */
   spreadPositions?: string[];

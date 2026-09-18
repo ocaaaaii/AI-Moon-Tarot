@@ -18,6 +18,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { buildUserMessage } from "@/lib/tarot/contextBuilder";
 import { getTarotAvatar } from "@/lib/tarot/avatars";
 import { loadCards } from "@/lib/tarot/wikiLoader";
+import {
+  getSpread,
+  fallbackSpreadForCount,
+  positionLabels,
+  type TarotSpread,
+} from "@/lib/tarot/spreads";
 import type { ReadingRequest, ApiError, HistoryMessage, SpreadType } from "@/lib/tarot/types";
 import { streamLLM, type LLMMessage } from "@/lib/llm/stream";
 import { LIMITS, capText, capTail } from "@/lib/api/limits";
@@ -34,7 +40,13 @@ const TEMPERATURE = 0.85;
 
 // ─── Request validation ───────────────────────────────────────────────────────
 
-function validateRequest(body: unknown): ReadingRequest {
+/** The validated request plus the spread it resolved to. */
+interface ValidatedReading {
+  request: ReadingRequest;
+  spread: TarotSpread;
+}
+
+function validateRequest(body: unknown): ValidatedReading {
   if (!body || typeof body !== "object") {
     throw new Error("Request body must be a JSON object");
   }
@@ -49,10 +61,28 @@ function validateRequest(body: unknown): ReadingRequest {
     throw new Error("`cards` must be a non-empty array");
   }
 
-  const isChakra = req.spreadType === "chakra";
-  const maxCards = isChakra ? 7 : 3;
-  if (req.cards.length > maxCards) {
-    throw new Error(`Maximum ${maxCards} cards per reading`);
+  // The spread decides how many cards are allowed and what the positions are
+  // called. Both used to come from the caller: the count via a
+  // `spreadType === "chakra" ? 7 : 3`, and the labels as a free-text array
+  // that went straight into the prompt.
+  let spread: TarotSpread | undefined;
+  if (req.spreadId !== undefined) {
+    if (typeof req.spreadId !== "string") {
+      throw new Error("`spreadId` must be a string if provided");
+    }
+    spread = getSpread(req.spreadId);
+    if (!spread) throw new Error(`Unknown spreadId: ${req.spreadId.slice(0, LIMITS.id)}`);
+  } else {
+    // A tab left open across a deploy still posts the old shape. Fall back to
+    // the generic spread of that size rather than erroring mid-session.
+    spread = fallbackSpreadForCount(req.cards.length);
+    if (!spread) throw new Error("`spreadId` is required");
+  }
+
+  if (req.cards.length !== spread.positions.length) {
+    throw new Error(
+      `Spread "${spread.id}" takes ${spread.positions.length} cards, got ${req.cards.length}`
+    );
   }
 
   for (const card of req.cards) {
@@ -95,27 +125,20 @@ function validateRequest(body: unknown): ReadingRequest {
   }
 
   const firstImpression = capText(req.firstImpression, LIMITS.impression);
-  const spreadPositions = capTail(
-    Array.isArray(req.spreadPositions)
-      ? (req.spreadPositions as unknown[])
-          .filter((p): p is string => typeof p === "string")
-          .map((p) => p.slice(0, LIMITS.id))
-      : undefined,
-    LIMITS.positions
-  );
-  const spreadType: SpreadType = req.spreadType === "chakra" ? "chakra" : "normal";
 
   return {
-    question: req.question.trim().slice(0, LIMITS.question),
-    cards: (req.cards as Array<{ id: number; reversed?: boolean }>).map((c) => ({
-      id: c.id,
-      reversed: c.reversed ?? false,
-    })),
-    history,
-    avatarId: req.avatarId as string | undefined,
-    firstImpression: firstImpression || undefined,
-    spreadPositions: spreadPositions?.length ? spreadPositions : undefined,
-    spreadType,
+    request: {
+      question: req.question.trim().slice(0, LIMITS.question),
+      cards: (req.cards as Array<{ id: number; reversed?: boolean }>).map((c) => ({
+        id: c.id,
+        reversed: c.reversed ?? false,
+      })),
+      history,
+      avatarId: req.avatarId as string | undefined,
+      firstImpression: firstImpression || undefined,
+      spreadId: spread.id,
+    },
+    spread,
   };
 }
 
@@ -140,9 +163,10 @@ function sseError(message: string): Uint8Array {
 export async function POST(req: NextRequest): Promise<Response> {
   // 1. Parse + validate request
   let request: ReadingRequest;
+  let spread: TarotSpread;
   try {
     const body = await req.json();
-    request = validateRequest(body);
+    ({ request, spread } = validateRequest(body));
   } catch (err) {
     const error: ApiError = { error: (err as Error).message };
     return NextResponse.json(error, { status: 400 });
@@ -151,9 +175,15 @@ export async function POST(req: NextRequest): Promise<Response> {
   // 2. Load wiki cards + resolve which tarot master is reading
   let userMessage: string;
   try {
-    const isChakraSpread = request.spreadType === "chakra";
-    const cards = loadCards(request.cards, isChakraSpread);
-    userMessage = buildUserMessage(request.question, cards, request.firstImpression, request.spreadPositions, request.spreadType);
+    const spreadType: SpreadType = spread.drawMode === "chakra" ? "chakra" : "normal";
+    const cards = loadCards(request.cards, spreadType === "chakra");
+    userMessage = buildUserMessage(
+      request.question,
+      cards,
+      request.firstImpression,
+      positionLabels(spread),
+      spreadType
+    );
   } catch (err) {
     const error: ApiError = {
       error: "Failed to load card data",

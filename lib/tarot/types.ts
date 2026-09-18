@@ -37,11 +37,16 @@ export interface ReadingRequest {
   /** Optional: the user's first impression / image that flashed when the card appeared.
    * Collected by the pre-reading question step in ChatInterface. */
   firstImpression?: string;
-  /** Named position labels for the spread, e.g. ["過去","現在","未來"].
-   * When present, contextBuilder uses these instead of the default generic labels. */
-  spreadPositions?: string[];
-  /** Spread type — "chakra" allows up to 7 cards from Major Arcana only */
-  spreadType?: SpreadType;
+  /**
+   * Which spread this reading uses — an id from `lib/tarot/spreads.ts`.
+   *
+   * This replaced a `spreadPositions: string[]` the browser used to send.
+   * Those labels went straight into the model's prompt, so the caller wrote
+   * part of the prompt; an id is looked up against a server-side table
+   * instead, and the card count is checked against it. Optional only so a tab
+   * left open across a deploy still works — see `fallbackSpreadForCount`.
+   */
+  spreadId?: string;
 }
 
 // ─── Card Data ────────────────────────────────────────────────────────────────
