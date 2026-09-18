@@ -217,3 +217,24 @@ Two traps already found by measurement, both worth re-checking whenever a new as
 - The moon portrait is masked with `radial-gradient(circle, #000 0%, #000 70%, transparent 100%)` so its edge dissolves; a hard circle reads as a cropped avatar, not a moon.
 
 Landing-page copy and section data live in `lib/landing/sections.ts` (same single-source-of-truth pattern as the avatar and story registries). Character cards read `TAROT_AVATARS` directly and only look up a thumbnail path — do not fork a second copy of the roster, and never render `realName` on the portal page.
+
+## 🚪 The four gates — 2×2 on phones, not a stack
+
+`GateCards.tsx` starts at `grid-cols-2` from 0px, not `sm:grid-cols-2`. One
+column put four `aspect-[3/4]` cards in a 2008px stack at 375px — 2.5 screens,
+a third of the whole page, for the site's four main entry points.
+
+- **The mobile type scale is load-bearing, not decoration.** Two columns leave
+  each card 158px wide, and at the desktop sizes every title hit its own
+  `truncate`: the shop read as "月之…" and the kicker as "TAROT S…". The
+  measured sizes (8px kicker / 15px title / 9.5px tagline, `px-2.5`) fit
+  "月之塔羅店鋪" and "THE DIVINE REALM" whole. Raising them re-clips the titles.
+- **`sm:truncate`, never bare `truncate`.** The ellipsis is a guard for the wide
+  card; below `sm` it is what did the clipping.
+- **The `→` circle is hidden below `sm`.** There is no hover on a phone, and at
+  158px it took a quarter of the width away from the titles.
+- A horizontal carousel was considered and rejected: these are the site's four
+  doors, and it would show ~1.2 of them at a time. THE SEVEN already owns that
+  pattern below `lg`.
+- Keep every `data-guide="gate-*"` attribute — `UserGuide.tsx` positions its
+  spotlight from them, and the layout change does not alter that contract.

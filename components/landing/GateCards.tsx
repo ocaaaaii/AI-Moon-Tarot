@@ -87,7 +87,7 @@ export default function GateCards() {
   });
 
   return (
-    <div ref={scope} className="grid gap-6 md:gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div ref={scope} className="grid grid-cols-2 gap-3 sm:gap-6 md:gap-5 lg:grid-cols-4">
       {GATES.map((gate, i) => (
         <motion.div
           key={gate.href}
@@ -136,27 +136,40 @@ export default function GateCards() {
               }}
             />
 
-            {/* readability scrim + info bar */}
+            {/* readability scrim + info bar.
+
+                The mobile sizes are not cosmetic. Two columns at 375px leave
+                each card 158px wide, and at the desktop type sizes every
+                title hit its own `truncate` — the shop read as "月之…" and
+                the kicker as "TAROT S…", which is worse than the tall stack
+                this replaced. Measured at 158px, these sizes fit "月之塔羅店鋪"
+                and "THE DIVINE REALM" whole. */}
             <div
-              className="absolute inset-x-0 bottom-0 pt-16 pb-5 px-5 flex items-end justify-between gap-3"
+              className="absolute inset-x-0 bottom-0 pt-10 pb-3 px-2.5 sm:pt-16 sm:pb-5 sm:px-5 flex items-end justify-between gap-3"
               style={{
                 background:
                   "linear-gradient(to top, rgba(10,7,18,0.95) 0%, rgba(10,7,18,0.72) 45%, transparent 100%)",
               }}
             >
               <div className="min-w-0">
-                <p className="font-display text-cream-200/60 text-[10px] tracking-[0.25em] uppercase truncate">
+                {/* `sm:truncate` only: the ellipsis is a guard for the wide
+                    card, and below sm it is what caused the clipping */}
+                <p className="font-display text-cream-200/60 text-[8px] tracking-[0.16em] sm:text-[10px] sm:tracking-[0.25em] uppercase sm:truncate">
                   {gate.titleEn}
                 </p>
-                <h3 className="font-serif text-cream-50 text-lg tracking-wide mt-1 truncate">
+                <h3 className="font-serif text-cream-50 text-[15px] sm:text-lg tracking-wide mt-0.5 sm:mt-1 sm:truncate">
                   {gate.titleZh}
                 </h3>
-                <p className="text-cream-200/45 text-[11px] mt-1.5 leading-snug">{gate.tagline}</p>
+                <p className="text-cream-200/45 text-[9.5px] leading-normal mt-1 sm:text-[11px] sm:mt-1.5 sm:leading-snug">
+                  {gate.tagline}
+                </p>
               </div>
 
+              {/* there is no hover on a phone, and at 158px this circle was
+                  taking a quarter of the width from the titles */}
               <span
                 aria-hidden
-                className="shrink-0 grid place-items-center w-8 h-8 rounded-full text-cream-100/80 text-sm mb-0.5"
+                className="hidden sm:grid shrink-0 place-items-center w-8 h-8 rounded-full text-cream-100/80 text-sm mb-0.5"
                 style={{ border: "1px solid rgba(212,168,89,0.5)" }}
               >
                 →
