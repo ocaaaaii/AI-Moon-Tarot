@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
 
   const html = `
     <div style="font-family:sans-serif;max-width:520px;padding:28px;color:#333;line-height:1.6">
-      <h2 style="margin:0 0 4px;color:#6b4fa8;font-size:18px">AI Tarot v7.0 — 測試問卷回饋</h2>
+      <h2 style="margin:0 0 4px;color:#6b4fa8;font-size:18px">AI Tarot v7.1.0 — 測試問卷回饋</h2>
       <p style="margin:0 0 24px;color:#999;font-size:12px">來自：<strong style="color:#555">${esc(displayName)}</strong></p>
       <table style="width:100%;border-collapse:collapse">
         ${row("Q1. 你覺得好玩嗎？", answers.q1, answers.q1r)}
@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
   `;
 
   const text = [
-    `AI Tarot v7.0 — 測試問卷回饋`,
+    `AI Tarot v7.1.0 — 測試問卷回饋`,
     `來自：${displayName}`,
     ``,
     line("Q1. 你覺得好玩嗎？", answers.q1, answers.q1r),

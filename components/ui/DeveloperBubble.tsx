@@ -141,7 +141,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-cream-100 text-xs font-medium leading-snug">開發者 CA</p>
-                <p className="text-morandi-stone/40 text-[10px]">AI Tarot v7.0 · 2026/9/16 上線</p>
+                <p className="text-morandi-stone/40 text-[10px]">AI Tarot v7.1.0 · 2026/9/18 更新</p>
               </div>
               <button onClick={()=>setOpen(false)}
                 className="text-morandi-stone/35 hover:text-cream-200/60 transition-colors text-sm leading-none flex-shrink-0">✕</button>
@@ -153,10 +153,36 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               {/* Intro message */}
               <div className="px-4 py-4" style={{ borderBottom:"1px solid rgba(184,168,200,0.07)" }}>
                 <p className="text-cream-200/82 text-[12.5px] leading-relaxed">
-                  Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v7.0 🌙
+                  Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v7.1 🌙
                 </p>
-                <p className="text-cream-200/70 text-[12px] leading-relaxed mt-2">
-                  這一版的大改動是<span className="text-morandi-gold/85 font-medium">全新首頁</span>——把原本四張縮圖的入口頁，重做成有主視覺、世界觀、七魂群像與故事導引的完整世界。燭火會搖、月亮會呼吸，七位神明攤開成一副牌陣讓你一位位翻看。右上角有顆小喇叭，想要的話可以<span className="text-morandi-gold/85 font-medium">配上音樂</span>再逛一次 🎵。<span className="text-morandi-gold/85 font-medium">對話體驗</span>也做了一輪提升。
+
+                {/* Newest first. v7.1 is a handling pass on top of v7.0's new
+                    homepage, and almost all of it came from survey answers —
+                    so it is worth showing that feedback actually lands. */}
+                <div
+                  className="mt-3 rounded-xl px-3 py-2.5"
+                  style={{ background:"rgba(184,168,200,0.06)", border:"1px solid rgba(184,168,200,0.14)" }}
+                >
+                  <p className="text-morandi-gold/85 text-[11px] tracking-widest mb-2">✦ 本次更新 v7.1.0 · 9/18</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {[
+                      "🃏 抽牌改成「直接在牌面上左右滑」，下面那條窄窄的拉桿退休了",
+                      "📱 手機上滑牌時畫面不再跟著上下抖動",
+                      "✍️ 修掉中文標題和說明文字「一個字掉到下一行」的排版",
+                      "💌 問卷信件寄送修復，之前的回饋我都有收到（在垃圾信匣裡找到了 😅）",
+                    ].map((item) => (
+                      <li key={item} className="text-cream-200/72 text-[11.5px] leading-relaxed" style={{ textWrap:"pretty" }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-cream-200/45 text-[11px] leading-relaxed mt-2.5">
+                    抽牌手感是這次最想請你試的一項——滑順不順、會不會滑過頭、會不會不小心誤抽，都跟我說 🙏
+                  </p>
+                </div>
+
+                <p className="text-cream-200/60 text-[12px] leading-relaxed mt-3">
+                  <span className="text-morandi-stone/50">上一版 v7.0 ·</span> 大改動是<span className="text-morandi-gold/85 font-medium">全新首頁</span>——把原本四張縮圖的入口頁，重做成有主視覺、世界觀、七魂群像與故事導引的完整世界。燭火會搖、月亮會呼吸，七位神明攤開成一副牌陣讓你一位位翻看。右上角有顆小喇叭，想要的話可以<span className="text-morandi-gold/85 font-medium">配上音樂</span>再逛一次 🎵。
                 </p>
                 <p className="text-cream-200/60 text-[12px] leading-relaxed mt-2">
                   接下來預計實作：<span className="text-morandi-lavender/85">推薦牌組</span>、<span className="text-morandi-lavender/85">自動抽牌</span>、以及眾神之庭的<span className="text-morandi-lavender/85">顯化願力</span>。
@@ -303,7 +329,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               transition={{ duration:0.2 }} onClick={()=>setOpen(true)}
               className="relative px-3 py-2 rounded-2xl rounded-br-sm text-[11.5px] font-medium tracking-wide cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.45)]"
               style={{ background:"rgba(22,16,36,0.95)", border:"1px solid rgba(184,168,200,0.22)", color:"rgba(220,210,238,0.92)", backdropFilter:"blur(12px)" }}>
-              作者有話要說！v7.0 ✨
+              作者有話要說！v7.1 ✨
               <span className="absolute -bottom-[7px] right-3 w-3 h-3 rotate-45"
                 style={{ background:"rgba(22,16,36,0.95)", borderRight:"1px solid rgba(184,168,200,0.22)", borderBottom:"1px solid rgba(184,168,200,0.22)" }} />
             </motion.button>
