@@ -11,15 +11,9 @@ export const MAJOR_IDS: readonly number[] = Array.from({ length: 22 }, (_, i) =>
 export const MINOR_NUMBERED_IDS: readonly number[] = Array.from({ length: 40 }, (_, i) => i + 22);
 export const COURT_IDS: readonly number[] = Array.from({ length: 16 }, (_, i) => i + 62);
 
-function pickRandom(arr: readonly number[]): number {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-/** Draw one card from each category for a 天地人 reading. */
-export function drawCategoryCards(): Array<{ id: number; reversed: boolean }> {
-  return [
-    { id: pickRandom(MAJOR_IDS), reversed: Math.random() < 0.5 },
-    { id: pickRandom(MINOR_NUMBERED_IDS), reversed: Math.random() < 0.5 },
-    { id: pickRandom(COURT_IDS), reversed: Math.random() < 0.5 },
-  ];
-}
+// A `drawCategoryCards()` used to live here. Nothing ever called it, and it
+// rolled `0.5` for reversed while every real draw rolled `0.35` — sitting in
+// exactly the place someone would look when implementing an automatic 天地人
+// draw. `autoDraw` in `lib/tarot/draw.ts` is the one to use; it shares its
+// orientation roll with the manual fan. Re-pointing this one at that file
+// would have made `cardCategories` and `draw` import each other.

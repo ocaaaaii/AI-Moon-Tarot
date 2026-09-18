@@ -2,11 +2,12 @@
 
 import React, { useState, useCallback, useEffect, useRef, Fragment } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
 import type { CardRequest, HistoryMessage } from "@/lib/tarot/types";
 import { MAJOR_IDS, MINOR_NUMBERED_IDS, COURT_IDS } from "@/lib/tarot/cardCategories";
 import { spreadsFor, getSpread, positionLabels, type TarotSpread } from "@/lib/tarot/spreads";
+import { autoDraw } from "@/lib/tarot/draw";
 import type { AvatarAccent } from "@/lib/tarot/avatars";
 import { ACCENT_RGB } from "@/lib/landing/accents";
 import DrawnCards from "./DrawnCards";
@@ -126,6 +127,11 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   const refineResultRef = useRef<IntakeResult | null>(null);
   /** the spread /api/question-intake picked for this question, if any */
   const [recommended, setRecommended] = useState<{ spread: TarotSpread; reason: string } | null>(null);
+
+  // "let the master draw for me"
+  const [autoDrawing, setAutoDrawing] = useState(false);
+  const autoDrawTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reducedMotion = useReducedMotion() ?? false;
   const refineWaitCountRef = useRef(0);
 
   // Enter-to-send preference (persisted in localStorage)
@@ -183,6 +189,13 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [step, readingText, followUpText, followUpRounds]);
+
+  // Both timers land the visitor on a different step, so leaving one running
+  // past unmount would fire setState on a component that is gone.
+  useEffect(() => () => {
+    if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
+    if (autoDrawTimerRef.current) clearTimeout(autoDrawTimerRef.current);
+  }, []);
 
 
 
@@ -242,6 +255,25 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     setDrawnCards(cards);
     setStep("reveal");
   }, []);
+
+  /**
+   * Draw the whole spread without the visitor picking.
+   *
+   * The pause is the point — cards that appear the instant you ask for them
+   * feel generated, not drawn. `autoDraw` handles every spread's pool rules,
+   * including 天地人's three phases, which is why this replaces the deck
+   * outright instead of stepping through it.
+   */
+  const startAutoDraw = useCallback(() => {
+    if (!spread || autoDrawing) return;
+    setAutoDrawing(true);
+    const cards = autoDraw(spread);
+    autoDrawTimerRef.current = setTimeout(() => {
+      setAutoDrawing(false);
+      setCategoryCards(spread.drawMode === "category" ? cards : []);
+      handleCardsDrawn(cards);
+    }, reducedMotion ? 300 : 1700);
+  }, [spread, autoDrawing, reducedMotion, handleCardsDrawn]);
 
   const handleCategoryPhaseComplete = useCallback((cards: CardRequest[]) => {
     setCategoryCards((prev) => {
@@ -424,6 +456,8 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
     setStep("idle");
     setQuestion("");
+    if (autoDrawTimerRef.current) clearTimeout(autoDrawTimerRef.current);
+    setAutoDrawing(false);
     setSpread(null);
     setRecommended(null);
     setShowGeneric(false);
@@ -698,7 +732,33 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
           {step === "deck" && (
             <motion.div key="deck" {...slideUp}>
               <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
-                {isCategorySpread ? (
+                {autoDrawing ? (
+                  <div className="flex flex-col items-center justify-center gap-4 py-10">
+                    <div className="relative w-[64px] h-[92px]">
+                      {[0, 1, 2].map(i => (
+                        <motion.div
+                          key={i}
+                          className="absolute inset-0 rounded-md"
+                          style={{
+                            border: `1px solid rgba(${accentRgb},0.45)`,
+                            background: `linear-gradient(150deg, rgba(${accentRgb},0.28), rgba(${accentRgb},0.08))`,
+                          }}
+                          animate={
+                            reducedMotion
+                              ? { x: (i - 1) * 8, rotate: 0 }
+                              : { x: [(i - 1) * 6, (1 - i) * 16, (i - 1) * 6], rotate: [(i - 1) * 3, (1 - i) * 9, (i - 1) * 3] }
+                          }
+                          transition={
+                            reducedMotion
+                              ? { duration: 0 }
+                              : { duration: 0.85, repeat: Infinity, ease: "easeInOut", delay: i * 0.1 }
+                          }
+                        />
+                      ))}
+                    </div>
+                    <p className="text-cream-200/70 text-sm">{avatar.displayName} 正在為你洗牌…</p>
+                  </div>
+                ) : isCategorySpread ? (
                   <div className="flex flex-col gap-3 w-full">
                     {/* Phase progress dots */}
                     <div className="flex items-center gap-2 mb-1">
@@ -768,6 +828,20 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                     </p>
                     <CardDeckCanvas spreadCount={spreadCount} onComplete={handleCardsDrawn} spreadPositions={spreadLabels} />
                   </>
+                )}
+
+                {/* Not everyone wants to choose. For 天地人 this draws all
+                    three phases at once, which is why it sits outside the
+                    per-phase deck above. */}
+                {!autoDrawing && (
+                  <div className="mt-4 pt-3 flex justify-center" style={{ borderTop: "1px solid rgba(184,168,200,0.10)" }}>
+                    <button
+                      onClick={startAutoDraw}
+                      className="px-5 py-2 rounded-full border border-morandi-lavender/25 text-morandi-stone/70 text-xs tracking-[0.12em] hover:border-morandi-lavender/55 hover:text-cream-200/90 transition-colors duration-200"
+                    >
+                      ✦ 讓 {avatar.displayName} 替我抽
+                    </button>
+                  </div>
                 )}
               </AssistantBlock>
             </motion.div>

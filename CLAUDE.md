@@ -214,6 +214,35 @@ from the registry so it cannot drift again; the reading route passes
 When adding a spread size, curl the route — a count rule can hide anywhere
 downstream of validation.
 
+## 🎲 One definition of "draw a card"
+
+`lib/tarot/draw.ts` owns `REVERSED_CHANCE` and every pool rule. Picking off
+the 3D fan and "let the master draw for me" are two paths to the same ritual,
+and the moment they disagree the difference is invisible but real — a deck 35%
+reversed by hand and 50% reversed automatically gives two people different
+readings for the same question.
+
+- `REVERSED_CHANCE` was written out four times before this file existed: 0.35
+  in `CardFanScene`, 0.35 again in two components nothing imports
+  (`CardDeck.tsx`, `CardSelector.tsx` — both dead), and **0.5 in a
+  `drawCategoryCards` nobody called**, sitting in the obvious place to look
+  when implementing an automatic 天地人 draw. That one is gone; a comment in
+  `cardCategories.ts` says where it went and why it could not simply import
+  the new file (`cardCategories` and `draw` would import each other).
+- `autoDraw(spread)` enforces every pool restriction the manual path does:
+  chakra stays inside the Major Arcana, 天地人 takes one card from each
+  category in order. An automatic draw that ignored those produces a reading
+  the persona's prompt cannot make sense of.
+- The shuffle pause before the cards appear is deliberate. Cards that arrive
+  the instant you ask for them feel generated, not drawn. It is 300ms under
+  `prefers-reduced-motion`.
+- `drawFrom` never mutates the pool it is given.
+
+Verified by a throwaway route over 4000 draws per spread: counts, no
+duplicates, ids in range, pools respected, reversed rate 0.341–0.358. If you
+change this file, do that again rather than eyeballing a few draws — a pool
+leak shows up once in fifty.
+
 ## 🎬 Question intake — one request, two model calls
 
 `/api/question-intake` (was `/api/refine-question`) runs during the four-second

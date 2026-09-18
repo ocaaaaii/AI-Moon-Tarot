@@ -9,6 +9,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import * as THREE from "three";
 import type { CardRequest } from "@/lib/tarot/types";
+import { rollReversed } from "@/lib/tarot/draw";
 import CardMesh, { type CardInfo, SHUFFLE_DURATION, DEAL_STAGGER } from "./CardMesh";
 
 // ── Layout config ─────────────────────────────────────────────────────────────
@@ -107,7 +108,8 @@ function buildSpread(ids: number[], stackOriginX: number): CardInfo[] {
       deckId,
       basePos: new THREE.Vector3(x, 0, z),
       baseRotZ: rotZ,
-      reversed: Math.random() < 0.35,
+      // shared with the automatic draw — see lib/tarot/draw.ts
+      reversed: rollReversed(),
       stackPos: new THREE.Vector3(stackX, 0, stackZ),
       stackRotZ,
       dealDelay,
