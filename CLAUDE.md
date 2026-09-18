@@ -137,6 +137,32 @@ Rules:
 
 **Verifying animation in the in-app Browser pane:** when the pane is hidden the browser throttles `requestAnimationFrame`, GSAP's ticker stops, and every animated value reads as frozen. That is the harness, not a bug — check `document.visibilityState` before concluding anything is broken.
 
+## 🎴 Drawing cards — you pan by dragging the cards
+
+`components/three/CardDeckCanvas.tsx` owns `panX` and the drag; the row is a
+plain translated `<group>` in `CardFanScene`.
+
+- **`touch-action: pan-y` on the drag surface is load-bearing.** Without it a
+  sideways drag also scrolls the page, which is what "the screen won't stay
+  still" meant. `pan-y` keeps vertical scrolling with the container and gives
+  horizontal to us. Nothing else in this project sets `touch-action`; this is
+  the one place that needs it.
+- **Never go back to an absolute-position scrubber.** The old bar mapped the
+  finger's absolute x onto the row, so a tap teleported you, and ~378px
+  standing in for 78 cards meant roughly 0.2 cards per pixel — a 5px wobble
+  skipped a card. Drag is relative, which is why it feels calm.
+- **`shouldIgnoreTap` must be set during `pointermove`, not on `pointerup`.**
+  R3F synthesises its click from pointerup, so a flag set in our own pointerup
+  would race it. Setting it the moment the drag passes 10px is ordering-proof.
+- A hidden native-scroll proxy used to sit under the canvas for momentum. It
+  never fired on a phone: the visible track called `setPointerCapture`, and
+  pointer events cover touch, so the proxy never saw a finger. Momentum is now
+  an explicit rAF decay. Do not reintroduce the proxy.
+- `setPointerCapture` is wrapped in try/catch — it throws for synthetic events
+  and in some embedded webviews, and capture is a nicety, not a requirement.
+- The deck height is `min(46svh, 400px)`. The page itself does not scroll here;
+  the chat panel does.
+
 ## 🔒 API surface — everything under /app/api is public
 
 There is no auth, no rate limiting and no origin check on any route, and

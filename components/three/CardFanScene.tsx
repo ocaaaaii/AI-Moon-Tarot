@@ -132,16 +132,20 @@ interface CardFanSceneProps {
   onComplete: (cards: CardRequest[]) => void;
   /** fires after each individual card draw with the new drawn count */
   onCardDrawn?: (count: number) => void;
-  /** world-space X offset for the whole row, driven by CardDeckCanvas's
-   * scroll proxy so the camera can stay fixed (no FOV distortion) while
+  /** world-space X offset for the whole row, driven by dragging the canvas
+   * in CardDeckCanvas so the camera can stay fixed (no FOV distortion) while
    * still letting the user pan across all 78 cards */
   panX?: number;
   /** When set, only cards whose IDs are in this set are shown in the fan.
    * Used for 天地人 category-split spreads. */
   allowedIds?: ReadonlySet<number>;
+  /** True when the gesture that just ended was a pan across the row rather
+   * than a tap on a card. R3F synthesises its click on pointerup, so a drag
+   * that happens to finish over a card would otherwise draw it. */
+  shouldIgnoreTap?: () => boolean;
 }
 
-export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, panX = 0, allowedIds }: CardFanSceneProps) {
+export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, panX = 0, allowedIds, shouldIgnoreTap }: CardFanSceneProps) {
   const texture = useMemo(() => makeCardBackTexture(), []);
   // Deps are intentionally [] — this closes over whatever `panX` is on the
   // very first render (CardDeckCanvas's initial pan, framing the row's
@@ -174,6 +178,8 @@ export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, pan
   const handleDraw = useCallback(
     (id: number, reversed: boolean) => {
       if (isDisabled) return;
+      // the user was browsing, not choosing
+      if (shouldIgnoreTap?.()) return;
       setDrawingId(id);
       setTimeout(() => {
         setDrawingId(null);
@@ -187,7 +193,7 @@ export default function CardFanScene({ spreadCount, onComplete, onCardDrawn, pan
         });
       }, 780);
     },
-    [isDisabled, spreadCount, onComplete],
+    [isDisabled, spreadCount, onComplete, shouldIgnoreTap],
   );
 
   return (
