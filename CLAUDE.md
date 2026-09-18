@@ -158,6 +158,17 @@ plain translated `<group>` in `CardFanScene`.
   never fired on a phone: the visible track called `setPointerCapture`, and
   pointer events cover touch, so the proxy never saw a finger. Momentum is now
   an explicit rAF decay. Do not reintroduce the proxy.
+- **Never call `setPointerCapture` on `pointerdown`.** Capture retargets every
+  later event for that pointer to the capturing element, so capturing the
+  moment a press starts sent the `pointerup` to the stage div instead of to
+  the `<canvas>` under it — R3F never saw it, never synthesised its click, and
+  **clicking a card on a desktop did nothing at all** (shipped in 8acd9d3,
+  fixed after a user report). Capture belongs in `pointermove`, at the moment
+  the 10px threshold is crossed: a plain click is then never captured and
+  reaches the canvas untouched, while a real drag still works past the edge of
+  the box. Proven by live reproduction — with capture on pointerdown the
+  canvas receives `pointerdown` and then nothing; without it, `pointerup` and
+  `click` both arrive.
 - `setPointerCapture` is wrapped in try/catch — it throws for synthetic events
   and in some embedded webviews, and capture is a nicety, not a requirement.
 - The deck height is `min(46svh, 400px)`. The page itself does not scroll here;

@@ -63,6 +63,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
   const lastX      = useRef(0);
   const lastT      = useRef(0);
   const glideRef   = useRef<number | null>(null);
+  const captured   = useRef(false);
 
   const clamp = useCallback((v: number) => Math.max(-MAX_PAN, Math.min(MAX_PAN, v)), [MAX_PAN]);
 
@@ -88,13 +89,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     stopGlide();
-    // throws if the pointer is not active (synthetic events, some embedded
-    // webviews); capture is a nicety, not a requirement
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {
-      /* keep dragging without capture */
-    }
+    // NOTE: deliberately no setPointerCapture here — see onPointerMove.
     dragging.current = true;
     dragged.current  = false;
     startX.current   = e.clientX;
@@ -111,7 +106,23 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
     // Set the moment the threshold is crossed, which is always BEFORE the
     // pointerup that R3F synthesises its click from — so the ordering of the
     // two listeners never matters.
-    if (!dragged.current && Math.abs(dx) > DRAG_THRESHOLD) dragged.current = true;
+    //
+    // Capturing happens HERE and not on pointerdown. Pointer capture
+    // retargets every later event for that pointer to the capturing element,
+    // so capturing on pointerdown sent the pointerup to this div instead of
+    // to the <canvas> underneath — R3F never saw it, never synthesised its
+    // click, and tapping a card did nothing at all. Capture only once the
+    // gesture is definitely a drag: a plain click is then never captured and
+    // reaches the canvas untouched.
+    if (!dragged.current && Math.abs(dx) > DRAG_THRESHOLD) {
+      dragged.current = true;
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        captured.current = true;
+      } catch {
+        /* keep dragging without capture — it only helps past the edge */
+      }
+    }
 
     applyPan(startPan.current + dx * worldPerPx());
 
@@ -122,9 +133,17 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
     lastT.current = now;
   }, [applyPan, worldPerPx]);
 
-  const onPointerUp = useCallback(() => {
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragging.current) return;
     dragging.current = false;
+    if (captured.current) {
+      captured.current = false;
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* already released implicitly */
+      }
+    }
     if (!dragged.current) return;
 
     let v = velocity.current;
