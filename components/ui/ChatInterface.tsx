@@ -862,7 +862,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
               {/* Cards — centered */}
               <div className="flex justify-center pb-10" style={{ isolation: "isolate" }}>
-                <DrawnCards key={metaReady ? "ready" : "loading"} cards={drawnCards} cardMeta={cardMeta} positions={spreadLabels} />
+                <DrawnCards key={metaReady ? "ready" : "loading"} cards={drawnCards} cardMeta={cardMeta} spread={spread} accentRgb={accentRgb} />
               </div>
 
               {/* Begin reading button */}

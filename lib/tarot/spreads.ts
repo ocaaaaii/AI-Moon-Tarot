@@ -65,6 +65,9 @@ export interface TarotSpread {
   aspect: number;
   /** card width as a fraction of board width */
   cardScale: number;
+  /** px ceiling for the board. A column spread needs a narrow one or its
+   *  height runs away; a row spread wants the room. */
+  maxWidth: number;
 }
 
 const CHAKRA_LABELS = ["海底輪", "臍輪", "太陽神經叢", "心輪", "喉輪", "眉心輪", "頂輪"] as const;
@@ -83,7 +86,7 @@ const CHAKRA_POSITIONS: SpreadPosition[] = CHAKRA_LABELS.map((label, i) => ({
   label,
   hint: CHAKRA_HINTS[i],
   x: 0.5,
-  y: 0.94 - i * 0.147,
+  y: 0.93 - i * 0.1433,
 }));
 
 /** Evenly spaced along one horizontal line — the plain reading of a sequence. */
@@ -104,6 +107,7 @@ export const SPREADS: TarotSpread[] = [
     backdrop: "none",
     aspect: 1.1,
     cardScale: 0.42,
+    maxWidth: 260,
   },
   {
     id: "timeline",
@@ -118,6 +122,7 @@ export const SPREADS: TarotSpread[] = [
     backdrop: "none",
     aspect: 1.7,
     cardScale: 0.3,
+    maxWidth: 420,
   },
   {
     id: "choice",
@@ -132,6 +137,7 @@ export const SPREADS: TarotSpread[] = [
     backdrop: "none",
     aspect: 1.7,
     cardScale: 0.3,
+    maxWidth: 420,
   },
   {
     id: "past-present-future",
@@ -145,8 +151,9 @@ export const SPREADS: TarotSpread[] = [
     ]),
     drawMode: "manual",
     backdrop: "none",
-    aspect: 2.1,
-    cardScale: 0.24,
+    aspect: 2.0,
+    cardScale: 0.22,
+    maxWidth: 460,
   },
   {
     id: "situation-challenge-advice",
@@ -160,8 +167,9 @@ export const SPREADS: TarotSpread[] = [
     ]),
     drawMode: "manual",
     backdrop: "none",
-    aspect: 2.1,
-    cardScale: 0.24,
+    aspect: 2.0,
+    cardScale: 0.22,
+    maxWidth: 460,
   },
   {
     id: "mind-body-spirit",
@@ -169,14 +177,15 @@ export const SPREADS: TarotSpread[] = [
     sub: "心 · 身 · 靈",
     bestFor: "說不上哪裡不對，但整個人不太對勁時",
     positions: [
-      { label: "心", hint: "情緒此刻的樣子", x: 0.26, y: 0.74 },
-      { label: "身", hint: "身體正在替你承擔的", x: 0.74, y: 0.74 },
-      { label: "靈", hint: "更深的那個你想說的", x: 0.5, y: 0.22 },
+      { label: "心", hint: "情緒此刻的樣子", x: 0.24, y: 0.70 },
+      { label: "身", hint: "身體正在替你承擔的", x: 0.76, y: 0.70 },
+      { label: "靈", hint: "更深的那個你想說的", x: 0.50, y: 0.30 },
     ],
     drawMode: "manual",
     backdrop: "none",
     aspect: 1.35,
-    cardScale: 0.3,
+    cardScale: 0.23,
+    maxWidth: 400,
   },
   {
     id: "heaven-earth-human",
@@ -191,8 +200,9 @@ export const SPREADS: TarotSpread[] = [
     // three phases: one major, one numbered minor, one court card
     drawMode: "category",
     backdrop: "none",
-    aspect: 0.62,
-    cardScale: 0.46,
+    aspect: 0.55,
+    cardScale: 0.33,
+    maxWidth: 300,
   },
   {
     id: "chakra",
@@ -202,8 +212,9 @@ export const SPREADS: TarotSpread[] = [
     positions: CHAKRA_POSITIONS,
     drawMode: "chakra",
     backdrop: "none",
-    aspect: 0.42,
-    cardScale: 0.3,
+    aspect: 0.3,
+    cardScale: 0.25,
+    maxWidth: 300,
   },
 
   // ── signature spreads, one per master ─────────────────────────────────────
@@ -220,8 +231,9 @@ export const SPREADS: TarotSpread[] = [
     drawMode: "manual",
     signatureOf: "cynthia",
     backdrop: "moon-phases",
-    aspect: 1.55,
-    cardScale: 0.26,
+    aspect: 1.2,
+    cardScale: 0.24,
+    maxWidth: 440,
   },
   {
     id: "solar-cross",
@@ -229,16 +241,17 @@ export const SPREADS: TarotSpread[] = [
     sub: "藉口 · 真相 · 盲區 · 曙光",
     bestFor: "拖延發作、自欺欺人、需要被強行敲醒時",
     positions: [
-      { label: "藉口", hint: "你一直拿來安慰自己的假象", x: 0.18, y: 0.5 },
-      { label: "真相", hint: "殘酷但你必須面對的核心", x: 0.5, y: 0.5 },
-      { label: "盲區", hint: "你不敢跨出去的那一步", x: 0.82, y: 0.5 },
-      { label: "曙光", hint: "現在立刻就能做的突破", x: 0.5, y: 0.14 },
+      { label: "藉口", hint: "你一直拿來安慰自己的假象", x: 0.18, y: 0.62 },
+      { label: "真相", hint: "殘酷但你必須面對的核心", x: 0.5, y: 0.62 },
+      { label: "盲區", hint: "你不敢跨出去的那一步", x: 0.82, y: 0.62 },
+      { label: "曙光", hint: "現在立刻就能做的突破", x: 0.5, y: 0.20 },
     ],
     drawMode: "manual",
     signatureOf: "helios",
     backdrop: "solar-cross",
-    aspect: 1.5,
-    cardScale: 0.24,
+    aspect: 0.78,
+    cardScale: 0.22,
+    maxWidth: 400,
   },
   {
     id: "puzzle",
@@ -255,8 +268,9 @@ export const SPREADS: TarotSpread[] = [
     drawMode: "manual",
     signatureOf: "athena",
     backdrop: "puzzle-grid",
-    aspect: 1.32,
+    aspect: 1.0,
     cardScale: 0.24,
+    maxWidth: 460,
   },
   {
     id: "tide-current",
@@ -271,8 +285,9 @@ export const SPREADS: TarotSpread[] = [
     drawMode: "manual",
     signatureOf: "poseidon",
     backdrop: "tide-wave",
-    aspect: 1.55,
+    aspect: 1.15,
     cardScale: 0.26,
+    maxWidth: 440,
   },
   {
     id: "dawn-prayer",
@@ -288,8 +303,9 @@ export const SPREADS: TarotSpread[] = [
     drawMode: "manual",
     signatureOf: "eos",
     backdrop: "dawn-rays",
-    aspect: 1.62,
+    aspect: 1.0,
     cardScale: 0.21,
+    maxWidth: 460,
   },
   {
     id: "night-dissect",
@@ -297,17 +313,18 @@ export const SPREADS: TarotSpread[] = [
     sub: "陰影 · 根源 · 防禦 · 轉化 · 和解",
     bestFor: "重複陷入同一種關係、無名的恐懼、想做深層梳理時",
     positions: [
-      { label: "陰影", hint: "你不敢承認的那份恐懼", x: 0.5, y: 0.12 },
-      { label: "根源", hint: "它是從哪一段經歷來的", x: 0.21, y: 0.42 },
-      { label: "防禦機制", hint: "你用什麼方式保護自己", x: 0.79, y: 0.42 },
-      { label: "轉化", hint: "這份陰影能變成什麼力量", x: 0.5, y: 0.63 },
-      { label: "和解", hint: "想對那個小小的你說的話", x: 0.5, y: 0.9 },
+      { label: "陰影", hint: "你不敢承認的那份恐懼", x: 0.5, y: 0.17 },
+      { label: "根源", hint: "它是從哪一段經歷來的", x: 0.2, y: 0.335 },
+      { label: "防禦機制", hint: "你用什麼方式保護自己", x: 0.8, y: 0.335 },
+      { label: "轉化", hint: "這份陰影能變成什麼力量", x: 0.5, y: 0.5 },
+      { label: "和解", hint: "想對那個小小的你說的話", x: 0.5, y: 0.83 },
     ],
     drawMode: "manual",
     signatureOf: "nyx",
     backdrop: "night-well",
-    aspect: 1.06,
+    aspect: 0.72,
     cardScale: 0.24,
+    maxWidth: 380,
   },
   {
     id: "rebirth",
@@ -323,8 +340,9 @@ export const SPREADS: TarotSpread[] = [
     drawMode: "manual",
     signatureOf: "persephone",
     backdrop: "bloom-vines",
-    aspect: 1.62,
+    aspect: 0.95,
     cardScale: 0.21,
+    maxWidth: 460,
   },
 ];
 

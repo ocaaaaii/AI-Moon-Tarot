@@ -3,20 +3,25 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import type { CardRequest } from "@/lib/tarot/types";
+import type { TarotSpread } from "@/lib/tarot/spreads";
 import { cardImagePath } from "@/lib/tarot/cardSlugs";
+import SpreadBackdrop from "./SpreadBackdrop";
 
 interface DrawnCardsProps {
   cards: CardRequest[];
   cardMeta?: Record<number, { name_zh: string; name_en: string; local_image: string }>;
-  /** Per-card position labels (e.g. ["天（靈魂課題）","地（現實事件）","人（心態鏡子）"]) */
-  positions?: string[];
+  /**
+   * The spread these cards were drawn for. Without one the cards fall back to
+   * the old centred row — which is what a reading restored from an older shape
+   * would get.
+   */
+  spread?: TarotSpread | null;
+  /** `r,g,b` for the active master, tinting the board's backdrop */
+  accentRgb?: string;
 }
 
-const POSITION_LABELS: Record<number, Record<number, string>> = {
-  1: { 0: "" },
-  2: { 0: "過去", 1: "現在" },
-  3: { 0: "過去", 1: "現在", 2: "未來" },
-};
+/** height ÷ width of a tarot card image */
+const CARD_RATIO = 192 / 110;
 
 // Chakra colors — one per position (海底輪 → 頂輪)
 const CHAKRA_COLORS = [
@@ -29,122 +34,189 @@ const CHAKRA_COLORS = [
   "#a855f7", // 頂輪 purple
 ];
 
-export default function DrawnCards({ cards, cardMeta = {}, positions }: DrawnCardsProps) {
-  const [flipped, setFlipped] = useState<boolean[]>(Array(cards.length).fill(false));
-  const isChakra = cards.length === 7;
-  // Smaller cards for 7-card chakra spread
-  const cardW = isChakra ? 72 : 110;
-  const cardH = isChakra ? 125 : 192;
+/**
+ * The drawn spread, laid out as a board.
+ *
+ * Every label lives INSIDE its own card — the position as a pill on the top
+ * edge, the card name and its hint as a caption over the bottom. That is not a
+ * style choice: the layouts put cards as little as 9px apart, and any text
+ * hanging outside a card would collide with its neighbour in the tighter
+ * spreads. Inside the card's own footprint it cannot, whatever the geometry.
+ */
+export default function DrawnCards({ cards, cardMeta = {}, spread, accentRgb = "184,168,200" }: DrawnCardsProps) {
+  const [flipped, setFlipped] = useState<boolean[]>(() => Array(cards.length).fill(false));
+
+  // "is this the chakra spread" reads the spread, not `cards.length === 7`,
+  // which would paint chakra colours onto any future seven-card spread.
+  const isChakra = spread?.id === "chakra";
+  const stagger = isChakra ? 260 : 420;
 
   useEffect(() => {
-    cards.forEach((_, i) => {
+    const timers = cards.map((_, i) =>
       setTimeout(() => {
-        setFlipped((prev) => {
+        setFlipped(prev => {
           const next = [...prev];
           next[i] = true;
           return next;
         });
-      }, 300 + i * (isChakra ? 220 : 380));
-    });
-  }, [cards, isChakra]);
+      }, 420 + i * stagger)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [cards, stagger]);
 
-  return (
-    <div className={`flex justify-center ${isChakra ? "gap-2 flex-wrap" : "gap-5 flex-wrap"}`}>
-      {cards.map((card, i) => {
-        const label = positions?.[i] ?? POSITION_LABELS[cards.length]?.[i] ?? "";
-        const meta = cardMeta[card.id];
-        const nameZh = meta?.name_zh ?? `#${card.id}`;
-        const imageSrc = cardImagePath(card.id);
-        const chakraColor = isChakra ? CHAKRA_COLORS[i] : undefined;
+  function card(i: number, widthPx: number | string, label: string, hint: string) {
+    const c = cards[i];
+    const meta = cardMeta[c.id];
+    const nameZh = meta?.name_zh ?? `#${c.id}`;
+    const chakraColor = isChakra ? CHAKRA_COLORS[i] : undefined;
+    const isUp = flipped[i];
 
-        return (
-          <motion.div
-            key={i}
-            className="flex flex-col items-center gap-1.5"
-            initial={{ opacity: 0, y: 16, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: i * (isChakra ? 0.08 : 0.12), duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    return (
+      <div style={{ width: widthPx, aspectRatio: "110 / 192", perspective: "900px", position: "relative" }}>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            transformStyle: "preserve-3d",
+            transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1)",
+            transform: isUp ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
+        >
+          {/* back */}
+          <div
+            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            className="absolute inset-0 rounded-xl border border-morandi-lavender/25 flex items-center justify-center overflow-hidden"
           >
-            {label && (
-              <div className="flex items-center gap-1">
-                {chakraColor && (
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: chakraColor, display: "inline-block", flexShrink: 0 }} />
-                )}
-                <span className="text-morandi-stone/70 text-[10px] tracking-widest">{label}</span>
-              </div>
+            <div
+              className="absolute inset-0 rounded-xl"
+              style={{ background: "radial-gradient(ellipse at 35% 30%, rgba(176,160,184,0.18) 0%, rgba(22,13,38,0.97) 100%)" }}
+            />
+            <span className="relative z-10 text-morandi-lavender/25 text-xl">✦</span>
+          </div>
+
+          {/* face */}
+          <div
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+              ...(chakraColor && isUp ? { boxShadow: `0 0 12px ${chakraColor}55` } : {}),
+            }}
+            className="absolute inset-0 rounded-xl overflow-hidden border border-morandi-lavender/20"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cardImagePath(c.id)}
+              alt={nameZh}
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", transform: "scale(1.04)" }}
+            />
+
+            {c.reversed && (
+              <span className="absolute top-1.5 right-1.5 text-[8px] text-morandi-lavender/80 tracking-widest bg-black/55 px-1.5 py-0.5 rounded-full">
+                逆位
+              </span>
             )}
 
-            {/* 3D flip container */}
-            <div style={{ width: cardW, height: cardH, perspective: "900px" }}>
-              <div style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                transformStyle: "preserve-3d",
-                transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1)",
-                transform: flipped[i] ? "rotateY(180deg)" : "rotateY(0deg)",
-              }}>
-                {/* Card back */}
-                <div
-                  style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-                  className="absolute inset-0 rounded-xl border border-morandi-lavender/25 flex items-center justify-center overflow-hidden"
-                >
-                  <div className="absolute inset-0 rounded-xl" style={{
-                    background: "radial-gradient(ellipse at 35% 30%, rgba(176,160,184,0.18) 0%, rgba(22,13,38,0.97) 100%)",
-                  }} />
-                  <span className="relative z-10 text-morandi-lavender/25 text-xl">✦</span>
-                </div>
+            {isUp && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-x-0 bottom-0 px-2 pt-6 pb-1.5 text-center"
+                style={{ background: "linear-gradient(to top, rgba(10,7,18,0.94) 35%, transparent 100%)" }}
+              >
+                <p className="text-cream-100/95 text-[11px] leading-tight">{nameZh}</p>
+                {/* clamped: a long hint on a 70px card would otherwise creep
+                    up over the art it is supposed to caption */}
+                {hint && (
+                  <p className="text-cream-200/50 text-[8.5px] leading-snug mt-0.5 line-clamp-2" style={{ textWrap: "pretty" }}>
+                    {hint}
+                  </p>
+                )}
+              </motion.div>
+            )}
+          </div>
+        </div>
 
-                {/* Card face */}
-                <div
-                  style={{
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                    ...(chakraColor && flipped[i] ? { boxShadow: `0 0 10px ${chakraColor}55` } : {}),
-                  }}
-                  className="absolute inset-0 rounded-xl overflow-hidden border border-morandi-lavender/20"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={imageSrc}
-                    alt={nameZh}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      objectPosition: "top",
-                      transform: "scale(1.04)",
-                    }}
-                  />
-                  {/* Reversed overlay */}
-                  {cards[i]?.reversed && (
-                    <div className="absolute inset-0 flex items-end justify-center pb-2">
-                      <span className="text-[9px] text-morandi-lavender/60 tracking-widest bg-black/50 px-2 py-0.5 rounded-full">
-                        逆位
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+        {/* position pill, straddling the top edge */}
+        {label && (
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-0.5 rounded-full whitespace-nowrap"
+            style={{ background: "rgba(14,9,26,0.92)", border: `1px solid rgba(${accentRgb},0.30)` }}
+          >
+            {chakraColor && (
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: chakraColor, flexShrink: 0 }} />
+            )}
+            <span className="text-morandi-stone/75 text-[9px] tracking-widest">{label}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
 
-            {/* Card label — outside the fixed-height container so it doesn't overflow */}
-            <div className="mt-2 text-center" style={{ width: cardW }}>
-              {flipped[i] && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-cream-200/70 text-xs"
-                >
-                  {nameZh}
-                </motion.p>
-              )}
-            </div>
+  // ── fallback: no spread, so no geometry — the old centred row ──────────────
+  if (!spread) {
+    return (
+      <div className="w-full flex justify-center gap-5 flex-wrap pt-3">
+        {cards.map((_, i) => (
+          <motion.div
+            key={i}
+            className="relative"
+            initial={{ opacity: 0, y: 16, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: i * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {card(i, 110, "", "")}
           </motion.div>
-        );
-      })}
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    // `w-full`: this sits inside another flex row, so without it the wrapper
+    // shrink-wraps and the board's own `width: 100%` resolves against zero.
+    <div className="w-full flex justify-center">
+      <div
+        className="relative"
+        style={{
+          width: "100%",
+          maxWidth: spread.maxWidth,
+          aspectRatio: `${spread.maxWidth} / ${Math.round(spread.maxWidth / spread.aspect)}`,
+        }}
+      >
+        <SpreadBackdrop id={spread.backdrop} rgb={accentRgb} aspect={spread.aspect} />
+
+        {cards.map((_, i) => {
+          const pos = spread.positions[i];
+          if (!pos) return null;
+          return (
+            // Outer box owns the static centring transform; the inner motion
+            // div owns the entrance. One element, one transform owner.
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                left: `${pos.x * 100}%`,
+                top: `${pos.y * 100}%`,
+                width: `${spread.cardScale * 100}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, y: 18, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: i * (stagger / 1000) * 0.55, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {card(i, "100%", pos.label, pos.hint)}
+              </motion.div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
+
+export { CARD_RATIO };

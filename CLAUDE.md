@@ -214,6 +214,41 @@ from the registry so it cannot drift again; the reading route passes
 When adding a spread size, curl the route — a count rule can hide anywhere
 downstream of validation.
 
+## 🪄 The board — geometry, backdrop, reveal
+
+`DrawnCards.tsx` lays the drawn cards out at each `SpreadPosition`'s `x`/`y`
+inside a box sized by the spread's `aspect`, `cardScale` and `maxWidth`.
+Without a `spread` prop it falls back to the old centred row.
+
+- **Every label lives inside its own card** — the position as a pill on the top
+  edge, the card name and hint as a caption over the bottom. Not a style
+  choice: the layouts put cards as little as 9px apart, so text hanging
+  outside a card would collide with its neighbour. Inside the card's footprint
+  it cannot, whatever the geometry.
+- **The centring `translate(-50%,-50%)` is on a static outer box; the entrance
+  animation is on an inner `motion.div`.** One element, one transform owner —
+  motion animating the same element would wipe the centring.
+- **A backdrop drawn at the card positions is a backdrop hidden behind the
+  cards.** The first `moon-phases` and `solar-cross` put their moons and
+  sunburst exactly where the cards sit and were completely invisible. Both now
+  draw in the negative space: a ring around the cluster, an arc through the
+  gaps, a burst outside the centre card.
+- **`SpreadBackdrop` carries the board's aspect in its viewBox** (`0 0 100 H`,
+  `H = 100/aspect`) with `preserveAspectRatio="none"`. That makes `x` a
+  percentage of board width and `y/H` a percentage of board height — so a
+  figure drawn at a card's coordinates lands on that card — while keeping
+  circles round, because the viewBox aspect equals the box aspect. `meet` was
+  tried first: it fits to the shorter side and letterboxes, so the arc was
+  drawn in a centred square and missed the outer cards.
+- **Card boxes must not overlap or fall outside the board.** Six spreads failed
+  this on the first pass — clipped cards and two real overlaps — and none of it
+  was visible from reading the numbers. A throwaway route checked all fifteen:
+  a card box is `cardScale` wide and `cardScale × 1.7455 × aspect` tall *as a
+  fraction of height*, two overlap when `|dx| < cw && |dy| < ch`. Re-run that
+  check after touching any `x`, `y`, `aspect` or `cardScale`.
+- `isChakra` reads `spread.id`, never `cards.length === 7`.
+- 七脈輪's board is 300×1000 — a genuine energy column, and tall on purpose.
+
 ## 🎲 One definition of "draw a card"
 
 `lib/tarot/draw.ts` owns `REVERSED_CHANCE` and every pool rule. Picking off
