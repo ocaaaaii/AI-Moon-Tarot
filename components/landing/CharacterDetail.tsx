@@ -24,6 +24,24 @@ import { ACCENT_RGB } from "@/lib/landing/accents";
  * selected" state — a carousel showing nobody is just an empty box.
  */
 
+/**
+ * The portrait's edge dissolve.
+ *
+ * `closest-side` is the load-bearing word. A bare `radial-gradient(circle, …)`
+ * sizes itself to the farthest CORNER, so in a square box 100% lands at r·√2
+ * and the visible circle edge sits at 1/√2 ≈ 70.7% of the gradient. The old
+ * stops faded from 70% to 100%, which meant the edge was still 97.6% opaque
+ * where you could see it and the whole fade happened out in the corners —
+ * corners that `rounded-full overflow-hidden` had already clipped away. The
+ * soft edge was in the code and had never once rendered.
+ *
+ * With `closest-side`, 100% IS the circle's radius, so every stop below is a
+ * real position on the visible disc. Solid to 58% keeps the face untouched;
+ * the outer 42% is the dissolve.
+ */
+const MOON_MASK =
+  "radial-gradient(circle closest-side, #000 0%, #000 58%, rgba(0,0,0,0.62) 78%, rgba(0,0,0,0.18) 92%, transparent 100%)";
+
 interface Props {
   value: string;
   onChange: (id: string) => void;
@@ -79,6 +97,7 @@ export default function CharacterDetail({ value, onChange }: Props) {
         >
             {/* ── moon ── */}
             <div className="shrink-0 relative">
+              {/* outer bloom, behind the portrait */}
               <div
                 aria-hidden
                 className="absolute inset-[-18%] rounded-full pointer-events-none"
@@ -88,10 +107,7 @@ export default function CharacterDetail({ value, onChange }: Props) {
               />
               <div
                 className="relative w-[220px] h-[220px] md:w-[290px] md:h-[290px] rounded-full overflow-hidden"
-                style={{
-                  maskImage: "radial-gradient(circle, #000 0%, #000 70%, transparent 100%)",
-                  WebkitMaskImage: "radial-gradient(circle, #000 0%, #000 70%, transparent 100%)",
-                }}
+                style={{ maskImage: MOON_MASK, WebkitMaskImage: MOON_MASK }}
               >
                 <img
                   src={CHARACTER_THUMBS[avatar.id]}
@@ -99,10 +115,17 @@ export default function CharacterDetail({ value, onChange }: Props) {
                   className="w-full h-full object-cover object-top"
                 />
               </div>
+              {/* Rim light, over the portrait. It brightens exactly the band
+                  where the mask is handing the image back to the page, so the
+                  edge reads as light rather than as an ending. `screen` means
+                  it can only add — it never darkens the face. */}
               <div
                 aria-hidden
-                className="absolute inset-[6%] rounded-full pointer-events-none"
-                style={{ border: `1px solid rgba(${rgb},0.32)` }}
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{
+                  background: `radial-gradient(circle closest-side, transparent 0%, transparent 60%, rgba(${rgb},0.20) 82%, rgba(${rgb},0.06) 94%, transparent 100%)`,
+                  mixBlendMode: "screen",
+                }}
               />
             </div>
 
