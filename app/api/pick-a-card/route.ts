@@ -66,8 +66,10 @@ export async function POST(req: NextRequest) {
   }));
 
   // Load card contexts (synchronous filesystem read).
-  // Pass isChakra=true to lift the 3-card limit to 7 — Oracle readings use 4 cards.
-  const cards = loadCards(cardRequests, true);
+  // The bound is the exact count this route already enforces above. It used to
+  // pass `isChakra=true` purely to lift a 3-card limit, which is the kind of
+  // flag that stops meaning what it says.
+  const cards = loadCards(cardRequests, 4);
 
   // Build Oracle system prompt
   const systemPrompt = buildOraclePrompt(themeId, pileLabel, cards);

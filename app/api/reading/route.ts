@@ -176,7 +176,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   let userMessage: string;
   try {
     const spreadType: SpreadType = spread.drawMode === "chakra" ? "chakra" : "normal";
-    const cards = loadCards(request.cards, spreadType === "chakra");
+    const cards = loadCards(request.cards, spread.positions.length);
     userMessage = buildUserMessage(
       request.question,
       cards,

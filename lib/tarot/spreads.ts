@@ -328,6 +328,16 @@ export const SPREADS: TarotSpread[] = [
   },
 ];
 
+/**
+ * The largest registered spread. A bound for anything that has to accept an
+ * arbitrary card array without knowing which spread it belongs to — it can
+ * never drift from the table the way a hand-written `7 : 3` did.
+ */
+export const MAX_SPREAD_CARDS: number = SPREADS.reduce(
+  (max, s) => Math.max(max, s.positions.length),
+  0
+);
+
 const BY_ID = new Map(SPREADS.map(s => [s.id, s]));
 
 export function getSpread(id: string): TarotSpread | undefined {

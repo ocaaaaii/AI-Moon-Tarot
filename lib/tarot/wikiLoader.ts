@@ -12,6 +12,7 @@ import path from "path";
 import matter from "gray-matter";
 
 import type { CardContext, CardFrontmatter, CardRequest } from "./types";
+import { MAX_SPREAD_CARDS } from "./spreads";
 
 // ─── Card slug lookup table (matches agents/scraper/config.py) ───────────────
 // Maps card ID → slug for filename resolution without importing Python config.
@@ -144,18 +145,26 @@ export function loadCard(id: number, reversed = false): CardContext {
 }
 
 /**
- * Load multiple cards at once (1–7 cards).
- * chakra spreads allow up to 7; normal spreads allow up to 3.
+ * Load multiple cards at once.
+ *
+ * This used to carry its own `isChakra ? 7 : 3`, a second copy of a rule that
+ * also lived in the reading route. Moving spreads into a registry removed the
+ * route's copy and left this one, so every 4- and 5-card signature spread
+ * passed validation and then threw here. The bound is now the largest spread
+ * that actually exists, which cannot drift from the registry.
+ *
+ * Callers that know their exact count should check it themselves — the
+ * reading route compares against `spread.positions.length`, which is stricter
+ * than anything this function can know.
  *
  * @param requests   Array of { id, reversed? }
- * @param isChakra   When true, lifts the limit to 7 cards
+ * @param maxCards   Upper bound; defaults to the biggest registered spread
  * @returns          Array of CardContext in the same order
  */
-export function loadCards(requests: CardRequest[], isChakra = false): CardContext[] {
+export function loadCards(requests: CardRequest[], maxCards = MAX_SPREAD_CARDS): CardContext[] {
   if (requests.length === 0) {
     throw new Error("At least 1 card is required");
   }
-  const maxCards = isChakra ? 7 : 3;
   if (requests.length > maxCards) {
     throw new Error(`Max ${maxCards} cards allowed (got ${requests.length})`);
   }

@@ -203,6 +203,17 @@ they are all read off it.
 still works — `fallbackSpreadForCount` resolves the generic spread of that
 size. Unknown ids and mismatched card counts are rejected with a 400.
 
+**The `isChakra ? 7 : 3` rule had a third copy**, inside `loadCards`
+(`wikiLoader.ts`). Removing the route's copy left it, so every 4- and 5-card
+signature spread passed validation and then threw `Max 3 cards allowed` at
+load time — found by curling all seven signature spreads, not by reading. That
+parameter is now a plain `maxCards` defaulting to `MAX_SPREAD_CARDS`, derived
+from the registry so it cannot drift again; the reading route passes
+`spread.positions.length`, which is exact. `pick-a-card` used to pass
+`isChakra: true` purely to lift the limit for its 4 cards, and now passes `4`.
+When adding a spread size, curl the route — a count rule can hide anywhere
+downstream of validation.
+
 ## 🔒 API surface — everything under /app/api is public
 
 There is no auth, no rate limiting and no origin check on any route, and

@@ -6,7 +6,9 @@ import { motion, AnimatePresence } from "motion/react";
 import dynamic from "next/dynamic";
 import type { CardRequest, HistoryMessage } from "@/lib/tarot/types";
 import { MAJOR_IDS, MINOR_NUMBERED_IDS, COURT_IDS } from "@/lib/tarot/cardCategories";
-import { GENERIC_SPREADS, positionLabels, type TarotSpread } from "@/lib/tarot/spreads";
+import { spreadsFor, positionLabels, type TarotSpread } from "@/lib/tarot/spreads";
+import type { AvatarAccent } from "@/lib/tarot/avatars";
+import { ACCENT_RGB } from "@/lib/landing/accents";
 import DrawnCards from "./DrawnCards";
 import ChatReading from "./ChatReading";
 import QuestionRefine from "./QuestionRefine";
@@ -61,6 +63,8 @@ export interface ChatInterfaceAvatar {
   id: string;
   displayName: string;
   image: string;
+  /** drives the signature spread's tint — see lib/landing/accents.ts */
+  accent: AvatarAccent;
   openingLines: string[];
   inputPlaceholder: string;
   suggestions: { icon: string; text: string }[];
@@ -122,6 +126,14 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   // Derive current phase from how many cards have been collected (no separate state needed)
   const categoryPhase = Math.min(categoryCards.length, 2) as 0 | 1 | 2;
   const readingAreaRef = useRef<HTMLDivElement>(null);
+
+  // This master's own spread, then the shared eight. The generic list starts
+  // folded so the signature one is what you actually see — but it is one tap
+  // away, because 天地人 and 七脈輪 have draw mechanics of their own and
+  // making someone switch master to reach them would be a downgrade.
+  const { signature, generic } = spreadsFor(avatar.id);
+  const [showGeneric, setShowGeneric] = useState(false);
+  const accentRgb = ACCENT_RGB[avatar.accent];
 
   // Everything the rest of this component used to keep in its own state
   const spreadId = spread?.id;
@@ -534,23 +546,77 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
             <motion.div key="spread" {...slideUp}>
               <AssistantBlock avatarImage={avatar.image} avatarAlt={avatar.displayName}>
                 <p className="text-cream-200/80 text-sm mb-4">選一個牌陣吧</p>
-                <div className="flex gap-2 flex-wrap">
-                  {GENERIC_SPREADS.map((option, i) => (
-                    <motion.button
-                      key={option.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.08, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => { setSpread(option); setCategoryCards([]); setStep("deck"); }}
-                      className="flex flex-col items-center px-5 py-3 rounded-xl border border-morandi-lavender/25 hover:border-morandi-lavender/60 hover:bg-morandi-mauve/20 text-sm transition-colors duration-200"
+
+                {signature && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ scale: 1.015 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => { setSpread(signature); setCategoryCards([]); setStep("deck"); }}
+                    className="w-full text-left rounded-2xl px-5 py-4 mb-3 transition-colors duration-200"
+                    style={{
+                      border: `1px solid rgba(${accentRgb},0.45)`,
+                      background: `linear-gradient(135deg, rgba(${accentRgb},0.16) 0%, rgba(${accentRgb},0.05) 100%)`,
+                      boxShadow: `0 0 26px rgba(${accentRgb},0.10)`,
+                    }}
+                  >
+                    <p className="text-[10px] tracking-[0.22em] mb-2" style={{ color: `rgba(${accentRgb},0.95)` }}>
+                      ✦ {avatar.displayName} 的專屬牌陣
+                    </p>
+                    <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                      <span className="text-cream-100 text-base tracking-wide">{signature.label}</span>
+                      <span className="text-morandi-stone/55 text-xs">{signature.sub}</span>
+                    </div>
+                    <p className="text-cream-200/55 text-[11.5px] leading-relaxed mt-2 text-pretty">
+                      {signature.bestFor}
+                    </p>
+                    <p className="text-[11px] mt-2.5" style={{ color: `rgba(${accentRgb},0.75)` }}>
+                      {signature.positions.length} 張 · 開始 →
+                    </p>
+                  </motion.button>
+                )}
+
+                {/* Folded, not removed — see the comment on `showGeneric`. */}
+                <button
+                  onClick={() => setShowGeneric(v => !v)}
+                  className="text-morandi-stone/55 hover:text-cream-200/80 text-xs tracking-[0.14em] transition-colors duration-200"
+                  aria-expanded={showGeneric}
+                >
+                  {showGeneric ? "收起其他牌陣 ▴" : `其他牌陣（${generic.length}）▾`}
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {(showGeneric || !signature) && (
+                    <motion.div
+                      key="generic"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
                     >
-                      <span className="text-cream-200/90">{option.label}</span>
-                      <span className="text-morandi-stone/60 text-xs mt-0.5">{option.sub}</span>
-                    </motion.button>
-                  ))}
-                </div>
+                      <div className="flex gap-2 flex-wrap pt-3">
+                        {generic.map((option, i) => (
+                          <motion.button
+                            key={option.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => { setSpread(option); setCategoryCards([]); setStep("deck"); }}
+                            className="flex flex-col items-center px-5 py-3 rounded-xl border border-morandi-lavender/25 hover:border-morandi-lavender/60 hover:bg-morandi-mauve/20 text-sm transition-colors duration-200"
+                          >
+                            <span className="text-cream-200/90">{option.label}</span>
+                            <span className="text-morandi-stone/60 text-xs mt-0.5">{option.sub}</span>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </AssistantBlock>
             </motion.div>
           )}
