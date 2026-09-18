@@ -65,7 +65,7 @@ export default function WorldSection({ onOpenTour }: Props) {
         </p>
 
         <h2
-          className="font-serif text-cream-50 mt-4"
+          className="font-serif text-cream-50 mt-4 text-balance"
           style={{ fontSize: "clamp(1.9rem, 4vw, 2.75rem)", letterSpacing: "0.12em" }}
         >
           {WORLD_COPY.heading}
@@ -78,7 +78,7 @@ export default function WorldSection({ onOpenTour }: Props) {
         </div>
 
         <p
-          className="text-cream-100/78 text-sm md:text-base mt-8 mx-auto max-w-xl"
+          className="text-cream-100/78 text-sm md:text-base mt-8 mx-auto max-w-xl text-pretty"
           style={{ lineHeight: 2.1, letterSpacing: "0.04em", textShadow: "0 2px 18px rgba(10,7,18,0.9)" }}
         >
           {WORLD_COPY.body}

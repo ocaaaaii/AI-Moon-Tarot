@@ -70,12 +70,12 @@ export default function CharacterRoster() {
           {CHARACTERS_COPY.kicker}
         </p>
         <h2
-          className="font-serif text-cream-50 mt-4"
+          className="font-serif text-cream-50 mt-4 text-balance"
           style={{ fontSize: "clamp(1.7rem, 3.4vw, 2.4rem)", letterSpacing: "0.08em" }}
         >
           {CHARACTERS_COPY.heading}
         </h2>
-        <p className="text-cream-100/60 text-sm mt-4">{CHARACTERS_COPY.body}</p>
+        <p className="text-cream-100/60 text-sm mt-4 text-pretty">{CHARACTERS_COPY.body}</p>
         <p className="text-morandi-gold/55 text-xs mt-3 tracking-[0.18em]">
           ✦ {CHARACTERS_COPY.hint}
         </p>

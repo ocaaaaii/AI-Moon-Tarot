@@ -42,7 +42,7 @@ export default function StorySection() {
           {STORY_COPY.kicker}
         </p>
         <h2
-          className="font-serif text-cream-50 mt-4"
+          className="font-serif text-cream-50 mt-4 text-balance"
           style={{ fontSize: "clamp(1.7rem, 3.4vw, 2.4rem)", letterSpacing: "0.1em" }}
         >
           {STORY_COPY.heading}
@@ -54,7 +54,7 @@ export default function StorySection() {
         </div>
 
         <p
-          className="text-cream-100/72 text-sm md:text-base mt-6"
+          className="text-cream-100/72 text-sm md:text-base mt-6 text-pretty"
           style={{ lineHeight: 2, letterSpacing: "0.04em" }}
         >
           {STORY_COPY.body}
