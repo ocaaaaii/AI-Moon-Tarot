@@ -151,6 +151,13 @@ plain translated `<group>` in `CardFanScene`.
   finger's absolute x onto the row, so a tap teleported you, and ~378px
   standing in for 78 cards meant roughly 0.2 cards per pixel — a 5px wobble
   skipped a card. Drag is relative, which is why it feels calm.
+- **The position read-out is dots, not a bar.** After the scrubber became
+  display-only it kept its full-width track and thumb, and people tried to
+  drag it — a grey bar under a scrollable area reads as a scrollbar whatever
+  it does, and that one does nothing. Dots carry the same information without
+  offering a handle. The hint that actually matters ("drag the cards") leads,
+  at 12.5px rather than 10px at 38% opacity, which was too faint to compete
+  with the thing that looked interactive.
 - **`shouldIgnoreTap` must be set during `pointermove`, not on `pointerup`.**
   R3F synthesises its click from pointerup, so a flag set in our own pointerup
   would race it. Setting it the moment the drag passes 10px is ordering-proof.
@@ -247,7 +254,12 @@ Without a `spread` prop it falls back to the old centred row.
   fraction of height*, two overlap when `|dx| < cw && |dy| < ch`. Re-run that
   check after touching any `x`, `y`, `aspect` or `cardScale`.
 - `isChakra` reads `spread.id`, never `cards.length === 7`.
-- 七脈輪's board is 300×1000 — a genuine energy column, and tall on purpose.
+- **七脈輪 is two columns, not one.** The lower four chakras on the left, the
+  upper three on the right starting a slot higher, each read upward. A single
+  column is the truer spine and is what shipped first, but it is arithmetically
+  cornered: seven stacked cards need ~7 × cardHeight of board, so a readable
+  card size gave a ~1400px board and a sane height gave 75px cards. Four rows
+  instead of seven buys back both — 127px cards in 955px.
 
 ## 🎲 One definition of "draw a card"
 

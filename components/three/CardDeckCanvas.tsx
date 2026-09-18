@@ -46,6 +46,8 @@ const DRAG_THRESHOLD = 10;
 const FRICTION = 0.94;
 /** below this (world units per ms) the glide has effectively stopped */
 const MIN_VELOCITY = 0.00004;
+/** position dots under the deck — coarse on purpose, it is a read-out */
+const DOTS = 7;
 
 export default function CardDeckCanvas({ spreadCount, onComplete, spreadPositions, allowedIds }: CardDeckCanvasProps) {
   const actualCardCount   = allowedIds?.size ?? SPREAD_COUNT;
@@ -173,8 +175,7 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
   const shouldIgnoreTap = useCallback(() => dragged.current, []);
 
   const progress    = MAX_PAN > 0 ? (MAX_PAN - panX) / (MAX_PAN * 2) : 0;
-  const thumbPct    = Math.max(8, Math.min(60, (VISIBLE_WORLD_WIDTH / TOTAL_WORLD_WIDTH) * 100));
-  const thumbLeft   = progress * (100 - thumbPct);
+  const activeDot   = Math.max(0, Math.min(DOTS - 1, Math.round(progress * (DOTS - 1))));
   const nextPosition = spreadPositions?.[drawnCount] ?? null;
 
   return (
@@ -237,20 +238,35 @@ export default function CardDeckCanvas({ spreadCount, onComplete, spreadPosition
         </Canvas>
       </div>
 
-      {/* Progress indicator — display only. It used to be the control; now it
-          just answers "where am I in 78 cards". */}
-      <div style={{ marginTop: 10, padding: "0 6px", display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ position: "relative", width: "100%", height: 4, borderRadius: 8, background: "rgba(184,168,200,0.12)" }}>
-          <div style={{
-            position: "absolute", top: 0, left: `${thumbLeft}%`, width: `${thumbPct}%`,
-            height: "100%", borderRadius: 8,
-            background: "linear-gradient(90deg, rgba(184,168,200,0.6), rgba(200,180,220,0.75))",
-            boxShadow: "0 0 8px rgba(184,168,200,0.25)",
-          }} />
-        </div>
-        <p style={{ textAlign: "center", fontSize: 10, color: "rgba(166,153,185,0.38)", letterSpacing: "0.12em", margin: 0 }}>
+      {/* Where you are in the deck.
+
+          This was a full-width track with a thumb, and people tried to drag
+          it — a grey bar under a scrollable area reads as a scrollbar no
+          matter what it says, and this one does nothing. Dots carry the same
+          information without offering a handle to grab. The instruction that
+          actually matters — drag the cards — now leads, at a size you can
+          read rather than 10px at 38% opacity. */}
+      <div style={{ marginTop: 12, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        <p style={{ textAlign: "center", fontSize: 12.5, color: "rgba(206,196,226,0.75)", letterSpacing: "0.03em", margin: 0 }}>
           {`← 在牌上左右滑動，瀏覽全部 ${actualCardCount} 張 →`}
         </p>
+        <div aria-hidden style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          {Array.from({ length: DOTS }, (_, i) => {
+            const on = i === activeDot;
+            return (
+              <span
+                key={i}
+                style={{
+                  width: on ? 16 : 5,
+                  height: 5,
+                  borderRadius: 8,
+                  background: on ? "rgba(200,180,220,0.72)" : "rgba(184,168,200,0.22)",
+                  transition: "width 0.25s ease, background 0.25s ease",
+                }}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -81,12 +81,24 @@ const CHAKRA_HINTS = [
   "與更大的意義的連結",
 ] as const;
 
-/** 海底輪 at the bottom, 頂輪 at the top — an energy column, read upward. */
+/**
+ * Two columns, each read upward: the lower four chakras on the left, the upper
+ * three on the right, starting one slot higher so the right column visibly
+ * begins above the left.
+ *
+ * A single column of seven is the truer picture of a spine, and it is what
+ * this was. The problem is arithmetic: seven cards stacked need roughly
+ * `7 × cardHeight` of board, so at a readable card size the board ran to
+ * ~1400px and at a sane height the cards shrank to 75px. Two columns need
+ * four rows instead of seven, which buys back both — ~110px cards in ~830px
+ * on a phone, where one column gave 82px cards in 1073px.
+ */
+const CHAKRA_ROW_Y = [0.88, 0.6267, 0.3733, 0.12];
 const CHAKRA_POSITIONS: SpreadPosition[] = CHAKRA_LABELS.map((label, i) => ({
   label,
   hint: CHAKRA_HINTS[i],
-  x: 0.5,
-  y: 0.93 - i * 0.1433,
+  x: i < 4 ? 0.28 : 0.72,
+  y: i < 4 ? CHAKRA_ROW_Y[i] : CHAKRA_ROW_Y[i - 3],
 }));
 
 /** Evenly spaced along one horizontal line — the plain reading of a sequence. */
@@ -212,9 +224,9 @@ export const SPREADS: TarotSpread[] = [
     positions: CHAKRA_POSITIONS,
     drawMode: "chakra",
     backdrop: "none",
-    aspect: 0.3,
-    cardScale: 0.25,
-    maxWidth: 300,
+    aspect: 0.398,
+    cardScale: 0.333,
+    maxWidth: 380,
   },
 
   // ── signature spreads, one per master ─────────────────────────────────────
