@@ -113,7 +113,7 @@ export const SPREADS: TarotSpread[] = [
     id: "single",
     label: "單張指引",
     sub: "當下最需要的訊息",
-    bestFor: "只想要一句話、一個方向，不需要前因後果時",
+    bestFor: "使用者在問題裡直接說了「只要一句話」「給我一個方向就好」「不用解釋那麼多」之類的話時；他沒有這樣明講就絕對不要選這個",
     positions: [{ label: "當下訊息", hint: "此刻最該被你看見的", x: 0.5, y: 0.5 }],
     drawMode: "manual",
     backdrop: "none",
@@ -171,7 +171,7 @@ export const SPREADS: TarotSpread[] = [
     id: "situation-challenge-advice",
     label: "情況挑戰建議",
     sub: "情況 · 挑戰 · 建議",
-    bestFor: "卡在一個具體處境裡，想知道下一步怎麼走",
+    bestFor: "想把一件事拆成「現在的情況／最大的阻礙／可以做的下一步」三塊來看時",
     positions: row([
       ["情況", "你現在面對的全貌"],
       ["挑戰", "真正擋住你的那一件事"],
@@ -187,7 +187,7 @@ export const SPREADS: TarotSpread[] = [
     id: "mind-body-spirit",
     label: "心身靈",
     sub: "心 · 身 · 靈",
-    bestFor: "說不上哪裡不對，但整個人不太對勁時",
+    bestFor: "想分別從心（情緒）、身（身體）、靈（更深的自己）三個層面各看一張時",
     positions: [
       { label: "心", hint: "情緒此刻的樣子", x: 0.24, y: 0.70 },
       { label: "身", hint: "身體正在替你承擔的", x: 0.76, y: 0.70 },

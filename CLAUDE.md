@@ -309,6 +309,30 @@ the sum — measured at 1.3–2.9s, inside the animation.
 - The spread menu is built server-side from `spreadsFor(avatarId)`, and the
   returned id is only used when it is in that master's own menu. A model will
   invent a plausible id.
+- **Structure first, then the signature.** The rule was "★ 專屬牌陣 only has to
+  fit, then pick it", and it swallowed almost everything: the signature
+  `bestFor` lines are emotional ("迷茫", "內耗", "低谷") and can be stretched to
+  cover any worry. Measured, a question that copied 七脈輪's own `bestFor`
+  almost word for word got 七脈輪 for 3 of 7 masters, and a textbook
+  過去現在未來 question got the signature for 4 of 4. Step 1 now asks whether
+  the visitor *named a way of looking* at it — a time order, two options, one
+  sentence, several layers, a whole-body scan — and takes the matching generic
+  spread without looking at ★ at all. Only a question that is purely mood goes
+  to step 2, which looks at ★ first.
+- **A generic spread's `bestFor` must describe a structure, not a mood.** Three
+  of them described moods (`single`, `mind-body-spirit`,
+  `situation-challenge-advice`) and therefore competed in step 1, which is how
+  「我剛失去一段很重要的感情」 ended up recommending 單張指引 with the invented
+  reason 「你只想要一句話」. Rewriting those three lines fixed it; prompt
+  wording alone did not. `bestFor` is prompt-only for generics — the picker
+  buttons show `sub` — so it can be written for the model.
+- Measured after the change: 10 of 10 structural questions correct, 6 of 7
+  mood questions land on the right signature, each over repeated runs. **One
+  known failure:** 「我剛失去一段很重要的感情」 with no emotional qualifier
+  still returns `single` 3 times out of 3. Adding any feeling word, or
+  rephrasing, gives `rebirth`. It is one confabulating phrasing, not a rule
+  failure — six rounds of prompt and data edits did not move it, and each
+  attempt destabilised cases that already worked.
 - `skipRefine` (client sends it past `LONG_QUESTION_CHARS`, 60) skips the
   refine call entirely — someone who typed that much has already said where
   they are, and offering three rewrites reads as being corrected.
