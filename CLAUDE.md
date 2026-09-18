@@ -214,6 +214,38 @@ from the registry so it cannot drift again; the reading route passes
 When adding a spread size, curl the route — a count rule can hide anywhere
 downstream of validation.
 
+## 🎬 Question intake — one request, two model calls
+
+`/api/question-intake` (was `/api/refine-question`) runs during the four-second
+stillness animation and answers two things: does the question need sharpening,
+and which spread suits it.
+
+**It makes two model calls, in parallel, on purpose. Do not merge them.** The
+merged version was written first and measurably degraded the refinement: asked
+to also pick a spread, the model invented issueLabels ("問題編碼異常"), wrote
+coaching instructions instead of copy-able questions, and picked generic
+spreads over the master's own. Two single-purpose prompts each do their job,
+and `Promise.allSettled` makes the latency the slower of the two rather than
+the sum — measured at 1.3–2.9s, inside the animation.
+
+- `REFINE_SYSTEM` is the old refine-only prompt **verbatim**. Every attempt to
+  give it a second job made it worse.
+- The spread menu is built server-side from `spreadsFor(avatarId)`, and the
+  returned id is only used when it is in that master's own menu. A model will
+  invent a plausible id.
+- `skipRefine` (client sends it past `LONG_QUESTION_CHARS`, 60) skips the
+  refine call entirely — someone who typed that much has already said where
+  they are, and offering three rewrites reads as being corrected.
+- Every failure path returns `{ shouldRefine: false }`. This is an optional
+  assist in front of the real reading; a failed intake should just give the
+  plain picker, never an error.
+
+**Known, pre-existing:** the refine prompt's examples are heavily
+romance-flavoured (他愛不愛我 / 真命天子 / 感情運), and it sometimes rewrites
+an unrelated question into a relationship one — 「我還會不會有翻身的一天」 came
+back with suggestions about 感情吸引力. This predates the intake split and is
+a prompt-content fix, not a wiring one.
+
 ## 🔒 API surface — everything under /app/api is public
 
 There is no auth, no rate limiting and no origin check on any route, and

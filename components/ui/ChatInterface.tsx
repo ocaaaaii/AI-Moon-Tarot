@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import dynamic from "next/dynamic";
 import type { CardRequest, HistoryMessage } from "@/lib/tarot/types";
 import { MAJOR_IDS, MINOR_NUMBERED_IDS, COURT_IDS } from "@/lib/tarot/cardCategories";
-import { spreadsFor, positionLabels, type TarotSpread } from "@/lib/tarot/spreads";
+import { spreadsFor, getSpread, positionLabels, type TarotSpread } from "@/lib/tarot/spreads";
 import type { AvatarAccent } from "@/lib/tarot/avatars";
 import { ACCENT_RGB } from "@/lib/landing/accents";
 import DrawnCards from "./DrawnCards";
@@ -51,6 +51,25 @@ const PHASE_CONFIG = [
  * the position labels and the draw mode used to be three separate facts kept
  * in step by hand — and the server had its own copy of the first two.
  */
+
+/**
+ * Past this many characters we stop offering to rewrite the question.
+ *
+ * Someone who has typed this much has already told us where they are, in their
+ * own words; handing them three "better" phrasings reads as being corrected
+ * rather than helped. The intake call still runs — it is what recommends the
+ * spread — it is just told to skip the refinement half.
+ */
+const LONG_QUESTION_CHARS = 60;
+
+/** what `/api/question-intake` answers with */
+interface IntakeResult {
+  shouldRefine: boolean;
+  issueLabel?: string;
+  suggestions?: string[];
+  recommendedSpreadId?: string;
+  reason?: string;
+}
 
 const slideUp = {
   initial: { opacity: 0, y: 14 },
@@ -104,7 +123,9 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   // Refine-question step state
   const [refineSuggestions, setRefineSuggestions] = useState<string[]>([]);
   const [refineIssueLabel, setRefineIssueLabel] = useState("");
-  const refineResultRef = useRef<{ shouldRefine: boolean; issueLabel?: string; suggestions?: string[] } | null>(null);
+  const refineResultRef = useRef<IntakeResult | null>(null);
+  /** the spread /api/question-intake picked for this question, if any */
+  const [recommended, setRecommended] = useState<{ spread: TarotSpread; reason: string } | null>(null);
   const refineWaitCountRef = useRef(0);
 
   // Enter-to-send preference (persisted in localStorage)
@@ -168,6 +189,13 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   const advanceFromStillness = useCallback(() => {
     if (stillnessTimerRef.current) clearTimeout(stillnessTimerRef.current);
     const result = refineResultRef.current;
+
+    // The server only offers ids from this master's own menu, but it is the
+    // model that picks one, so resolve it against the registry rather than
+    // trusting the string through to the UI.
+    const picked = result?.recommendedSpreadId ? getSpread(result.recommendedSpreadId) : undefined;
+    setRecommended(picked ? { spread: picked, reason: result?.reason ?? "" } : null);
+
     if (result && result.shouldRefine && result.suggestions && result.suggestions.length > 0) {
       setRefineSuggestions(result.suggestions);
       setRefineIssueLabel(result.issueLabel ?? "");
@@ -180,19 +208,26 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
   }, []);
 
   const handleSubmitQuestion = useCallback(() => {
-    if (question.trim().length < 2) return;
+    const trimmed = question.trim();
+    if (trimmed.length < 2) return;
     setStep("stillness");
     refineResultRef.current = null;
     refineWaitCountRef.current = 0;
+    setRecommended(null);
 
-    // Fire refine-question API in parallel with stillness animation
-    fetch("/api/refine-question", {
+    // Fires during the four-second stillness animation, so the spread
+    // recommendation costs no extra call and no extra wait.
+    fetch("/api/question-intake", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: question.trim() }),
+      body: JSON.stringify({
+        question: trimmed,
+        avatarId: avatar.id,
+        skipRefine: trimmed.length >= LONG_QUESTION_CHARS,
+      }),
     })
       .then((r) => r.json())
-      .then((data: { shouldRefine: boolean; issueLabel?: string; suggestions?: string[] }) => {
+      .then((data: IntakeResult) => {
         refineResultRef.current = data;
       })
       .catch(() => {
@@ -201,7 +236,7 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
 
     // Auto-advance to spread/refine after 4 s
     stillnessTimerRef.current = setTimeout(() => advanceFromStillness(), 4000);
-  }, [question, advanceFromStillness]);
+  }, [question, avatar.id, advanceFromStillness]);
 
   const handleCardsDrawn = useCallback((cards: CardRequest[]) => {
     setDrawnCards(cards);
@@ -390,6 +425,8 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
     setStep("idle");
     setQuestion("");
     setSpread(null);
+    setRecommended(null);
+    setShowGeneric(false);
     setCategoryCards([]);
     setRefineSuggestions([]);
     setRefineIssueLabel("");
@@ -563,7 +600,8 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                     }}
                   >
                     <p className="text-[10px] tracking-[0.22em] mb-2" style={{ color: `rgba(${accentRgb},0.95)` }}>
-                      ✦ {avatar.displayName} 的專屬牌陣
+                      {recommended?.spread.id === signature.id ? "✦ 為你推薦 · " : "✦ "}
+                      {avatar.displayName} 的專屬牌陣
                     </p>
                     <div className="flex items-baseline justify-between gap-3 flex-wrap">
                       <span className="text-cream-100 text-base tracking-wide">{signature.label}</span>
@@ -572,9 +610,42 @@ export default function ChatInterface({ avatar }: ChatInterfaceProps) {
                     <p className="text-cream-200/55 text-[11.5px] leading-relaxed mt-2 text-pretty">
                       {signature.bestFor}
                     </p>
+                    {recommended?.spread.id === signature.id && recommended.reason && (
+                      <p className="text-[11.5px] leading-relaxed mt-2 text-pretty" style={{ color: `rgba(${accentRgb},0.85)` }}>
+                        「{recommended.reason}」
+                      </p>
+                    )}
                     <p className="text-[11px] mt-2.5" style={{ color: `rgba(${accentRgb},0.75)` }}>
                       {signature.positions.length} 張 · 開始 →
                     </p>
+                  </motion.button>
+                )}
+
+                {/* When the recommendation is not this master's own spread it
+                    gets its own row, because the generic list it lives in is
+                    folded and a badge nobody can see is not a recommendation. */}
+                {recommended && recommended.spread.id !== signature?.id && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ scale: 1.015 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => { setSpread(recommended.spread); setCategoryCards([]); setStep("deck"); }}
+                    className="w-full text-left rounded-xl px-4 py-3 mb-3 border border-morandi-gold/35 bg-morandi-gold/[0.07] hover:border-morandi-gold/60 hover:bg-morandi-gold/[0.12] transition-colors duration-200"
+                  >
+                    <p className="text-morandi-gold/90 text-[10px] tracking-[0.22em] mb-1.5">✦ 為你推薦</p>
+                    <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                      <span className="text-cream-100/95 text-sm tracking-wide">{recommended.spread.label}</span>
+                      <span className="text-morandi-stone/50 text-[11px]">
+                        {recommended.spread.positions.length} 張
+                      </span>
+                    </div>
+                    {recommended.reason && (
+                      <p className="text-cream-200/60 text-[11.5px] leading-relaxed mt-1.5 text-pretty">
+                        「{recommended.reason}」
+                      </p>
+                    )}
                   </motion.button>
                 )}
 
