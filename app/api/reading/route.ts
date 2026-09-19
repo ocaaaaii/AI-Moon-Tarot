@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { buildUserMessage } from "@/lib/tarot/contextBuilder";
+import { READING_RULES } from "@/lib/tarot/readingRules";
 import { getTarotAvatar } from "@/lib/tarot/avatars";
 import { loadCards } from "@/lib/tarot/wikiLoader";
 import {
@@ -193,19 +194,32 @@ export async function POST(req: NextRequest): Promise<Response> {
   }
   const avatar = getTarotAvatar(request.avatarId);
 
+  // Who they are + the rules everyone shares + how to walk this spread.
+  // The middle part used to be copy-pasted into all seven persona prompts;
+  // the last part is why a signature spread reads differently from a generic
+  // one rather than just sounding different.
+  const systemPrompt = [
+    avatar.systemPrompt,
+    READING_RULES,
+    spread.readingGuide ?? "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
   // 3. Stream from the active LLM provider (see lib/llm/stream.ts)
   const stream = new ReadableStream({
     async start(controller) {
       try {
         // Build multi-turn messages: initial context + optional follow-up history.
         // When history exists, the last entry is the follow-up question — append a note
-        // so the persona replies conversationally instead of using the Chapter format.
+        // so the persona replies conversationally instead of using the reading
+        // structure. Section names vary by spread now, so the note cannot name them.
         const historyMessages = (request.history ?? []).map((h, idx, arr) => {
           const isLastUser = idx === arr.length - 1 && h.role === "user";
           return {
             role: h.role as "user" | "assistant",
             content: isLastUser
-              ? h.content + "\n\n（這是追問，請用你自己的語氣自然對話，不要使用 Chapter 1／2／3／4 格式。）"
+              ? h.content + "\n\n（這是追問，請用你自己的語氣自然對話，不要再用解讀時的分段標題格式。）"
               : h.content,
           };
         });
@@ -215,7 +229,7 @@ export async function POST(req: NextRequest): Promise<Response> {
           ...historyMessages,
         ];
 
-        for await (const chunk of streamLLM(avatar.systemPrompt, messages, MAX_TOKENS, TEMPERATURE)) {
+        for await (const chunk of streamLLM(systemPrompt, messages, MAX_TOKENS, TEMPERATURE)) {
           controller.enqueue(sseChunk(chunk));
         }
 

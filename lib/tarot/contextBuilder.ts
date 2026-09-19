@@ -27,7 +27,9 @@ export function buildCardContext(
   card: CardContext,
   position = 0,
   total = 1,
-  customPositions?: string[]
+  customPositions?: string[],
+  /** the chakra reading judges energy partly by colour; nothing else needs it */
+  withColors = false
 ): string {
   const posLabel = customPositions?.[position]
     ? `第 ${position + 1} 張（${customPositions[position]}）`
@@ -46,18 +48,13 @@ export function buildCardContext(
     "",
   ];
 
-  if (card.summary) {
-    lines.push("【牌面簡述】", card.summary, "");
-  }
-
-  if (card.story) {
-    const storySnippet =
-      card.story.length > 600
-        ? card.story.slice(0, 600) + "…"
-        : card.story;
-    lines.push("【牌義故事與象徵】", storySnippet, "");
-  }
-
+  // 【牌面簡述】and 【牌義故事與象徵】(up to 600 chars each) used to sit here.
+  // They were removed on purpose: a reading is supposed to be about the
+  // visitor's situation, not a tour of the picture, and five cards' worth of
+  // symbolic narrative parked in front of the model is an invitation to
+  // narrate it. Forbidding the behaviour in the prompt while still serving the
+  // material does not work — see READING_RULES. Keywords and the active
+  // meanings are what a reader actually reasons from.
   const activeLabel = card.isReversed ? "逆位核心意義" : "正位核心意義";
   lines.push(`【${activeLabel}】`, formatList(card.activeMeanings), "");
 
@@ -75,7 +72,7 @@ export function buildCardContext(
     lines.push("【職場事業指引】", card.careerReading, "");
   }
 
-  if (card.dominantColors.length > 0) {
+  if (withColors && card.dominantColors.length > 0) {
     lines.push(`【牌面主色調】${card.dominantColors.join("、")}`, "");
   }
 
@@ -85,9 +82,13 @@ export function buildCardContext(
 /**
  * Build the full context block for a multi-card reading.
  */
-export function buildReadingContext(cards: CardContext[], customPositions?: string[]): string {
+export function buildReadingContext(
+  cards: CardContext[],
+  customPositions?: string[],
+  withColors = false
+): string {
   return cards
-    .map((card, i) => buildCardContext(card, i, cards.length, customPositions))
+    .map((card, i) => buildCardContext(card, i, cards.length, customPositions, withColors))
     .join("\n\n");
 }
 
@@ -101,7 +102,7 @@ export function buildUserMessage(
   spreadPositions?: string[],
   spreadType?: SpreadType
 ): string {
-  const cardContext = buildReadingContext(cards, spreadPositions);
+  const cardContext = buildReadingContext(cards, spreadPositions, spreadType === "chakra");
   const cardNames = cards
     .map((c) => `【${c.displayName}${c.isReversed ? "（逆）" : ""}】`)
     .join("、");

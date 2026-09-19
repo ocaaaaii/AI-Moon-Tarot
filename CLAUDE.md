@@ -290,6 +290,61 @@ duplicates, ids in range, pools respected, reversed rate 0.341–0.358. If you
 change this file, do that again rather than eyeballing a few draws — a pool
 leak shows up once in fifty.
 
+## 📖 A reading is about the visitor, not about the card
+
+The PO's note: a real reader never says 「這張金幣五，你看看它長怎樣，它出現在
+這邊代表對方⋯」. They tell you about your situation. The deck is how they
+reason, not what they talk about.
+
+This was not model drift — **we asked for it, in writing, in six of the seven
+prompts**, with worked examples: `eosPrompt` 「描述牌面上具體可見的東西：人物的
+姿勢、手中的物件、背景的顏色」, `persephonePrompt` 「你看這張牌上，那個人獨自坐
+在橋邊，手裡拿著空的酒杯」. All seven Chapter 2 titles named the deck
+(牌說的故事 / 牌面意象與歲月長河 / 卡牌中的潮汐起落 …).
+
+- **`lib/tarot/readingRules.ts` holds the 不描述牌面 rule and every other rule
+  all seven share.** Naming a card to mark a position is fine — the UI shows
+  the name anyway. Describing the picture, explaining the symbolism, or
+  writing 「第一張牌是Ｘ，它⋯」 is not.
+- **Sample lines matter more than rules.** The prompts carried quoted examples
+  like 「這張牌說的是真的痛喔」; the model copies those far more faithfully than
+  it follows an instruction not to. Rewriting nineteen of them to address the
+  visitor was what actually moved the numbers. If you add a sample line, make
+  the visitor its subject.
+- **`contextBuilder` no longer serves 牌面簡述 or 牌義故事與象徵.** Forbidding
+  the narration while still parking 500 characters of symbolism per major
+  arcana card in front of the model does not work. 牌面主色調 survives only for
+  the chakra reading, which judges energy partly by colour.
+- Measured on the same seven questions before and after: picture-description
+  wording went **42 → 0** (two apparent hits were 「你站在哪個位置」 and
+  「教皇坐在你的藉口位置」 — the person and the slot, not the picture), and
+  card-as-subject wording 36 → 13.
+
+## 🗺 Each signature spread reads differently, not just sounds different
+
+`TarotSpread.readingGuide` carries the section path for a spread, and the
+reading route appends it after the persona's voice and `READING_RULES`. It
+**replaces** the default section structure — that is the difference between a
+spread that is genuinely that master's and one that is the same four chapters
+in a different accent.
+
+Before this, ~27 of the ~50 substantive lines in every persona prompt were
+byte-identical across all seven — 天地人識別, 牌陣位置, 行動處方箋, 脈輪色彩,
+誠實直述. That is machinery, not personality, and it meant a rule change was a
+seven-file edit with seven copies free to drift.
+
+- The chakra guide used to live in **all seven** prompts. It belongs to the
+  spread; it lives in `spreads.ts` now.
+- Section names come from the spread's own positions in that master's voice:
+  Helios reads 你的藉口 → 真相 → 你不敢跨的那一步 → 今天就能做的事; Nyx walks
+  陰影 → 根源 → 防禦機制 → 轉化 → 和解.
+- Generic spreads have no `readingGuide` and use the persona's own default
+  sections, which now follow the spread's positions.
+- `ChatReading.tsx` splits on blank lines and bolds `**…**`, so it never cared
+  how many sections there are or what they are called. Nothing hardcodes
+  Chapter 1-4 any more — the follow-up note in the reading route used to, and
+  no longer does.
+
 ## 🎬 Question intake — one request, two model calls
 
 `/api/question-intake` (was `/api/refine-question`) runs during the four-second
