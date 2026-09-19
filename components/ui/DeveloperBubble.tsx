@@ -141,7 +141,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-cream-100 text-xs font-medium leading-snug">開發者 CA</p>
-                <p className="text-morandi-stone/40 text-[10px]">AI Tarot v7.1.0 · 2026/9/18 更新</p>
+                <p className="text-morandi-stone/40 text-[10px]">AI Tarot v7.2.1 · 2026/9/19 更新</p>
               </div>
               <button onClick={()=>setOpen(false)}
                 className="text-morandi-stone/35 hover:text-cream-200/60 transition-colors text-sm leading-none flex-shrink-0">✕</button>
@@ -153,23 +153,41 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               {/* Intro message */}
               <div className="px-4 py-4" style={{ borderBottom:"1px solid rgba(184,168,200,0.07)" }}>
                 <p className="text-cream-200/82 text-[12.5px] leading-relaxed">
-                  Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v7.1 🌙
+                  Dear All，我是開發者 <span className="text-morandi-lavender/90 font-medium">CA</span>！歡迎來到 v7.2 🌙
                 </p>
 
-                {/* Newest first. v7.1 is a handling pass on top of v7.0's new
-                    homepage, and almost all of it came from survey answers —
-                    so it is worth showing that feedback actually lands. */}
+                {/* Newest first, and split into what is new versus what was
+                    broken — a reader skimming wants "what can I try" before
+                    "what did you fix". */}
                 <div
                   className="mt-3 rounded-xl px-3 py-2.5"
                   style={{ background:"rgba(184,168,200,0.06)", border:"1px solid rgba(184,168,200,0.14)" }}
                 >
-                  <p className="text-morandi-gold/85 text-[11px] tracking-widest mb-2">✦ 本次更新 v7.1.0 · 9/18</p>
+                  <p className="text-morandi-gold/85 text-[11px] tracking-widest mb-2">✦ 本次更新 v7.2.1 · 9/19</p>
+
+                  <p className="text-morandi-lavender/85 text-[11px] tracking-wide mb-1.5">新推出</p>
                   <ul className="flex flex-col gap-1.5">
                     {[
-                      "🃏 抽牌改成「直接在牌面上左右滑」，下面那條窄窄的拉桿退休了",
-                      "📱 手機上滑牌時畫面不再跟著上下抖動",
-                      "🚪 手機版四道門改成 2×2 宮格，一眼看完，不用再往下滑三個螢幕",
-                      "✍️ 修掉中文標題和說明文字「一個字掉到下一行」的排版",
+                      "🔮 七位塔羅師各自有了專屬牌陣——三段月相鏡像陣、烈陽破曉十字陣、解謎拼圖陣、洋流潮汐陣、曙光祈願陣、深夜剖析陣、冥界重生陣",
+                      "✦ 打完問題後會依你的處境推薦適合的牌陣，不用自己猜要選哪個",
+                      "🎴 不想自己抽？可以請塔羅師替你抽",
+                      "🗺️ 牌不再是一排——每個牌陣照自己的陣型擺開，底下還有專屬的光影",
+                      "💬 解牌體驗優化",
+                    ].map((item) => (
+                      <li key={item} className="text-cream-200/72 text-[11.5px] leading-relaxed" style={{ textWrap:"pretty" }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="text-morandi-lavender/85 text-[11px] tracking-wide mt-3 mb-1.5">修正</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {[
+                      "🖱️ 電腦版點牌沒反應的問題修好了（抱歉，是我上一版弄壞的）",
+                      "🌀 七脈輪改成兩排，牌變大了，也不用再滑那麼久",
+                      "📜 牌陣清單不再需要展開，八個牌陣直接看得到",
+                      "🚪 手機版四道門改成 2×2 宮格，不用再往下滑三個螢幕",
+                      "🌙 THE SEVEN 的頭像邊緣不再是硬邊，改成散進夜色裡",
                       "💌 問卷信件寄送修復，之前的回饋我都有收到（在垃圾信匣裡找到了 😅）",
                     ].map((item) => (
                       <li key={item} className="text-cream-200/72 text-[11.5px] leading-relaxed" style={{ textWrap:"pretty" }}>
@@ -177,16 +195,20 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
                       </li>
                     ))}
                   </ul>
+
                   <p className="text-cream-200/45 text-[11px] leading-relaxed mt-2.5">
-                    抽牌手感是這次最想請你試的一項——滑順不順、會不會滑過頭、會不會不小心誤抽，都跟我說 🙏
+                    最想請你試的是<span className="text-morandi-gold/85">專屬牌陣</span>——換不同的塔羅師問同一件事，看看解出來的感覺有沒有真的不一樣 🙏
                   </p>
                 </div>
 
                 <p className="text-cream-200/60 text-[12px] leading-relaxed mt-3">
-                  <span className="text-morandi-stone/50">上一版 v7.0 ·</span> 大改動是<span className="text-morandi-gold/85 font-medium">全新首頁</span>——把原本四張縮圖的入口頁，重做成有主視覺、世界觀、七魂群像與故事導引的完整世界。燭火會搖、月亮會呼吸，七位神明攤開成一副牌陣讓你一位位翻看。右上角有顆小喇叭，想要的話可以<span className="text-morandi-gold/85 font-medium">配上音樂</span>再逛一次 🎵。
+                  <span className="text-morandi-stone/50">v7.1 ·</span> 抽牌改成直接在牌面上左右滑，手機上不再邊滑邊抖。
                 </p>
                 <p className="text-cream-200/60 text-[12px] leading-relaxed mt-2">
-                  接下來預計實作：<span className="text-morandi-lavender/85">推薦牌組</span>、<span className="text-morandi-lavender/85">自動抽牌</span>、以及眾神之庭的<span className="text-morandi-lavender/85">顯化願力</span>。
+                  <span className="text-morandi-stone/50">v7.0 ·</span> 大改動是<span className="text-morandi-gold/85 font-medium">全新首頁</span>——把原本四張縮圖的入口頁，重做成有主視覺、世界觀、七魂群像與故事導引的完整世界。燭火會搖、月亮會呼吸，七位神明攤開成一副牌陣讓你一位位翻看。右上角有顆小喇叭，想要的話可以<span className="text-morandi-gold/85 font-medium">配上音樂</span>再逛一次 🎵。
+                </p>
+                <p className="text-cream-200/60 text-[12px] leading-relaxed mt-2">
+                  接下來預計實作：眾神之庭的<span className="text-morandi-lavender/85">顯化願力</span>、以及<span className="text-morandi-lavender/85">會員系統</span>。
                 </p>
                 <p className="text-cream-200/60 text-[12px] leading-relaxed mt-2">
                   星座週運勢目前品質還不到我想要的樣子，先收起來重做，請見諒 🙇
@@ -196,7 +218,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
                 </p>
                 <ul className="mt-2 flex flex-col gap-1">
                   {[
-                    "🔮 塔羅店鋪：占卜 + 追問聊天 + 七脈輪牌陣",
+                    "🔮 塔羅店鋪：占卜 + 追問聊天 + 十五種牌陣（含七位塔羅師的專屬牌陣）",
                     "⛩️ 月神神社：抽籤 + 解籤 + 聖域儀式",
                     "🌌 眾神之庭：眾神之語陪伴聊天（週神諭整修中）",
                     "📖 月神天啟：七位角色的日常故事劇場",
@@ -330,7 +352,7 @@ export default function DeveloperBubble({ hidden }: { hidden?: boolean }) {
               transition={{ duration:0.2 }} onClick={()=>setOpen(true)}
               className="relative px-3 py-2 rounded-2xl rounded-br-sm text-[11.5px] font-medium tracking-wide cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.45)]"
               style={{ background:"rgba(22,16,36,0.95)", border:"1px solid rgba(184,168,200,0.22)", color:"rgba(220,210,238,0.92)", backdropFilter:"blur(12px)" }}>
-              作者有話要說！v7.1 ✨
+              作者有話要說！v7.2 ✨
               <span className="absolute -bottom-[7px] right-3 w-3 h-3 rotate-45"
                 style={{ background:"rgba(22,16,36,0.95)", borderRight:"1px solid rgba(184,168,200,0.22)", borderBottom:"1px solid rgba(184,168,200,0.22)" }} />
             </motion.button>
