@@ -338,8 +338,13 @@ seven-file edit with seven copies free to drift.
 - Section names come from the spread's own positions in that master's voice:
   Helios reads 你的藉口 → 真相 → 你不敢跨的那一步 → 今天就能做的事; Nyx walks
   陰影 → 根源 → 防禦機制 → 轉化 → 和解.
-- Generic spreads have no `readingGuide` and use the persona's own default
-  sections, which now follow the spread's positions.
+- **Generic spreads have no `readingGuide` and keep the persona's own
+  Chapter 1–4, prefix and all.** Only the eight spreads with a guide read
+  differently. The first version of `READING_RULES` said 「段落標題請用你自己的
+  語氣命名」 and that quietly beat the fixed titles in the persona prompts —
+  Helios came back with 先看清楚你在哪裡 instead of Chapter 1，烈日下的無處遁形.
+  The rule now offers exactly two cases and no third: follow the guide, or use
+  your own four titles unchanged.
 - `ChatReading.tsx` splits on blank lines and bolds `**…**`, so it never cared
   how many sections there are or what they are called. Nothing hardcodes
   Chapter 1-4 any more — the follow-up note in the reading route used to, and
